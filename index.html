@@ -8,8 +8,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="apple-touch-icon" href="./icon.svg" />
-    <link rel="stylesheet" href="./styles.css?v=21" />
-    <link rel="stylesheet" href="./calendar-month.css?v=21" />
+    <link rel="stylesheet" href="./styles.css?v=22" />
+    <link rel="stylesheet" href="./calendar-month.css?v=22" />
     <style>
       html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
       body { min-height: 100dvh; }
@@ -20,6 +20,40 @@
       .timeline::-webkit-scrollbar-thumb { background: #aac7dc; border-radius: 4px; }
       @media (min-width: 541px) { .app-shell { height: calc(100dvh - 44px); max-height: calc(100dvh - 44px); min-height: 640px; } }
       @media (max-width: 540px) { .app-shell { height: 100dvh; max-height: 100dvh; min-height: 0; } }
+      .day-date-trigger { display: inline-grid; gap: 3px; border: 0; background: transparent; color: #18324f; padding: 0; text-align: left; cursor: pointer; }
+      .day-date-trigger:hover .day-title-line, .day-date-trigger:focus-visible .day-title-line { color: #1769aa; }
+      .day-date-trigger:focus-visible { outline: 2px solid #2484c5; outline-offset: 4px; border-radius: 5px; }
+      #day-year { color: #6686a2; font-size: 13px; font-weight: 650; }
+      .day-title-line { display: flex; align-items: center; gap: 7px; transition: color .16s; }
+      #day-title { font-size: 28px; line-height: 1.08; letter-spacing: -.5px; }
+      .day-title-chevron { color: #5485ab; font-size: 18px; transform: translateY(2px); }
+      .day-date-dialog { width: min(460px, calc(100% - 32px)); max-height: min(680px, calc(100dvh - 32px)); margin: auto; border: 0; border-radius: 16px; background: #fafdff; box-shadow: 0 22px 70px #163b5d38; }
+      .day-date-dialog[open] { animation: day-picker-open .22s cubic-bezier(.2,.85,.28,1) both; }
+      .day-date-dialog::backdrop { background: #0c345966; backdrop-filter: blur(2px); }
+      .day-picker-panel { padding: 24px; }
+      .day-picker-close { flex: 0 0 auto; }
+      .day-picker-heading { margin: 7px 0 18px; }
+      .day-picker-year { display: inline-flex; align-items: center; gap: 5px; border: 0; background: transparent; color: #547895; padding: 0; font-size: 15px; font-weight: 750; cursor: pointer; }
+      .day-picker-year:hover { color: #1769aa; }
+      .day-picker-year-cue { font-size: 14px; }
+      .day-picker-date { display: block; margin-top: 4px; font-size: 30px; letter-spacing: -.6px; color: #18324f; }
+      .day-year-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; max-height: 168px; margin: -4px 0 16px; overflow-y: auto; overscroll-behavior: contain; padding: 7px; border: 1px solid #cfe0ee; border-radius: 10px; background: #f4faff; scrollbar-width: thin; }
+      .day-year-option { border: 0; border-radius: 7px; background: transparent; color: #42627f; padding: 9px 4px; font-weight: 700; cursor: pointer; }
+      .day-year-option:hover, .day-year-option.is-selected { background: #dff1ff; color: #1769aa; }
+      .day-picker-month-row { display: grid; grid-template-columns: 38px 1fr 38px; align-items: center; margin-bottom: 13px; text-align: center; }
+      .day-picker-month-row strong { font-size: 16px; }
+      .day-picker-nav { display: grid; place-items: center; width: 34px; height: 34px; border: 0; border-radius: 50%; background: #eaf5ff; color: #24679d; font-size: 25px; line-height: 1; cursor: pointer; }
+      .day-picker-nav:hover { background: #dbefff; }
+      .day-picker-weekdays, .day-picker-grid { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; }
+      .day-picker-weekdays { margin-bottom: 5px; color: #8ba5bf; font-size: 11px; }
+      .day-picker-grid { gap: 3px; }
+      .day-picker-day { aspect-ratio: 1; border: 0; border-radius: 50%; background: transparent; color: #345b7e; font-size: 13px; font-weight: 650; cursor: pointer; }
+      .day-picker-day:hover { background: #e6f4ff; color: #1769aa; }
+      .day-picker-day.is-other { color: #bdcbd7; }
+      .day-picker-day.is-today:not(.is-selected) { color: #0879c9; font-weight: 850; }
+      .day-picker-day.is-selected { background: #1769aa; color: #fff; box-shadow: 0 3px 9px #1769aa40; }
+      @keyframes day-picker-open { from { opacity: 0; transform: scale(.86) translateY(16px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+      @media (max-width: 420px) { .day-picker-panel { padding: 21px 18px; } .day-picker-date { font-size: 28px; } }
     </style>
     <title>每日备忘</title>
   </head>
@@ -51,8 +85,11 @@
       <section class="screen is-hidden" id="day-screen" aria-label="日程">
         <header class="day-header">
           <div>
+            <button type="button" class="day-date-trigger" id="day-date-trigger" aria-haspopup="dialog" aria-label="选择日期">
+              <span id="day-year"></span>
+              <span class="day-title-line"><strong id="day-title"></strong><span class="day-title-chevron" aria-hidden="true">⌄</span></span>
+            </button>
             <p id="day-weekday"></p>
-            <h1 id="day-title"></h1>
           </div>
           <button class="today-button" id="jump-today">回到今天</button>
         </header>
@@ -103,6 +140,19 @@
         <div class="dialog-actions"><button type="button" id="delete-event-button" class="delete-button is-hidden">删除日程</button><button class="save-button" id="save-event-button" value="default">保存日程</button></div>
       </form>
     </dialog>
+    <dialog id="day-date-dialog" class="day-date-dialog" aria-labelledby="day-picker-date-label">
+      <section class="day-picker-panel">
+        <header class="modal-header"><div><p class="modal-eyebrow">选择日期</p><h2>日程</h2></div><button type="button" id="close-day-date-dialog" class="close-button day-picker-close" aria-label="关闭日期选择">×</button></header>
+        <div class="day-picker-heading">
+          <button type="button" id="day-picker-year" class="day-picker-year" aria-expanded="false"><span id="day-picker-year-label"></span><span class="day-picker-year-cue" aria-hidden="true">⌄</span></button>
+          <strong id="day-picker-date-label" class="day-picker-date"></strong>
+        </div>
+        <div id="day-year-list" class="day-year-list is-hidden" aria-label="选择年份"></div>
+        <div class="day-picker-month-row"><button type="button" id="day-picker-previous-month" class="day-picker-nav" aria-label="上个月">‹</button><strong id="day-picker-month-label"></strong><button type="button" id="day-picker-next-month" class="day-picker-nav" aria-label="下个月">›</button></div>
+        <div class="day-picker-weekdays" aria-hidden="true"><span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span></div>
+        <div id="day-picker-grid" class="day-picker-grid" aria-label="选择日期"></div>
+      </section>
+    </dialog>
     <dialog id="auth-dialog" aria-labelledby="auth-dialog-title">
       <form id="auth-form" novalidate>
         <div class="modal-header"><div><p class="modal-eyebrow" id="auth-dialog-eyebrow">跨设备保存</p><h2 id="auth-dialog-title">登录同步</h2></div><button type="button" id="close-auth-dialog" class="close-button" aria-label="关闭">×</button></div>
@@ -127,6 +177,6 @@
       </form>
     </dialog>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <script src="./app.js?v=21"></script>
+    <script src="./app.js?v=22"></script>
   </body>
 </html>
