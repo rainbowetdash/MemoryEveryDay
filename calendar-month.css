@@ -283,6 +283,8 @@
 
 @media(max-width:450px){.topbar{grid-template-columns:auto 1fr auto;gap:5px}.topbar h1{min-width:0;font-size:18px}.month-switcher{gap:3px}.topbar-actions{gap:4px}.account-button{max-width:74px;padding:6px 5px}.account-icon{display:none}.calendar-zoom-controls{gap:2px}.zoom-button{width:27px;height:27px}}
 
+.auth-code-copy{margin-bottom:11px}.auth-code-copy strong{font-size:12px;overflow-wrap:anywhere}.auth-link-button{display:block;margin:10px auto 0;border:0;background:transparent;color:#2676ad;font-size:12px;font-weight:700;cursor:pointer}.auth-link-button:hover{text-decoration:underline}
+
 .dialog-actions {
   display: flex;
   gap: 10px;
