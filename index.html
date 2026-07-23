@@ -3,12 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#faf8f5" />
+    <meta name="theme-color" content="#f4f9ff" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="apple-touch-icon" href="/icon.svg" />
-    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/styles.css?v=2" />
     <title>每日备忘</title>
   </head>
   <body>
@@ -51,14 +51,29 @@
     </main>
 
     <dialog id="event-dialog">
-      <form method="dialog" id="event-form">
-        <div class="modal-header"><h2>添加日程</h2><button value="cancel" class="close-button" aria-label="关闭">×</button></div>
+      <form method="dialog" id="event-form" novalidate>
+        <div class="modal-header"><div><p class="modal-eyebrow">新的安排</p><h2>添加日程</h2></div><button type="button" id="close-event-dialog" class="close-button" aria-label="关闭">×</button></div>
         <label>内容<input id="event-title" name="title" required maxlength="60" placeholder="例如：和朋友喝咖啡" /></label>
-        <div class="form-row"><label>日期<input id="event-date" name="date" type="date" required /></label><label>时间<input id="event-time" name="time" type="time" required value="09:00" /></label></div>
-        <label>颜色<select id="event-color" name="color"><option value="purple">薰衣草紫</option><option value="peach">暖杏色</option><option value="blue">天空蓝</option><option value="green">清新绿</option></select></label>
+        <input id="event-date" name="date" type="hidden" />
+        <input id="event-time" name="time" type="hidden" value="09:00" />
+        <input id="event-end-time" name="endTime" type="hidden" />
+        <input id="event-time-mode" name="timeMode" type="hidden" value="reminder" />
+        <div class="form-label">时间安排</div>
+        <button type="button" id="schedule-editor-trigger" class="schedule-editor-trigger" aria-label="更改日期和时间" aria-expanded="false"><span class="schedule-editor-icon">◷</span><span><strong id="schedule-editor-title">7月22日</strong><small id="schedule-editor-subtitle">09:00 提醒</small></span><span class="chevron">›</span></button>
+        <section id="schedule-editor" class="schedule-editor is-hidden" aria-label="更改日期和时间">
+          <header class="schedule-editor-header"><button type="button" id="close-schedule-editor" class="back-button" aria-label="返回">‹</button><div><p>时间安排</p><strong>选择日期和时间</strong></div></header>
+          <div class="mini-calendar-header"><button type="button" class="mini-nav" id="picker-previous-month" aria-label="上个月">‹</button><strong id="picker-month-label"></strong><button type="button" class="mini-nav" id="picker-next-month" aria-label="下个月">›</button></div>
+          <div class="mini-weekdays" aria-hidden="true"><span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span></div>
+          <div class="mini-calendar-grid" id="picker-calendar-grid"></div>
+          <div class="time-mode-row"><div><strong>设置时间段</strong><small>关闭时仅作为提醒时间</small></div><button type="button" id="time-mode-toggle" class="mode-switch" role="switch" aria-checked="false"><span></span></button></div>
+          <div class="time-inputs"><label>提醒时间<input id="event-time-input" inputmode="numeric" autocomplete="off" maxlength="5" placeholder="09:00" value="09:00" /></label><label id="end-time-field" class="is-hidden">结束时间<input id="event-end-time-input" inputmode="numeric" autocomplete="off" maxlength="5" placeholder="10:00" value="10:00" /></label></div>
+          <button type="button" id="apply-schedule-editor" class="apply-schedule-button">完成时间安排</button>
+        </section>
+        <label>颜色<select id="event-color" name="color"><option value="blue">海雾蓝</option><option value="navy">深海蓝</option><option value="cyan">晴空蓝</option><option value="mint">薄荷蓝</option></select></label>
+        <p class="form-error" id="form-error" role="alert"></p>
         <button class="save-button" value="default">保存日程</button>
       </form>
     </dialog>
-    <script src="/app.js"></script>
+    <script src="/app.js?v=2"></script>
   </body>
 </html>
