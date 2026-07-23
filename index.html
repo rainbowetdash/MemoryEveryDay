@@ -8,8 +8,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="apple-touch-icon" href="./icon.svg" />
-    <link rel="stylesheet" href="./styles.css?v=4" />
-    <link rel="stylesheet" href="./calendar-month.css?v=4" />
+    <link rel="stylesheet" href="./styles.css?v=6" />
+    <link rel="stylesheet" href="./calendar-month.css?v=6" />
     <title>每日备忘</title>
   </head>
   <body>
@@ -22,10 +22,12 @@
             <h1 id="month-label"></h1>
             <button class="icon-button" id="next-month" aria-label="下个月">›</button>
           </div>
-          <button class="more-button" aria-label="更多">•••</button>
+          <div class="calendar-zoom-controls" aria-label="日历显示大小">
+            <button type="button" id="calendar-zoom-out" class="zoom-button" aria-label="缩小月历" title="缩小月历">−</button>
+            <button type="button" id="calendar-zoom-in" class="zoom-button" aria-label="放大月历" title="放大月历">＋</button>
+          </div>
         </header>
-        <div class="weekdays" aria-hidden="true"><span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span></div>
-        <div class="calendar-grid" id="calendar-grid"></div>
+        <div class="calendar-scroll" id="calendar-scroll"><div class="calendar-canvas"><div class="weekdays" aria-hidden="true"><span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span></div><div class="calendar-grid" id="calendar-grid"></div></div></div>
         <section class="up-next">
           <div class="section-heading"><span id="selected-date-label">今天</span><span id="schedule-count"></span></div>
           <div id="calendar-agenda" class="agenda-list"></div>
@@ -75,6 +77,6 @@
         <div class="dialog-actions"><button type="button" id="delete-event-button" class="delete-button is-hidden">删除日程</button><button class="save-button" id="save-event-button" value="default">保存日程</button></div>
       </form>
     </dialog>
-    <script src="./app.js?v=4"></script>
+    <script src="./app.js?v=6"></script>
   </body>
 </html>
