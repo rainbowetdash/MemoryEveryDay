@@ -8,8 +8,17 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="apple-touch-icon" href="./icon.svg" />
-    <link rel="stylesheet" href="./styles.css?v=15" />
-    <link rel="stylesheet" href="./calendar-month.css?v=15" />
+    <link rel="stylesheet" href="./styles.css?v=20" />
+    <link rel="stylesheet" href="./calendar-month.css?v=20" />
+    <style>
+      #day-screen { display: flex; flex-direction: column; height: 100%; min-height: 0; overflow: hidden; }
+      .day-header, .day-summary { flex: 0 0 auto; }
+      .timeline { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 0 8px 10px 0; scrollbar-color: #aac7dc transparent; scrollbar-width: thin; }
+      .timeline::-webkit-scrollbar { width: 4px; }
+      .timeline::-webkit-scrollbar-thumb { background: #aac7dc; border-radius: 4px; }
+      @media (min-width: 541px) { .app-shell { height: calc(100vh - 44px); min-height: 640px; } }
+      @media (max-width: 540px) { .app-shell { height: 100dvh; min-height: 0; } }
+    </style>
     <title>每日备忘</title>
   </head>
   <body>
@@ -116,6 +125,6 @@
       </form>
     </dialog>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <script src="./app.js?v=15"></script>
+    <script src="./app.js?v=20"></script>
   </body>
 </html>
