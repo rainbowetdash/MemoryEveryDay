@@ -8,8 +8,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="apple-touch-icon" href="./icon.svg" />
-    <link rel="stylesheet" href="./styles.css?v=12" />
-    <link rel="stylesheet" href="./calendar-month.css?v=12" />
+    <link rel="stylesheet" href="./styles.css?v=13" />
+    <link rel="stylesheet" href="./calendar-month.css?v=13" />
     <title>每日备忘</title>
   </head>
   <body>
@@ -77,19 +77,16 @@
         </section>
         <div class="form-label">颜色</div>
         <input id="event-color" name="color" type="hidden" value="blue" />
-        <div class="color-picker" id="event-color-picker">
-          <button type="button" id="color-picker-trigger" class="color-picker-trigger" aria-haspopup="listbox" aria-expanded="false" aria-controls="color-picker-list"><span id="selected-color-swatch" class="color-swatch blue"></span><span id="selected-color-label">海雾蓝</span><span class="color-picker-chevron" aria-hidden="true">⌄</span></button>
-          <div class="color-picker-list is-hidden" id="color-picker-list" role="listbox" aria-label="日程颜色">
-            <button type="button" class="color-choice blue" data-event-color="blue" role="option" aria-selected="true"><span class="color-swatch"></span><span>海雾蓝</span><span class="color-choice-check" aria-hidden="true">✓</span></button>
-            <button type="button" class="color-choice navy" data-event-color="navy" role="option" aria-selected="false"><span class="color-swatch"></span><span>深海蓝</span><span class="color-choice-check" aria-hidden="true">✓</span></button>
-            <button type="button" class="color-choice cyan" data-event-color="cyan" role="option" aria-selected="false"><span class="color-swatch"></span><span>晴空蓝</span><span class="color-choice-check" aria-hidden="true">✓</span></button>
-            <button type="button" class="color-choice mint" data-event-color="mint" role="option" aria-selected="false"><span class="color-swatch"></span><span>薄荷绿</span><span class="color-choice-check" aria-hidden="true">✓</span></button>
-            <button type="button" class="color-choice purple" data-event-color="purple" role="option" aria-selected="false"><span class="color-swatch"></span><span>薰衣草紫</span><span class="color-choice-check" aria-hidden="true">✓</span></button>
-            <button type="button" class="color-choice pink" data-event-color="pink" role="option" aria-selected="false"><span class="color-swatch"></span><span>樱花粉</span><span class="color-choice-check" aria-hidden="true">✓</span></button>
-            <button type="button" class="color-choice coral" data-event-color="coral" role="option" aria-selected="false"><span class="color-swatch"></span><span>珊瑚橘</span><span class="color-choice-check" aria-hidden="true">✓</span></button>
-            <button type="button" class="color-choice yellow" data-event-color="yellow" role="option" aria-selected="false"><span class="color-swatch"></span><span>向日葵黄</span><span class="color-choice-check" aria-hidden="true">✓</span></button>
-            <button type="button" class="color-choice green" data-event-color="green" role="option" aria-selected="false"><span class="color-swatch"></span><span>森林绿</span><span class="color-choice-check" aria-hidden="true">✓</span></button>
-          </div>
+        <div class="color-picker" id="event-color-picker" role="radiogroup" aria-label="日程颜色">
+          <button type="button" class="color-choice blue" data-event-color="blue" role="radio" aria-checked="true"><span class="color-swatch"></span><span>海雾蓝</span></button>
+          <button type="button" class="color-choice navy" data-event-color="navy" role="radio" aria-checked="false"><span class="color-swatch"></span><span>深海蓝</span></button>
+          <button type="button" class="color-choice cyan" data-event-color="cyan" role="radio" aria-checked="false"><span class="color-swatch"></span><span>晴空蓝</span></button>
+          <button type="button" class="color-choice mint" data-event-color="mint" role="radio" aria-checked="false"><span class="color-swatch"></span><span>薄荷绿</span></button>
+          <button type="button" class="color-choice purple" data-event-color="purple" role="radio" aria-checked="false"><span class="color-swatch"></span><span>薰衣草紫</span></button>
+          <button type="button" class="color-choice pink" data-event-color="pink" role="radio" aria-checked="false"><span class="color-swatch"></span><span>樱花粉</span></button>
+          <button type="button" class="color-choice coral" data-event-color="coral" role="radio" aria-checked="false"><span class="color-swatch"></span><span>珊瑚橘</span></button>
+          <button type="button" class="color-choice yellow" data-event-color="yellow" role="radio" aria-checked="false"><span class="color-swatch"></span><span>向日葵黄</span></button>
+          <button type="button" class="color-choice green" data-event-color="green" role="radio" aria-checked="false"><span class="color-swatch"></span><span>森林绿</span></button>
         </div>
         <p class="form-error" id="form-error" role="alert"></p>
         <div class="dialog-actions"><button type="button" id="delete-event-button" class="delete-button is-hidden">删除日程</button><button class="save-button" id="save-event-button" value="default">保存日程</button></div>
@@ -118,6 +115,6 @@
       </form>
     </dialog>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <script src="./app.js?v=12"></script>
+    <script src="./app.js?v=13"></script>
   </body>
 </html>
