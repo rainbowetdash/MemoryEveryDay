@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#faf8f5" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="/icon.svg" />
+    <link rel="stylesheet" href="/styles.css" />
+    <title>每日备忘</title>
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="screen" id="calendar-screen" aria-label="日历">
+        <header class="topbar">
+          <button class="today-button" id="today-button">今天</button>
+          <div class="month-switcher">
+            <button class="icon-button" id="previous-month" aria-label="上个月">‹</button>
+            <h1 id="month-label"></h1>
+            <button class="icon-button" id="next-month" aria-label="下个月">›</button>
+          </div>
+          <button class="more-button" aria-label="更多">•••</button>
+        </header>
+        <div class="weekdays" aria-hidden="true"><span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span></div>
+        <div class="calendar-grid" id="calendar-grid"></div>
+        <section class="up-next">
+          <div class="section-heading"><span id="selected-date-label">今天</span><span id="schedule-count"></span></div>
+          <div id="calendar-agenda" class="agenda-list"></div>
+        </section>
+      </section>
+
+      <section class="screen is-hidden" id="day-screen" aria-label="日程">
+        <header class="day-header">
+          <div>
+            <p id="day-weekday"></p>
+            <h1 id="day-title"></h1>
+          </div>
+          <button class="today-button" id="jump-today">回到今天</button>
+        </header>
+        <div class="day-summary" id="day-summary"></div>
+        <div class="timeline" id="timeline"></div>
+      </section>
+
+      <nav class="tabbar" aria-label="主导航">
+        <button class="tab is-active" data-screen="calendar-screen"><span class="tab-icon">▦</span><span>日历</span></button>
+        <button class="tab" data-screen="day-screen"><span class="tab-icon">☷</span><span>日程</span></button>
+      </nav>
+      <button class="add-button" id="add-button" aria-label="添加日程">＋</button>
+    </main>
+
+    <dialog id="event-dialog">
+      <form method="dialog" id="event-form">
+        <div class="modal-header"><h2>添加日程</h2><button value="cancel" class="close-button" aria-label="关闭">×</button></div>
+        <label>内容<input id="event-title" name="title" required maxlength="60" placeholder="例如：和朋友喝咖啡" /></label>
+        <div class="form-row"><label>日期<input id="event-date" name="date" type="date" required /></label><label>时间<input id="event-time" name="time" type="time" required value="09:00" /></label></div>
+        <label>颜色<select id="event-color" name="color"><option value="purple">薰衣草紫</option><option value="peach">暖杏色</option><option value="blue">天空蓝</option><option value="green">清新绿</option></select></label>
+        <button class="save-button" value="default">保存日程</button>
+      </form>
+    </dialog>
+    <script src="/app.js"></script>
+  </body>
+</html>
