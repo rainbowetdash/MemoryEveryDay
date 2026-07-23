@@ -8,8 +8,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="apple-touch-icon" href="./icon.svg" />
-    <link rel="stylesheet" href="./styles.css?v=13" />
-    <link rel="stylesheet" href="./calendar-month.css?v=13" />
+    <link rel="stylesheet" href="./styles.css?v=14" />
+    <link rel="stylesheet" href="./calendar-month.css?v=14" />
     <title>每日备忘</title>
   </head>
   <body>
@@ -97,13 +97,14 @@
         <div class="modal-header"><div><p class="modal-eyebrow" id="auth-dialog-eyebrow">跨设备保存</p><h2 id="auth-dialog-title">登录同步</h2></div><button type="button" id="close-auth-dialog" class="close-button" aria-label="关闭">×</button></div>
         <section id="signed-out-panel">
           <p class="auth-copy" id="auth-mode-copy">使用已注册的邮箱和密码登录，同一账号在手机和电脑上会显示相同的日程。</p>
+          <label id="auth-username-field" class="is-hidden">用户名（必填，最多 10 字）<input id="auth-username" type="text" autocomplete="nickname" maxlength="10" placeholder="例如：小满" /></label>
           <label>邮箱<input id="auth-email" type="email" inputmode="email" autocomplete="email" placeholder="name@example.com" required /></label>
           <label>密码<input id="auth-password" type="password" autocomplete="current-password" minlength="6" placeholder="至少 6 位" required /></label>
           <label id="auth-password-confirm-field" class="is-hidden">确认密码<input id="auth-password-confirm" type="password" autocomplete="new-password" minlength="6" placeholder="再次输入密码" /></label>
           <p class="auth-message" id="auth-message" role="status"></p>
           <button class="save-button" id="auth-primary-button" type="submit">登录</button>
           <button class="auth-link-button" id="auth-mode-switch" type="button">第一次使用？注册账号</button>
-          <p class="auth-note">密码至少需要 6 位。日程仅属于登录的这个邮箱。</p>
+          <p class="auth-note" id="auth-note">密码至少需要 6 位。日程仅属于登录的这个邮箱。</p>
         </section>
         <section id="signed-in-panel" class="is-hidden">
           <div class="account-summary"><span class="account-summary-icon">✓</span><div><strong id="account-email"></strong><small id="sync-status">正在准备同步…</small></div></div>
@@ -115,6 +116,6 @@
       </form>
     </dialog>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <script src="./app.js?v=13"></script>
+    <script src="./app.js?v=14"></script>
   </body>
 </html>
