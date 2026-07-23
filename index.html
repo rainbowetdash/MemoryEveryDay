@@ -8,8 +8,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="apple-touch-icon" href="./icon.svg" />
-    <link rel="stylesheet" href="./styles.css?v=22" />
-    <link rel="stylesheet" href="./calendar-month.css?v=22" />
+    <link rel="stylesheet" href="./styles.css?v=23" />
+    <link rel="stylesheet" href="./calendar-month.css?v=23" />
     <style>
       html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
       body { min-height: 100dvh; }
@@ -35,7 +35,6 @@
       .day-picker-heading { margin: 7px 0 18px; }
       .day-picker-year { display: inline-flex; align-items: center; gap: 5px; border: 0; background: transparent; color: #547895; padding: 0; font-size: 15px; font-weight: 750; cursor: pointer; }
       .day-picker-year:hover { color: #1769aa; }
-      .day-picker-year-cue { font-size: 14px; }
       .day-picker-date { display: block; margin-top: 4px; font-size: 30px; letter-spacing: -.6px; color: #18324f; }
       .day-year-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; max-height: 168px; margin: -4px 0 16px; overflow-y: auto; overscroll-behavior: contain; padding: 7px; border: 1px solid #cfe0ee; border-radius: 10px; background: #f4faff; scrollbar-width: thin; }
       .day-year-option { border: 0; border-radius: 7px; background: transparent; color: #42627f; padding: 9px 4px; font-weight: 700; cursor: pointer; }
@@ -52,6 +51,14 @@
       .day-picker-day.is-other { color: #bdcbd7; }
       .day-picker-day.is-today:not(.is-selected) { color: #0879c9; font-weight: 850; }
       .day-picker-day.is-selected { background: #1769aa; color: #fff; box-shadow: 0 3px 9px #1769aa40; }
+      .calendar-month-trigger { min-width: 112px; border: 0; background: transparent; color: #18324f; padding: 4px 6px; border-radius: 7px; font-size: 20px; font-weight: 700; letter-spacing: 0; cursor: pointer; }
+      .calendar-month-trigger:hover { background: #eaf5ff; color: #1769aa; }
+      .calendar-month-trigger:focus-visible { outline: 2px solid #2484c5; outline-offset: 2px; }
+      .calendar-year-dialog { width: min(360px, calc(100% - 32px)); margin: auto; border: 0; border-radius: 16px; background: #fafdff; box-shadow: 0 22px 70px #163b5d38; }
+      .calendar-year-dialog[open] { animation: day-picker-open .22s cubic-bezier(.2,.85,.28,1) both; }
+      .calendar-year-dialog::backdrop { background: #0c345966; backdrop-filter: blur(2px); }
+      .calendar-year-panel { padding: 24px; }
+      .calendar-year-list { max-height: min(420px, calc(100dvh - 170px)); margin: 0; }
       @keyframes day-picker-open { from { opacity: 0; transform: scale(.86) translateY(16px); } to { opacity: 1; transform: scale(1) translateY(0); } }
       @media (max-width: 420px) { .day-picker-panel { padding: 21px 18px; } .day-picker-date { font-size: 28px; } }
     </style>
@@ -64,7 +71,7 @@
           <button class="today-button" id="today-button">今天</button>
           <div class="month-switcher">
             <button class="icon-button" id="previous-month" aria-label="上个月">‹</button>
-            <h1 id="month-label"></h1>
+            <button type="button" id="calendar-month-trigger" class="calendar-month-trigger" aria-haspopup="dialog" aria-label="选择年份"></button>
             <button class="icon-button" id="next-month" aria-label="下个月">›</button>
           </div>
           <div class="topbar-actions">
@@ -77,7 +84,7 @@
         </header>
         <div class="calendar-scroll" id="calendar-scroll"><div class="calendar-canvas"><div class="weekdays" aria-hidden="true"><span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span></div><div class="calendar-grid" id="calendar-grid"></div></div></div>
         <section class="up-next">
-          <div class="section-heading"><span id="selected-date-label">今天</span><span id="schedule-count"></span></div>
+          <div class="section-heading"><span id="schedule-count"></span></div>
           <div id="calendar-agenda" class="agenda-list"></div>
         </section>
       </section>
@@ -144,13 +151,19 @@
       <section class="day-picker-panel">
         <header class="modal-header"><div><p class="modal-eyebrow">选择日期</p><h2>日程</h2></div><button type="button" id="close-day-date-dialog" class="close-button day-picker-close" aria-label="关闭日期选择">×</button></header>
         <div class="day-picker-heading">
-          <button type="button" id="day-picker-year" class="day-picker-year" aria-expanded="false"><span id="day-picker-year-label"></span><span class="day-picker-year-cue" aria-hidden="true">⌄</span></button>
+          <button type="button" id="day-picker-year" class="day-picker-year" aria-expanded="false"><span id="day-picker-year-label"></span></button>
           <strong id="day-picker-date-label" class="day-picker-date"></strong>
         </div>
         <div id="day-year-list" class="day-year-list is-hidden" aria-label="选择年份"></div>
         <div class="day-picker-month-row"><button type="button" id="day-picker-previous-month" class="day-picker-nav" aria-label="上个月">‹</button><strong id="day-picker-month-label"></strong><button type="button" id="day-picker-next-month" class="day-picker-nav" aria-label="下个月">›</button></div>
         <div class="day-picker-weekdays" aria-hidden="true"><span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span></div>
         <div id="day-picker-grid" class="day-picker-grid" aria-label="选择日期"></div>
+      </section>
+    </dialog>
+    <dialog id="calendar-year-dialog" class="calendar-year-dialog" aria-labelledby="calendar-year-dialog-title">
+      <section class="calendar-year-panel">
+        <header class="modal-header"><div><p class="modal-eyebrow">选择年份</p><h2 id="calendar-year-dialog-title">日历</h2></div><button type="button" id="close-calendar-year-dialog" class="close-button" aria-label="关闭年份选择">×</button></header>
+        <div id="calendar-year-list" class="day-year-list calendar-year-list" aria-label="选择年份"></div>
       </section>
     </dialog>
     <dialog id="auth-dialog" aria-labelledby="auth-dialog-title">
@@ -177,6 +190,6 @@
       </form>
     </dialog>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <script src="./app.js?v=22"></script>
+    <script src="./app.js?v=23"></script>
   </body>
 </html>
