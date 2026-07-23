@@ -8,8 +8,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="apple-touch-icon" href="./icon.svg" />
-    <link rel="stylesheet" href="./styles.css?v=24" />
-    <link rel="stylesheet" href="./calendar-month.css?v=24" />
+    <link rel="stylesheet" href="./styles.css?v=25" />
+    <link rel="stylesheet" href="./calendar-month.css?v=25" />
     <style>
       html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
       body { min-height: 100dvh; }
@@ -70,11 +70,7 @@
       <section class="screen" id="calendar-screen" aria-label="日历">
         <header class="topbar">
           <button class="today-button" id="today-button">今天</button>
-          <div class="month-switcher">
-            <button class="icon-button" id="previous-month" aria-label="上个月">‹</button>
-            <button type="button" id="calendar-month-trigger" class="calendar-month-trigger" aria-haspopup="dialog" aria-label="选择年份"></button>
-            <button class="icon-button" id="next-month" aria-label="下个月">›</button>
-          </div>
+          <div class="topbar-spacer" aria-hidden="true"></div>
           <div class="topbar-actions">
             <button type="button" id="account-button" class="account-button" aria-label="登录并同步日程"><span class="account-icon">⌁</span><span id="account-button-label">登录同步</span></button>
             <div class="calendar-zoom-controls" aria-label="日历显示大小">
@@ -83,10 +79,16 @@
             </div>
           </div>
         </header>
-        <section class="up-next">
-          <div class="section-heading"><span id="schedule-count"></span></div>
-          <div id="calendar-agenda" class="agenda-list"></div>
+        <section class="calendar-selected-date" aria-live="polite" aria-label="当前选中日期">
+          <p id="calendar-selected-year"></p>
+          <h1><span id="calendar-selected-date"></span><span class="calendar-selected-chevron" aria-hidden="true">⌄</span></h1>
+          <p id="calendar-selected-weekday"></p>
         </section>
+        <div class="month-switcher calendar-month-navigation" aria-label="切换月份">
+          <button class="icon-button" id="previous-month" aria-label="上个月">‹</button>
+          <button type="button" id="calendar-month-trigger" class="calendar-month-trigger" aria-haspopup="dialog" aria-label="选择年份"></button>
+          <button class="icon-button" id="next-month" aria-label="下个月">›</button>
+        </div>
         <div class="calendar-scroll" id="calendar-scroll"><div class="calendar-canvas"><div class="weekdays" aria-hidden="true"><span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span></div><div class="calendar-grid" id="calendar-grid"></div></div></div>
       </section>
 
@@ -191,6 +193,6 @@
       </form>
     </dialog>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <script src="./app.js?v=24"></script>
+    <script src="./app.js?v=25"></script>
   </body>
 </html>
