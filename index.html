@@ -8,12 +8,13 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="apple-touch-icon" href="./icon.svg" />
-    <link rel="stylesheet" href="./styles.css?v=23" />
-    <link rel="stylesheet" href="./calendar-month.css?v=23" />
+    <link rel="stylesheet" href="./styles.css?v=24" />
+    <link rel="stylesheet" href="./calendar-month.css?v=24" />
     <style>
       html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
       body { min-height: 100dvh; }
       #day-screen { display: flex; flex-direction: column; height: 100%; min-height: 0; overflow: hidden; }
+      #day-screen.is-hidden { display: none; }
       .day-header, .day-summary { flex: 0 0 auto; }
       .timeline { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 0 8px 10px 0; scrollbar-color: #aac7dc transparent; scrollbar-width: thin; }
       .timeline::-webkit-scrollbar { width: 4px; }
@@ -82,11 +83,11 @@
             </div>
           </div>
         </header>
-        <div class="calendar-scroll" id="calendar-scroll"><div class="calendar-canvas"><div class="weekdays" aria-hidden="true"><span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span></div><div class="calendar-grid" id="calendar-grid"></div></div></div>
         <section class="up-next">
           <div class="section-heading"><span id="schedule-count"></span></div>
           <div id="calendar-agenda" class="agenda-list"></div>
         </section>
+        <div class="calendar-scroll" id="calendar-scroll"><div class="calendar-canvas"><div class="weekdays" aria-hidden="true"><span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span></div><div class="calendar-grid" id="calendar-grid"></div></div></div>
       </section>
 
       <section class="screen is-hidden" id="day-screen" aria-label="日程">
@@ -190,6 +191,6 @@
       </form>
     </dialog>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <script src="./app.js?v=23"></script>
+    <script src="./app.js?v=24"></script>
   </body>
 </html>
