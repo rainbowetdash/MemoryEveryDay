@@ -43,12 +43,6 @@
   letter-spacing: 0;
 }
 
-.calendar-selected-chevron {
-  color: #4c82a8;
-  font-size: 23px;
-  font-weight: 700;
-}
-
 .calendar-month-navigation {
   justify-content: center;
   margin: 0 0 10px;
@@ -73,7 +67,7 @@
   --calendar-title-font: 9px;
   --calendar-more-font: 8px;
   --calendar-event-padding: 2px 3px;
-  height: 375px;
+  height: 320px;
   overflow: auto;
   overscroll-behavior: contain;
   padding-right: 2px;
@@ -332,7 +326,7 @@
 
 @media(max-width:450px){.topbar{grid-template-columns:auto 1fr auto;gap:5px}.topbar h1{min-width:0;font-size:18px}.month-switcher{gap:3px}.topbar-actions{gap:4px}.account-button{max-width:74px;padding:6px 5px}.account-icon{display:none}.calendar-zoom-controls{gap:2px}.zoom-button{width:27px;height:27px}}
 
-@media(max-width:450px){.calendar-selected-date{padding-top:4px;padding-bottom:13px}.calendar-selected-date p{font-size:14px}.calendar-selected-date h1{font-size:31px}.calendar-selected-chevron{font-size:20px}.calendar-month-navigation{margin-bottom:7px}.calendar-month-navigation .calendar-month-trigger{min-width:116px}}
+@media(max-width:450px){.calendar-selected-date{padding-top:4px;padding-bottom:13px}.calendar-selected-date p{font-size:14px}.calendar-selected-date h1{font-size:31px}.calendar-month-navigation{margin-bottom:7px}.calendar-month-navigation .calendar-month-trigger{min-width:116px}}
 
 .auth-code-copy{margin-bottom:11px}.auth-code-copy strong{font-size:12px;overflow-wrap:anywhere}.auth-link-button{display:block;margin:10px auto 0;border:0;background:transparent;color:#2676ad;font-size:12px;font-weight:700;cursor:pointer}.auth-link-button:hover{text-decoration:underline}
 
@@ -389,7 +383,7 @@
     --calendar-title-font: 8px;
     --calendar-more-font: 7px;
     --calendar-event-padding: 2px 3px;
-    height: 319px;
+    height: 252px;
   }
 
   #calendar-screen[data-calendar-zoom="1"] .calendar-scroll {
