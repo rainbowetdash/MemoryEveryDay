@@ -279,6 +279,10 @@
   margin-block: 88px;
 }
 
+.topbar-actions{display:flex;align-items:center;justify-content:flex-end;gap:8px}.account-button{display:flex;align-items:center;gap:4px;max-width:94px;border:1px solid #d2e3ef;border-radius:7px;background:#fff;color:#24679d;padding:6px 7px;font-size:11px;font-weight:700;cursor:pointer;overflow:hidden}.account-button:hover{background:#edf7ff}.account-button[data-sync-state="offline"]{color:#9a702b;border-color:#eed9a8}.account-icon{font-size:17px;line-height:12px}.account-button-label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.auth-copy{color:#587793;font-size:13px;line-height:1.65;margin:0 0 17px}.auth-note{color:#839aaf;font-size:11px;line-height:1.6;margin:13px 0 0}.auth-message{min-height:19px;margin:0 0 9px;color:#2c7caf;font-size:12px;line-height:1.5}.account-summary{display:flex;align-items:center;gap:11px;margin:2px 0 17px;padding:13px;background:#edf7ff;border:1px solid #d6eafa;border-radius:8px}.account-summary-icon{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:#2383c3;color:#fff;font-weight:800}.account-summary strong,.account-summary small{display:block}.account-summary strong{font-size:14px;overflow-wrap:anywhere}.account-summary small{margin-top:3px;color:#6886a0;font-size:12px}.account-summary small[data-tone="offline"]{color:#a2772e}.sync-now-button,.sign-out-button{width:100%;border-radius:8px;padding:12px;font-weight:700;cursor:pointer}.sync-now-button{border:0;background:#1769aa;color:#fff}.sync-now-button:disabled{opacity:.6}.sign-out-button{margin-top:9px;border:1px solid #e4c5c9;background:#fff7f7;color:#b84e57}.sign-out-button:hover{background:#fff0f1}
+
+@media(max-width:450px){.topbar{grid-template-columns:auto 1fr auto;gap:5px}.topbar h1{min-width:0;font-size:18px}.month-switcher{gap:3px}.topbar-actions{gap:4px}.account-button{max-width:74px;padding:6px 5px}.account-icon{display:none}.calendar-zoom-controls{gap:2px}.zoom-button{width:27px;height:27px}}
+
 .dialog-actions {
   display: flex;
   gap: 10px;
