@@ -8,8 +8,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="apple-touch-icon" href="./icon.svg" />
-    <link rel="stylesheet" href="./styles.css?v=33" />
-    <link rel="stylesheet" href="./calendar-month.css?v=33" />
+    <link rel="stylesheet" href="./styles.css?v=34" />
+    <link rel="stylesheet" href="./calendar-month.css?v=34" />
     <style>
       html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
       body { min-height: 100dvh; }
@@ -82,7 +82,15 @@
     <title>每日备忘</title>
   </head>
   <body>
-    <main class="app-shell">
+    <main class="app-shell" id="app-shell">
+      <button type="button" id="group-sidebar-scrim" class="group-sidebar-scrim" aria-label="收起日程表"></button>
+      <aside class="group-sidebar" id="group-sidebar" aria-label="日程表">
+        <header class="group-sidebar-header"><div><p>我的日程</p><strong id="current-group-name">总日程表</strong></div><button type="button" class="group-sidebar-close" id="group-sidebar-close" aria-label="收起日程表">×</button></header>
+        <div class="group-sidebar-copy">选择日程表后，日历和日程只显示该表内的安排。</div>
+        <div class="group-list" id="group-list"></div>
+        <button type="button" class="new-group-button" id="new-group-button"><span>＋</span> 新建日程表</button>
+      </aside>
+      <button type="button" class="group-sidebar-toggle" id="group-sidebar-toggle" aria-controls="group-sidebar" aria-expanded="false" aria-label="展开日程表">›</button>
       <section class="screen" id="calendar-screen" aria-label="日历">
         <header class="topbar">
           <button class="today-button" id="today-button">今天</button>
@@ -142,6 +150,7 @@
         <input id="event-time" name="time" type="hidden" value="09:00" />
         <input id="event-end-time" name="endTime" type="hidden" />
         <input id="event-time-mode" name="timeMode" type="hidden" value="reminder" />
+        <label class="event-group-field">归属日程表<select id="event-group" name="group"></select></label>
         <div class="form-label">时间安排</div>
         <button type="button" id="schedule-editor-trigger" class="schedule-editor-trigger" aria-label="更改日期和时间" aria-expanded="false"><span class="schedule-editor-icon">◷</span><span><strong id="schedule-editor-title">7月22日</strong><small id="schedule-editor-subtitle">09:00 提醒</small></span><span class="chevron">›</span></button>
         <section id="schedule-editor" class="schedule-editor is-hidden" aria-label="更改日期和时间">
@@ -169,6 +178,24 @@
         </div>
         <p class="form-error" id="form-error" role="alert"></p>
         <div class="dialog-actions"><button type="button" id="delete-event-button" class="delete-button is-hidden">删除日程</button><button class="save-button" id="save-event-button" value="default">保存日程</button></div>
+      </form>
+    </dialog>
+    <dialog id="group-dialog" class="group-dialog" aria-labelledby="group-dialog-title">
+      <form id="group-form" novalidate>
+        <div class="modal-header"><div><p class="modal-eyebrow" id="group-dialog-eyebrow">新的日程表</p><h2 id="group-dialog-title">创建日程表</h2></div><button type="button" id="close-group-dialog" class="close-button" aria-label="关闭">×</button></div>
+        <label>日程表名称<input id="group-name" maxlength="20" placeholder="例如：健身计划" /></label>
+        <input id="group-color" type="hidden" value="blue" />
+        <div class="form-label">分组颜色</div>
+        <div class="group-color-picker" role="radiogroup" aria-label="分组颜色">
+          <button type="button" class="group-color-choice blue is-selected" data-group-color="blue" role="radio" aria-checked="true"><span></span>海雾蓝</button>
+          <button type="button" class="group-color-choice purple" data-group-color="purple" role="radio" aria-checked="false"><span></span>薰衣草紫</button>
+          <button type="button" class="group-color-choice mint" data-group-color="mint" role="radio" aria-checked="false"><span></span>薄荷绿</button>
+          <button type="button" class="group-color-choice coral" data-group-color="coral" role="radio" aria-checked="false"><span></span>珊瑚橘</button>
+          <button type="button" class="group-color-choice yellow" data-group-color="yellow" role="radio" aria-checked="false"><span></span>向日葵黄</button>
+          <button type="button" class="group-color-choice green" data-group-color="green" role="radio" aria-checked="false"><span></span>森林绿</button>
+        </div>
+        <p class="form-error" id="group-form-error" role="alert"></p>
+        <button class="save-button" id="save-group-button" value="default">创建日程表</button>
       </form>
     </dialog>
     <dialog id="delete-confirm-dialog" class="delete-confirm-dialog" aria-labelledby="delete-confirm-title">
@@ -230,6 +257,6 @@
       </section>
     </dialog>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <script src="./app.js?v=33"></script>
+    <script src="./app.js?v=34"></script>
   </body>
 </html>
