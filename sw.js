@@ -1,1 +1,14 @@
-const cache='memory-everyday-v26';const files=['/','/index.html','/styles.css?v=26','/calendar-month.css?v=26','/app.js?v=26','/manifest.webmanifest','/icon.svg'];self.addEventListener('install',e=>e.waitUntil(caches.open(cache).then(c=>c.addAll(files)).then(()=>self.skipWaiting())));self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==cache).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request))));
+const cache = 'memory-everyday-v27';
+const files = ['/', '/index.html', '/styles.css?v=27', '/calendar-month.css?v=27', '/app.js?v=27', '/manifest.webmanifest', '/icon.svg'];
+
+self.addEventListener('install', (event) => event.waitUntil(
+  caches.open(cache).then((storage) => storage.addAll(files)).then(() => self.skipWaiting())
+));
+
+self.addEventListener('activate', (event) => event.waitUntil(
+  caches.keys().then((keys) => Promise.all(keys.filter((key) => key !== cache).map((key) => caches.delete(key)))).then(() => self.clients.claim())
+));
+
+self.addEventListener('fetch', (event) => event.respondWith(
+  caches.match(event.request).then((response) => response || fetch(event.request))
+));

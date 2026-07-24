@@ -42,7 +42,17 @@ function renderCalendar() {
     if (dayEvents.length > calendarZoomLevels[state.calendarZoom].previewLimit) { const more = document.createElement('span'); more.className = 'more-events'; more.textContent = `+${dayEvents.length - calendarZoomLevels[state.calendarZoom].previewLimit}项`; previews.append(more); }
     cell.append(previews); cell.onclick = () => { state.selected = d; state.showing = new Date(d); render(); }; cell.onkeydown = (event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); cell.click(); } }; grid.append(cell);
   }
-  const selectedCell = grid.querySelector('.is-selected'), scroller = $('calendar-scroll'), weekdays = scroller.querySelector('.weekdays'); if (selectedCell) { const viewport = scroller.getBoundingClientRect(), cell = selectedCell.getBoundingClientRect(), headerHeight = weekdays.offsetHeight + 9, selectedCenterX = scroller.scrollLeft + cell.left - viewport.left + cell.width / 2, selectedCenterY = scroller.scrollTop + cell.top - viewport.top + cell.height / 2; scroller.scrollLeft = Math.max(0, selectedCenterX - scroller.clientWidth / 2); scroller.scrollTop = Math.max(0, selectedCenterY - headerHeight - (scroller.clientHeight - headerHeight) / 2); }
+  const selectedCell = grid.querySelector('.is-selected'), scroller = $('calendar-scroll'), weekdays = scroller.querySelector('.weekdays');
+  const selectedIsShowing = selected.getFullYear() === year && selected.getMonth() === month;
+  if (selectedCell && selectedIsShowing) {
+    const viewport = scroller.getBoundingClientRect(), cell = selectedCell.getBoundingClientRect(), headerHeight = weekdays.offsetHeight + 9;
+    const selectedCenterX = scroller.scrollLeft + cell.left - viewport.left + cell.width / 2;
+    const selectedTop = scroller.scrollTop + cell.top - viewport.top;
+    scroller.scrollLeft = Math.max(0, selectedCenterX - scroller.clientWidth / 2);
+    scroller.scrollTop = Math.max(0, selectedTop - headerHeight);
+  } else {
+    scroller.scrollTo({ left: 0, top: 0 });
+  }
 }
 function eventMarkup(e, card = false) { const time = eventTimeLabel(e); return `<div class="${card ? 'event-card' : 'agenda-item'} ${e.color || 'blue'} ${isEventPast(e) ? 'is-past' : ''}" data-event-id="${escapeHtml(e.id)}" role="button" tabindex="0"><span class="${card ? '' : 'agenda-time'}">${escapeHtml(time)}</span><div><strong class="${card ? '' : 'agenda-title'}">${escapeHtml(e.title)}</strong>${card ? `<small>${e.mode === 'range' ? '时间段' : `${escapeHtml(time)} 提醒`}</small>` : ''}</div></div>`; }
 function bindEventDetails() { document.querySelectorAll('.agenda-item[data-event-id], .event-card[data-event-id]').forEach((element) => { const open = () => { const event = state.events.find((item) => item.id === element.dataset.eventId); if (event) openEventDialog(event); }; element.onclick = open; element.onkeydown = (keyEvent) => { if (keyEvent.key === 'Enter' || keyEvent.key === ' ') { keyEvent.preventDefault(); open(); } }; }); }
