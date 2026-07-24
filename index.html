@@ -8,8 +8,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="apple-touch-icon" href="./icon.svg" />
-    <link rel="stylesheet" href="./styles.css?v=36" />
-    <link rel="stylesheet" href="./calendar-month.css?v=36" />
+    <link rel="stylesheet" href="./styles.css?v=37" />
+    <link rel="stylesheet" href="./calendar-month.css?v=37" />
     <style>
       html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
       body { min-height: 100dvh; }
@@ -78,14 +78,18 @@
       .confirm-delete-button { min-height: 46px; border: 0; border-radius: 8px; background: #c85d50; color: #fff; font-weight: 700; cursor: pointer; }
       .sync-reminder-login { min-height: 48px; border: 0; border-radius: 8px; background: #1769aa; color: #fff; font-weight: 700; cursor: pointer; }
       .sync-reminder-register { min-height: 46px; border: 1px solid #9bc5e4; border-radius: 8px; background: #eef8ff; color: #1769aa; font-weight: 700; cursor: pointer; }
-      #app-shell:not(.is-group-drawer-open) .group-sidebar { transform: translateX(-100%) !important; visibility: hidden !important; pointer-events: none !important; }
-      #app-shell.is-group-drawer-open .group-sidebar { transform: translateX(0) !important; visibility: visible !important; pointer-events: auto !important; }
-      #app-shell.is-group-drawer-open .group-sidebar-toggle { left: min(286px, calc(100% - 58px)) !important; transform: none !important; }
-      .group-sidebar { background: #fafdff; box-shadow: 12px 0 30px #183b6030; }
-      .group-select, .group-edit, .new-group-button, .group-color-choice { font-family: inherit; }
-      .group-select { border: 0; background: transparent; color: #335a79; }
-      .group-edit { border: 0; background: transparent; color: #6686a2; }
-      .new-group-button { border: 1px dashed #8fb9d8; border-radius: 9px; background: #f4faff; color: #1769aa; }
+      .group-sidebar-scrim { display: none; }
+      #app-shell.is-group-drawer-open .group-sidebar-scrim { display: block; position: absolute; z-index: 19; inset: 0; border: 0; background: #183b6030; cursor: pointer; }
+      .group-sidebar { position: absolute; z-index: 20; inset: 0 auto 0 0; display: flex; flex-direction: column; width: min(286px, calc(100% - 58px)); padding: 26px 16px 22px; background: #fafdff; box-shadow: 12px 0 30px #183b6030; transform: translateX(-104%); visibility: hidden; pointer-events: none; transition: transform .28s cubic-bezier(.2,.85,.28,1), visibility 0s linear .28s; }
+      #app-shell.is-group-drawer-open .group-sidebar { transform: translateX(0); visibility: visible; pointer-events: auto; transition-delay: 0s; }
+      .group-sidebar-toggle { position: absolute; z-index: 21; top: 122px; left: 0; display: grid; place-items: center; width: 34px; height: 48px; border: 1px solid #b8d7eb; border-left: 0; border-radius: 0 10px 10px 0; background: #fafdff; color: #1769aa; font-size: 25px; line-height: 1; box-shadow: 3px 5px 12px #1c527b1f; cursor: pointer; transition: left .28s cubic-bezier(.2,.85,.28,1), background .16s; }
+      #app-shell.is-group-drawer-open .group-sidebar-toggle { left: min(286px, calc(100% - 58px)); background: #eaf5ff; }
+      .group-sidebar-header { display: flex; align-items: flex-start; justify-content: space-between; padding: 0 3px 17px; border-bottom: 1px solid #dceaf5; }
+      .group-sidebar-header p { margin: 0 0 4px; color: #6686a2; font-size: 12px; font-weight: 700; }.group-sidebar-header strong { font-size: 22px; }.group-sidebar-close { width: 32px; height: 32px; border: 0; border-radius: 50%; background: #eaf5ff; color: #1769aa; font-size: 22px; cursor: pointer; }
+      .group-sidebar-copy { margin: 14px 4px 12px; color: #6a89a4; font-size: 12px; line-height: 1.55; }.group-list { display: grid; gap: 5px; }.group-row { display: grid; grid-template-columns: minmax(0,1fr) 30px; align-items: center; border-radius: 8px; }.group-row:first-child { grid-template-columns: 1fr; }.group-row.is-active { background: #e9f5ff; }
+      .group-select { display: flex; align-items: center; gap: 9px; width: 100%; min-height: 43px; border: 0; border-radius: 8px; background: transparent; color: #335a79; padding: 9px; text-align: left; font-size: 14px; font-weight: 750; cursor: pointer; }.group-select:hover { background: #f0f8fd; }.group-select small { margin-left: auto; color: #7d99b0; font-size: 11px; }.group-dot { width: 10px; height: 10px; flex: 0 0 10px; border-radius: 50%; background: #328ccd; }.group-dot.all { background: linear-gradient(135deg,#3266a7 0 34%,#42aaa4 34% 67%,#dc795d 67%); }.group-dot.mint { background:#42aaa4; }.group-dot.purple { background:#8a64c7; }.group-dot.coral { background:#dc795d; }.group-dot.yellow { background:#c79424; }.group-dot.green { background:#4d9b63; }
+      .group-edit { width: 29px; height: 29px; border: 0; border-radius: 7px; background: transparent; color: #6686a2; font-size: 16px; cursor: pointer; }.group-edit:hover { background: #dceeff; color: #1769aa; }.new-group-button { display: flex; align-items: center; justify-content: center; gap: 7px; width: 100%; min-height: 45px; margin-top: 15px; border: 1px dashed #8fb9d8; border-radius: 9px; background: #f4faff; color: #1769aa; font-weight: 800; cursor: pointer; }
+      .group-color-picker { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; margin-bottom: 15px; }.group-color-choice { display: flex; align-items: center; gap: 7px; min-height: 40px; border: 1px solid #d6e4ee; border-radius: 8px; background: #fff; color: #365a77; padding: 7px 9px; font-size: 12px; font-weight: 700; cursor: pointer; }.group-color-choice span { width: 14px; height: 14px; border-radius: 50%; background:#328ccd; }.group-color-choice.purple span { background:#8a64c7; }.group-color-choice.mint span { background:#42aaa4; }.group-color-choice.coral span { background:#dc795d; }.group-color-choice.yellow span { background:#c79424; }.group-color-choice.green span { background:#4d9b63; }.group-color-choice.is-selected { border-color:#2383c3; background:#edf7ff; box-shadow:0 0 0 1px #2383c344; color:#176296; }
     </style>
     <title>每日备忘</title>
   </head>
@@ -271,6 +275,6 @@
       </section>
     </dialog>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <script src="./app.js?v=36"></script>
+    <script src="./app.js?v=37"></script>
   </body>
 </html>
