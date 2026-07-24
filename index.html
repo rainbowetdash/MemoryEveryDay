@@ -8,8 +8,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="apple-touch-icon" href="./icon.svg" />
-    <link rel="stylesheet" href="./styles.css?v=42" />
-    <link rel="stylesheet" href="./calendar-month.css?v=42" />
+    <link rel="stylesheet" href="./styles.css?v=43" />
+    <link rel="stylesheet" href="./calendar-month.css?v=43" />
     <style>
       html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
       body { min-height: 100dvh; }
@@ -27,7 +27,7 @@
       .calendar-agenda-section .agenda-list::-webkit-scrollbar { width: 4px; }
       .calendar-agenda-section .agenda-list::-webkit-scrollbar-thumb { border-radius: 4px; background: #aac7dc; }
       @media (min-width: 541px) { .app-shell { height: calc(100dvh - 44px); max-height: calc(100dvh - 44px); min-height: 640px; } }
-      @media (max-width: 540px) { .app-shell { height: 100dvh; max-height: 100dvh; min-height: 0; } }
+      @media (max-width: 540px) { .app-shell { height: 100dvh; max-height: 100dvh; min-height: 0; } input, select, textarea { font-size: 16px; } }
       .day-date-trigger { display: inline-grid; gap: 3px; border: 0; background: transparent; color: #18324f; padding: 0; text-align: left; cursor: pointer; }
       .day-date-trigger:hover .day-title-line, .day-date-trigger:focus-visible .day-title-line { color: #1769aa; }
       .day-date-trigger:focus-visible { outline: 2px solid #2484c5; outline-offset: 4px; border-radius: 5px; }
@@ -283,6 +283,6 @@
       </section>
     </dialog>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <script src="./app.js?v=42"></script>
+    <script src="./app.js?v=43"></script>
   </body>
 </html>
