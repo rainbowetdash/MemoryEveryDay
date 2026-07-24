@@ -8,8 +8,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="apple-touch-icon" href="./icon.svg" />
-    <link rel="stylesheet" href="./styles.css?v=35" />
-    <link rel="stylesheet" href="./calendar-month.css?v=35" />
+    <link rel="stylesheet" href="./styles.css?v=36" />
+    <link rel="stylesheet" href="./calendar-month.css?v=36" />
     <style>
       html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
       body { min-height: 100dvh; }
@@ -78,6 +78,14 @@
       .confirm-delete-button { min-height: 46px; border: 0; border-radius: 8px; background: #c85d50; color: #fff; font-weight: 700; cursor: pointer; }
       .sync-reminder-login { min-height: 48px; border: 0; border-radius: 8px; background: #1769aa; color: #fff; font-weight: 700; cursor: pointer; }
       .sync-reminder-register { min-height: 46px; border: 1px solid #9bc5e4; border-radius: 8px; background: #eef8ff; color: #1769aa; font-weight: 700; cursor: pointer; }
+      #app-shell:not(.is-group-drawer-open) .group-sidebar { transform: translateX(-100%) !important; visibility: hidden !important; pointer-events: none !important; }
+      #app-shell.is-group-drawer-open .group-sidebar { transform: translateX(0) !important; visibility: visible !important; pointer-events: auto !important; }
+      #app-shell.is-group-drawer-open .group-sidebar-toggle { left: min(286px, calc(100% - 58px)) !important; transform: none !important; }
+      .group-sidebar { background: #fafdff; box-shadow: 12px 0 30px #183b6030; }
+      .group-select, .group-edit, .new-group-button, .group-color-choice { font-family: inherit; }
+      .group-select { border: 0; background: transparent; color: #335a79; }
+      .group-edit { border: 0; background: transparent; color: #6686a2; }
+      .new-group-button { border: 1px dashed #8fb9d8; border-radius: 9px; background: #f4faff; color: #1769aa; }
     </style>
     <title>每日备忘</title>
   </head>
@@ -263,6 +271,6 @@
       </section>
     </dialog>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <script src="./app.js?v=35"></script>
+    <script src="./app.js?v=36"></script>
   </body>
 </html>
