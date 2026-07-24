@@ -8,8 +8,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="apple-touch-icon" href="./icon.svg" />
-    <link rel="stylesheet" href="./styles.css?v=27" />
-    <link rel="stylesheet" href="./calendar-month.css?v=27" />
+    <link rel="stylesheet" href="./styles.css?v=28" />
+    <link rel="stylesheet" href="./calendar-month.css?v=28" />
     <style>
       html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
       body { min-height: 100dvh; }
@@ -134,7 +134,7 @@
           <div class="mini-weekdays" aria-hidden="true"><span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span></div>
           <div class="mini-calendar-grid" id="picker-calendar-grid"></div>
           <div class="time-mode-row"><div><strong>设置时间段</strong><small>关闭时仅作为提醒时间</small></div><button type="button" id="time-mode-toggle" class="mode-switch" role="switch" aria-checked="false"><span></span></button></div>
-          <div class="time-inputs"><label>提醒时间<input id="event-time-input" inputmode="numeric" autocomplete="off" maxlength="5" placeholder="09:00" value="09:00" /></label><label id="end-time-field" class="is-hidden">结束时间（可填 24:00）<input id="event-end-time-input" inputmode="numeric" autocomplete="off" maxlength="5" placeholder="24:00" value="10:00" /></label></div>
+          <div class="time-inputs"><label>提醒时间<input id="event-time-input" inputmode="numeric" autocomplete="off" maxlength="5" placeholder="09:00 或 0900" value="09:00" /></label><label id="end-time-field" class="is-hidden">结束时间（可填 24:00）<input id="event-end-time-input" inputmode="numeric" autocomplete="off" maxlength="5" placeholder="24:00 或 2400" value="10:00" /></label></div>
           <button type="button" id="apply-schedule-editor" class="apply-schedule-button">完成时间安排</button>
         </section>
         <div class="form-label">颜色</div>
@@ -197,6 +197,6 @@
       </form>
     </dialog>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <script src="./app.js?v=27"></script>
+    <script src="./app.js?v=28"></script>
   </body>
 </html>
