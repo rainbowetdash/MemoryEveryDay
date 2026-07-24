@@ -351,17 +351,37 @@
 }
 
 .delete-button {
-  border: 1px solid #f0c8cc;
+  min-height: 46px;
+  border: 1px solid #efbdb5;
   border-radius: 8px;
-  background: #fff5f5;
-  color: #bd3c46;
-  padding: 12px 14px;
+  background: #fff1ee;
+  color: #b64d43;
+  padding: 11px 16px;
   font-weight: 700;
   cursor: pointer;
+  transition: background .16s, border-color .16s, box-shadow .16s, transform .16s;
 }
 
 .delete-button:hover {
-  background: #ffecec;
+  border-color: #e69a8d;
+  background: #ffe3dc;
+  box-shadow: 0 3px 9px #c95d4b24;
+}
+
+.delete-button:focus-visible {
+  outline: 2px solid #d96b5c;
+  outline-offset: 2px;
+}
+
+.delete-button:active {
+  transform: translateY(1px);
+}
+
+.time-input-note {
+  margin: 8px 1px 0;
+  color: #6686a2;
+  font-size: 11px;
+  line-height: 1.45;
 }
 
 @media (max-width: 540px) {
