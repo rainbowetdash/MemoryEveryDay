@@ -1,5 +1,5 @@
-const cache = 'memory-everyday-v34';
-const files = ['/', '/index.html', '/styles.css?v=34', '/calendar-month.css?v=34', '/app.js?v=34', '/manifest.webmanifest', '/icon.svg'];
+const cache = 'memory-everyday-v35';
+const files = ['/', '/index.html', '/styles.css?v=35', '/calendar-month.css?v=35', '/app.js?v=35', '/manifest.webmanifest', '/icon.svg'];
 
 self.addEventListener('install', (event) => event.waitUntil(
   caches.open(cache).then((storage) => storage.addAll(files)).then(() => self.skipWaiting())

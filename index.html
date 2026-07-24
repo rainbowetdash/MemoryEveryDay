@@ -8,8 +8,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="apple-touch-icon" href="./icon.svg" />
-    <link rel="stylesheet" href="./styles.css?v=34" />
-    <link rel="stylesheet" href="./calendar-month.css?v=34" />
+    <link rel="stylesheet" href="./styles.css?v=35" />
+    <link rel="stylesheet" href="./calendar-month.css?v=35" />
     <style>
       html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
       body { min-height: 100dvh; }
@@ -195,8 +195,14 @@
           <button type="button" class="group-color-choice green" data-group-color="green" role="radio" aria-checked="false"><span></span>森林绿</button>
         </div>
         <p class="form-error" id="group-form-error" role="alert"></p>
-        <button class="save-button" id="save-group-button" value="default">创建日程表</button>
+        <div class="group-dialog-actions"><button type="button" class="delete-group-button is-hidden" id="delete-group-button">删除日程表</button><button class="save-button" id="save-group-button" value="default">创建日程表</button></div>
       </form>
+    </dialog>
+    <dialog id="group-delete-confirm-dialog" class="delete-confirm-dialog" aria-labelledby="group-delete-confirm-title">
+      <section class="confirmation-panel">
+        <p class="modal-eyebrow">删除确认</p><h2 id="group-delete-confirm-title">确定删除这个日程表吗？</h2><p class="confirmation-copy" id="group-delete-confirm-copy">删除后无法恢复。</p>
+        <div class="confirmation-actions"><button type="button" id="cancel-group-delete-button" class="confirm-cancel-button">取消</button><button type="button" id="confirm-group-delete-button" class="confirm-delete-button">确认删除</button></div>
+      </section>
     </dialog>
     <dialog id="delete-confirm-dialog" class="delete-confirm-dialog" aria-labelledby="delete-confirm-title">
       <section class="confirmation-panel">
@@ -257,6 +263,6 @@
       </section>
     </dialog>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <script src="./app.js?v=34"></script>
+    <script src="./app.js?v=35"></script>
   </body>
 </html>
