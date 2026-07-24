@@ -8,8 +8,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="apple-touch-icon" href="./icon.svg" />
-    <link rel="stylesheet" href="./styles.css?v=31" />
-    <link rel="stylesheet" href="./calendar-month.css?v=31" />
+    <link rel="stylesheet" href="./styles.css?v=32" />
+    <link rel="stylesheet" href="./calendar-month.css?v=32" />
     <style>
       html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
       body { min-height: 100dvh; }
@@ -67,6 +67,17 @@
       .delete-button:focus-visible { outline: 2px solid #d96b5c; outline-offset: 2px; }
       .delete-button:active { transform: translateY(1px); }
       .time-input-note { margin: 8px 1px 0; color: #6686a2; font-size: 11px; line-height: 1.45; }
+      .dialog-actions { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 4px; }
+      .dialog-actions .save-button, .dialog-actions .delete-button { width: 100%; min-height: 54px; margin: 0; }
+      .delete-confirm-dialog, .sync-reminder-dialog { width: min(380px, calc(100% - 32px)); }
+      .confirmation-panel, .sync-reminder-panel { padding: 25px; }
+      .confirmation-copy, .sync-reminder-copy { margin: -4px 0 20px; color: #587793; font-size: 13px; line-height: 1.65; }
+      .confirmation-actions, .sync-reminder-actions { display: grid; gap: 9px; }
+      .confirmation-actions { grid-template-columns: 1fr 1fr; }
+      .confirm-cancel-button, .reminder-later-button { min-height: 46px; border: 1px solid #cfe0ee; border-radius: 8px; background: #fff; color: #42627f; font-weight: 700; cursor: pointer; }
+      .confirm-delete-button { min-height: 46px; border: 0; border-radius: 8px; background: #c85d50; color: #fff; font-weight: 700; cursor: pointer; }
+      .sync-reminder-login { min-height: 48px; border: 0; border-radius: 8px; background: #1769aa; color: #fff; font-weight: 700; cursor: pointer; }
+      .sync-reminder-register { min-height: 46px; border: 1px solid #9bc5e4; border-radius: 8px; background: #eef8ff; color: #1769aa; font-weight: 700; cursor: pointer; }
     </style>
     <title>每日备忘</title>
   </head>
@@ -160,6 +171,14 @@
         <div class="dialog-actions"><button type="button" id="delete-event-button" class="delete-button is-hidden">删除日程</button><button class="save-button" id="save-event-button" value="default">保存日程</button></div>
       </form>
     </dialog>
+    <dialog id="delete-confirm-dialog" class="delete-confirm-dialog" aria-labelledby="delete-confirm-title">
+      <section class="confirmation-panel">
+        <p class="modal-eyebrow">删除确认</p>
+        <h2 id="delete-confirm-title">确定删除这项日程吗？</h2>
+        <p class="confirmation-copy">删除后无法恢复。</p>
+        <div class="confirmation-actions"><button type="button" id="cancel-delete-button" class="confirm-cancel-button">取消</button><button type="button" id="confirm-delete-button" class="confirm-delete-button">确认删除</button></div>
+      </section>
+    </dialog>
     <dialog id="day-date-dialog" class="day-date-dialog" aria-labelledby="day-picker-date-label">
       <section class="day-picker-panel">
         <header class="modal-header"><div><p class="modal-eyebrow">选择日期</p><h2>日程</h2></div><button type="button" id="close-day-date-dialog" class="close-button day-picker-close" aria-label="关闭日期选择">×</button></header>
@@ -202,7 +221,15 @@
         </section>
       </form>
     </dialog>
+    <dialog id="sync-reminder-dialog" class="sync-reminder-dialog" aria-labelledby="sync-reminder-title">
+      <section class="sync-reminder-panel">
+        <p class="modal-eyebrow">跨设备保存</p>
+        <h2 id="sync-reminder-title">登录后可同步日程</h2>
+        <p class="sync-reminder-copy">当前日程仅保存在这台设备。登录或注册账号后，才能在手机和电脑之间同步查看与编辑。</p>
+        <div class="sync-reminder-actions"><button type="button" id="sync-reminder-login" class="sync-reminder-login">登录</button><button type="button" id="sync-reminder-register" class="sync-reminder-register">注册账号</button><button type="button" id="sync-reminder-later" class="reminder-later-button">暂不登录</button></div>
+      </section>
+    </dialog>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <script src="./app.js?v=31"></script>
+    <script src="./app.js?v=32"></script>
   </body>
 </html>
