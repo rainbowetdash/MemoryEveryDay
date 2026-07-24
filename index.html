@@ -8,8 +8,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="apple-touch-icon" href="./icon.svg" />
-    <link rel="stylesheet" href="./styles.css?v=37" />
-    <link rel="stylesheet" href="./calendar-month.css?v=37" />
+    <link rel="stylesheet" href="./styles.css?v=38" />
+    <link rel="stylesheet" href="./calendar-month.css?v=38" />
     <style>
       html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
       body { min-height: 100dvh; }
@@ -90,6 +90,7 @@
       .group-select { display: flex; align-items: center; gap: 9px; width: 100%; min-height: 43px; border: 0; border-radius: 8px; background: transparent; color: #335a79; padding: 9px; text-align: left; font-size: 14px; font-weight: 750; cursor: pointer; }.group-select:hover { background: #f0f8fd; }.group-select small { margin-left: auto; color: #7d99b0; font-size: 11px; }.group-dot { width: 10px; height: 10px; flex: 0 0 10px; border-radius: 50%; background: #328ccd; }.group-dot.all { background: linear-gradient(135deg,#3266a7 0 34%,#42aaa4 34% 67%,#dc795d 67%); }.group-dot.mint { background:#42aaa4; }.group-dot.purple { background:#8a64c7; }.group-dot.coral { background:#dc795d; }.group-dot.yellow { background:#c79424; }.group-dot.green { background:#4d9b63; }
       .group-edit { width: 29px; height: 29px; border: 0; border-radius: 7px; background: transparent; color: #6686a2; font-size: 16px; cursor: pointer; }.group-edit:hover { background: #dceeff; color: #1769aa; }.new-group-button { display: flex; align-items: center; justify-content: center; gap: 7px; width: 100%; min-height: 45px; margin-top: 15px; border: 1px dashed #8fb9d8; border-radius: 9px; background: #f4faff; color: #1769aa; font-weight: 800; cursor: pointer; }
       .group-color-picker { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; margin-bottom: 15px; }.group-color-choice { display: flex; align-items: center; gap: 7px; min-height: 40px; border: 1px solid #d6e4ee; border-radius: 8px; background: #fff; color: #365a77; padding: 7px 9px; font-size: 12px; font-weight: 700; cursor: pointer; }.group-color-choice span { width: 14px; height: 14px; border-radius: 50%; background:#328ccd; }.group-color-choice.purple span { background:#8a64c7; }.group-color-choice.mint span { background:#42aaa4; }.group-color-choice.coral span { background:#dc795d; }.group-color-choice.yellow span { background:#c79424; }.group-color-choice.green span { background:#4d9b63; }.group-color-choice.is-selected { border-color:#2383c3; background:#edf7ff; box-shadow:0 0 0 1px #2383c344; color:#176296; }
+      .group-dialog-actions { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 4px; }.group-dialog-actions .save-button, .delete-group-button { width: 100%; min-height: 52px; margin: 0; }.delete-group-button { border: 1px solid #a9cce5; border-radius: 8px; background: #eff8ff; color: #1769aa; padding: 11px 16px; font-weight: 750; cursor: pointer; transition: background .16s, border-color .16s, box-shadow .16s, transform .16s; }.delete-group-button:hover { border-color: #71afd4; background: #dff1ff; box-shadow: 0 3px 9px #1769aa1c; }.delete-group-button:focus-visible { outline: 2px solid #2484c5; outline-offset: 2px; }.delete-group-button:active { transform: translateY(1px); }
     </style>
     <title>每日备忘</title>
   </head>
@@ -275,6 +276,6 @@
       </section>
     </dialog>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <script src="./app.js?v=37"></script>
+    <script src="./app.js?v=38"></script>
   </body>
 </html>
