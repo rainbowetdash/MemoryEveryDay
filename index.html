@@ -8,8 +8,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="apple-touch-icon" href="./icon.svg" />
-    <link rel="stylesheet" href="./styles.css?v=40" />
-    <link rel="stylesheet" href="./calendar-month.css?v=40" />
+    <link rel="stylesheet" href="./styles.css?v=41" />
+    <link rel="stylesheet" href="./calendar-month.css?v=41" />
     <style>
       html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
       body { min-height: 100dvh; }
@@ -19,6 +19,13 @@
       .timeline { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 0 8px 10px 0; scrollbar-color: #aac7dc transparent; scrollbar-width: thin; }
       .timeline::-webkit-scrollbar { width: 4px; }
       .timeline::-webkit-scrollbar-thumb { background: #aac7dc; border-radius: 4px; }
+      #calendar-screen:not(.is-hidden) { display: flex; flex-direction: column; height: 100%; min-height: 0; overflow: hidden; }
+      #calendar-screen .calendar-scroll { flex: 0 1 auto; min-height: 170px; }
+      .calendar-agenda-section { display: flex; flex: 1 1 auto; flex-direction: column; min-height: 0; margin-top: 18px; overflow: hidden; }
+      .calendar-agenda-section .section-heading { flex: 0 0 auto; }
+      .calendar-agenda-section .agenda-list { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 0 8px 12px 0; scrollbar-color: #aac7dc transparent; scrollbar-width: thin; }
+      .calendar-agenda-section .agenda-list::-webkit-scrollbar { width: 4px; }
+      .calendar-agenda-section .agenda-list::-webkit-scrollbar-thumb { border-radius: 4px; background: #aac7dc; }
       @media (min-width: 541px) { .app-shell { height: calc(100dvh - 44px); max-height: calc(100dvh - 44px); min-height: 640px; } }
       @media (max-width: 540px) { .app-shell { height: 100dvh; max-height: 100dvh; min-height: 0; } }
       .day-date-trigger { display: inline-grid; gap: 3px; border: 0; background: transparent; color: #18324f; padding: 0; text-align: left; cursor: pointer; }
@@ -276,6 +283,6 @@
       </section>
     </dialog>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <script src="./app.js?v=40"></script>
+    <script src="./app.js?v=41"></script>
   </body>
 </html>
