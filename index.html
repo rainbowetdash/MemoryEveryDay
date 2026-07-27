@@ -8,8 +8,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="apple-touch-icon" href="./icon.svg" />
-    <link rel="stylesheet" href="./styles.css?v=43" />
-    <link rel="stylesheet" href="./calendar-month.css?v=43" />
+    <link rel="stylesheet" href="./styles.css?v=44" />
+    <link rel="stylesheet" href="./calendar-month.css?v=44" />
     <style>
       html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
       body { min-height: 100dvh; }
@@ -170,7 +170,16 @@
         <input id="event-time" name="time" type="hidden" value="09:00" />
         <input id="event-end-time" name="endTime" type="hidden" />
         <input id="event-time-mode" name="timeMode" type="hidden" value="reminder" />
-        <label class="event-group-field">归属日程表<select id="event-group" name="group"></select></label>
+        <div class="event-group-field">
+          <div class="form-label">归属日程表</div>
+          <input id="event-group" name="group" type="hidden" />
+          <div class="event-group-picker">
+            <button type="button" id="event-group-trigger" class="event-group-trigger" aria-expanded="false" aria-controls="event-group-list">
+              <span id="event-group-dot" class="group-dot"></span><span id="event-group-label"></span><span class="event-group-chevron" aria-hidden="true">⌄</span>
+            </button>
+            <div id="event-group-list" class="event-group-list is-hidden" role="listbox" aria-label="选择归属日程表"></div>
+          </div>
+        </div>
         <div class="form-label">时间安排</div>
         <button type="button" id="schedule-editor-trigger" class="schedule-editor-trigger" aria-label="更改日期和时间" aria-expanded="false"><span class="schedule-editor-icon">◷</span><span><strong id="schedule-editor-title">7月22日</strong><small id="schedule-editor-subtitle">09:00 提醒</small></span><span class="chevron">›</span></button>
         <section id="schedule-editor" class="schedule-editor is-hidden" aria-label="更改日期和时间">
@@ -283,6 +292,6 @@
       </section>
     </dialog>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <script src="./app.js?v=43"></script>
+    <script src="./app.js?v=44"></script>
   </body>
 </html>
