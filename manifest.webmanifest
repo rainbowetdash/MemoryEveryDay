@@ -1,1 +1,1 @@
-{"name":"每日备忘","short_name":"每日备忘","start_url":"/","display":"standalone","background_color":"#f4f9ff","theme_color":"#f4f9ff","icons":[{"src":"/icon.svg","sizes":"any","type":"image/svg+xml"}]}
+{"name":"每日备忘","short_name":"每日备忘","description":"轻松安排每天的日程，并在到点时收到系统通知。","id":"/","start_url":"/","scope":"/","display":"standalone","background_color":"#f4f9ff","theme_color":"#f4f9ff","icons":[{"src":"/wecom-daily-memo-icon.png","sizes":"1024x1024","type":"image/png","purpose":"any maskable"},{"src":"/icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any"}]}
