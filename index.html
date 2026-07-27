@@ -8,8 +8,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="apple-touch-icon" href="./icon.svg" />
-    <link rel="stylesheet" href="./styles.css?v=47" />
-    <link rel="stylesheet" href="./calendar-month.css?v=47" />
+    <link rel="stylesheet" href="./styles.css?v=48" />
+    <link rel="stylesheet" href="./calendar-month.css?v=48" />
     <style>
       html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
       body { min-height: 100dvh; }
@@ -101,6 +101,7 @@
       .event-group-field { margin-bottom: 15px; }.event-group-field .form-label { margin-bottom: 7px; }.event-group-picker { position: relative; }.event-group-trigger { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 46px; border: 1px solid #cfe0ee; border-radius: 8px; background: #f8fcff; color: #284e6d; padding: 10px 12px; text-align: left; font-size: 14px; font-weight: 700; cursor: pointer; }.event-group-trigger:hover, .event-group-trigger[aria-expanded="true"] { border-color: #80b5da; background: #edf7ff; }.event-group-trigger:focus-visible, .event-group-option:focus-visible { outline: 2px solid #2484c5; outline-offset: 2px; }.event-group-chevron { margin-left: auto; color: #4d82a8; font-size: 20px; line-height: 1; transition: transform .16s; }.event-group-trigger[aria-expanded="true"] .event-group-chevron { transform: rotate(180deg); }.event-group-list { position: absolute; z-index: 8; top: calc(100% + 5px); left: 0; right: 0; display: grid; gap: 3px; max-height: 220px; overflow-y: auto; border: 1px solid #bad5e8; border-radius: 8px; background: #fff; box-shadow: 0 12px 24px #1a5c8a24; padding: 5px; }.event-group-option { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 40px; border: 0; border-radius: 6px; background: transparent; color: #345b7a; padding: 9px; text-align: left; font-size: 13px; font-weight: 700; cursor: pointer; }.event-group-option:hover, .event-group-option.is-selected { background: #edf7ff; color: #176296; }.event-group-check { visibility: hidden; margin-left: auto; color: #1675b4; font-size: 15px; font-weight: 800; }.event-group-option.is-selected .event-group-check { visibility: visible; }.group-dot.navy { background: #3266a7; }.group-dot.cyan { background: #2db3d6; }.group-dot.pink { background: #d96696; }
       .event-group-chevron { display: grid; place-items: center; width: 24px; height: 24px; margin-left: auto; font-size: 0; transition: transform .16s; }.event-group-chevron::before { content: ""; width: 8px; height: 8px; border-right: 2px solid #4d82a8; border-bottom: 2px solid #4d82a8; transform: rotate(45deg) translate(-1px, -1px); transform-origin: center; }.event-group-trigger[aria-expanded="true"] .event-group-chevron { transform: rotate(180deg); }.event-group-check { display: grid; place-items: center; width: 20px; height: 20px; margin-left: auto; visibility: visible; font-size: 0; }.event-group-check::before { content: ""; width: 6px; height: 11px; border-right: 3px solid #1675b4; border-bottom: 3px solid #1675b4; opacity: 0; transform: rotate(45deg) translate(-1px, -1px); }.event-group-option.is-selected .event-group-check::before { opacity: 1; }
       .event-group-list.is-hidden { display: none; }
+      .group-sidebar-toggle { top: 58px; }
     </style>
     <title>每日备忘</title>
   </head>
@@ -126,16 +127,16 @@
             </div>
           </div>
         </header>
-        <section class="calendar-selected-date" aria-live="polite" aria-label="当前选中日期">
-          <p id="calendar-selected-year"></p>
-          <h1><span id="calendar-selected-date"></span></h1>
-          <p id="calendar-selected-weekday"></p>
-        </section>
         <div class="month-switcher calendar-month-navigation" aria-label="切换月份">
           <button class="icon-button" id="previous-month" aria-label="上个月">‹</button>
           <button type="button" id="calendar-month-trigger" class="calendar-month-trigger" aria-haspopup="dialog" aria-label="选择年份"></button>
           <button class="icon-button" id="next-month" aria-label="下个月">›</button>
         </div>
+        <section class="calendar-selected-date" aria-live="polite" aria-label="当前选中日期">
+          <p id="calendar-selected-year"></p>
+          <h1><span id="calendar-selected-date"></span></h1>
+          <p id="calendar-selected-weekday"></p>
+        </section>
         <div class="calendar-scroll" id="calendar-scroll"><div class="calendar-canvas"><div class="weekdays" aria-hidden="true"><span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span></div><div class="calendar-grid" id="calendar-grid"></div></div></div>
         <section class="up-next calendar-agenda-section" aria-live="polite" aria-label="所选日期的日程">
           <div class="section-heading"><span id="schedule-count"></span></div>
@@ -295,6 +296,6 @@
       </section>
     </dialog>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <script src="./app.js?v=47"></script>
+    <script src="./app.js?v=48"></script>
   </body>
 </html>
