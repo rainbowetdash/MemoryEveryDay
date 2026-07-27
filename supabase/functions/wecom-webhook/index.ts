@@ -1,4 +1,5 @@
 import CryptoJS from "npm:crypto-js@4.2.0";
+import { createClient } from "npm:@supabase/supabase-js@2";
 
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
@@ -70,6 +71,23 @@ function configFromEnvironment(): WeComConfig | null {
   return token && encodingAesKey && corpId ? { token, encodingAesKey, corpId } : null;
 }
 
+async function acknowledgeActiveReminders(fromUser: string) {
+  const recipientUserId = Deno.env.get("WECOM_RECIPIENT_USER_ID");
+  const supabaseUrl = Deno.env.get("SUPABASE_URL");
+  const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  if (!fromUser || (recipientUserId && fromUser !== recipientUserId) || !supabaseUrl || !serviceRoleKey) return;
+
+  const now = new Date().toISOString();
+  const supabase = createClient(supabaseUrl, serviceRoleKey);
+  const { error } = await supabase.from("wecom_reminders").update({
+    status: "acknowledged",
+    acknowledged_at: now,
+    acknowledged_by: fromUser,
+    updated_at: now,
+  }).eq("status", "reminding");
+  if (error) throw error;
+}
+
 Deno.serve(async (request) => {
   const config = configFromEnvironment();
   if (!config) return text("WeCom callback is not configured", 503);
@@ -97,7 +115,11 @@ Deno.serve(async (request) => {
     const content = xmlValue(message, "Content").trim();
     console.info("Verified WeCom reply", { fromUser, hasContent: Boolean(content) });
 
-    // The reminder workflow will use this verified reply to end the active reminder.
+    try {
+      await acknowledgeActiveReminders(fromUser);
+    } catch (error) {
+      console.error("Unable to acknowledge WeCom reminders", error);
+    }
     return text("success");
   } catch (error) {
     console.error("WeCom callback failed", error);

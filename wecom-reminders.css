@@ -1,0 +1,31 @@
+.wecom-reminder-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 0 0 15px;
+  padding: 12px 13px;
+  border: 1px solid #cfe0ee;
+  border-radius: 8px;
+  background: #f3f9ff;
+}
+
+.wecom-reminder-row strong,
+.wecom-reminder-row small {
+  display: block;
+}
+
+.wecom-reminder-row strong {
+  font-size: 14px;
+}
+
+.wecom-reminder-row small {
+  margin-top: 3px;
+  color: #6886a0;
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.wecom-reminder-row .mode-switch {
+  flex: 0 0 auto;
+}

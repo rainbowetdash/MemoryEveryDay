@@ -8,8 +8,9 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="apple-touch-icon" href="./icon.svg" />
-    <link rel="stylesheet" href="./styles.css?v=51" />
-    <link rel="stylesheet" href="./calendar-month.css?v=51" />
+    <link rel="stylesheet" href="./styles.css?v=52" />
+    <link rel="stylesheet" href="./calendar-month.css?v=52" />
+    <link rel="stylesheet" href="./wecom-reminders.css?v=52" />
     <style>
       html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
       body { min-height: 100dvh; }
@@ -201,6 +202,11 @@
           <p class="time-input-note">可只输入数字：900 会自动变为 09:00；结束时间可输入 2400。</p>
           <button type="button" id="apply-schedule-editor" class="apply-schedule-button">完成时间安排</button>
         </section>
+        <input id="wecom-reminder" name="wecomReminder" type="hidden" value="false" />
+        <div class="wecom-reminder-row">
+          <div><strong>企业微信提醒</strong><small>到点后每分钟提醒，回复即可停止</small></div>
+          <button type="button" id="wecom-reminder-toggle" class="mode-switch" role="switch" aria-checked="false" aria-label="开启企业微信提醒"><span></span></button>
+        </div>
         <div class="form-label">颜色</div>
         <input id="event-color" name="color" type="hidden" value="blue" />
         <div class="color-picker" id="event-color-picker" role="radiogroup" aria-label="日程颜色">
@@ -301,6 +307,6 @@
       </section>
     </dialog>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <script src="./app.js?v=51"></script>
+    <script src="./app.js?v=52"></script>
   </body>
 </html>
