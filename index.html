@@ -8,8 +8,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="apple-touch-icon" href="./icon.svg" />
-    <link rel="stylesheet" href="./styles.css?v=44" />
-    <link rel="stylesheet" href="./calendar-month.css?v=44" />
+    <link rel="stylesheet" href="./styles.css?v=45" />
+    <link rel="stylesheet" href="./calendar-month.css?v=45" />
     <style>
       html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
       body { min-height: 100dvh; }
@@ -98,6 +98,7 @@
       .group-edit { width: 29px; height: 29px; border: 0; border-radius: 7px; background: transparent; color: #6686a2; font-size: 16px; cursor: pointer; }.group-edit:hover { background: #dceeff; color: #1769aa; }.new-group-button { display: flex; align-items: center; justify-content: center; gap: 7px; width: 100%; min-height: 45px; margin-top: 15px; border: 1px dashed #8fb9d8; border-radius: 9px; background: #f4faff; color: #1769aa; font-weight: 800; cursor: pointer; }
       .group-color-picker { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; margin-bottom: 15px; }.group-color-choice { display: flex; align-items: center; gap: 7px; min-height: 40px; border: 1px solid #d6e4ee; border-radius: 8px; background: #fff; color: #365a77; padding: 7px 9px; font-size: 12px; font-weight: 700; cursor: pointer; }.group-color-choice span { width: 14px; height: 14px; border-radius: 50%; background:#328ccd; }.group-color-choice.purple span { background:#8a64c7; }.group-color-choice.mint span { background:#42aaa4; }.group-color-choice.coral span { background:#dc795d; }.group-color-choice.yellow span { background:#c79424; }.group-color-choice.green span { background:#4d9b63; }.group-color-choice.is-selected { border-color:#2383c3; background:#edf7ff; box-shadow:0 0 0 1px #2383c344; color:#176296; }
       .group-dialog-actions { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 4px; }.group-dialog-actions .save-button, .delete-group-button { width: 100%; min-height: 52px; margin: 0; }.delete-group-button { border: 1px solid #a9cce5; border-radius: 8px; background: #eff8ff; color: #1769aa; padding: 11px 16px; font-weight: 750; cursor: pointer; transition: background .16s, border-color .16s, box-shadow .16s, transform .16s; }.delete-group-button:hover { border-color: #71afd4; background: #dff1ff; box-shadow: 0 3px 9px #1769aa1c; }.delete-group-button:focus-visible { outline: 2px solid #2484c5; outline-offset: 2px; }.delete-group-button:active { transform: translateY(1px); }
+      .event-group-field { margin-bottom: 15px; }.event-group-field .form-label { margin-bottom: 7px; }.event-group-picker { position: relative; }.event-group-trigger { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 46px; border: 1px solid #cfe0ee; border-radius: 8px; background: #f8fcff; color: #284e6d; padding: 10px 12px; text-align: left; font-size: 14px; font-weight: 700; cursor: pointer; }.event-group-trigger:hover, .event-group-trigger[aria-expanded="true"] { border-color: #80b5da; background: #edf7ff; }.event-group-trigger:focus-visible, .event-group-option:focus-visible { outline: 2px solid #2484c5; outline-offset: 2px; }.event-group-chevron { margin-left: auto; color: #4d82a8; font-size: 20px; line-height: 1; transition: transform .16s; }.event-group-trigger[aria-expanded="true"] .event-group-chevron { transform: rotate(180deg); }.event-group-list { position: absolute; z-index: 8; top: calc(100% + 5px); left: 0; right: 0; display: grid; gap: 3px; max-height: 220px; overflow-y: auto; border: 1px solid #bad5e8; border-radius: 8px; background: #fff; box-shadow: 0 12px 24px #1a5c8a24; padding: 5px; }.event-group-option { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 40px; border: 0; border-radius: 6px; background: transparent; color: #345b7a; padding: 9px; text-align: left; font-size: 13px; font-weight: 700; cursor: pointer; }.event-group-option:hover, .event-group-option.is-selected { background: #edf7ff; color: #176296; }.event-group-check { visibility: hidden; margin-left: auto; color: #1675b4; font-size: 15px; font-weight: 800; }.event-group-option.is-selected .event-group-check { visibility: visible; }.group-dot.navy { background: #3266a7; }.group-dot.cyan { background: #2db3d6; }.group-dot.pink { background: #d96696; }
     </style>
     <title>每日备忘</title>
   </head>
@@ -292,6 +293,6 @@
       </section>
     </dialog>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <script src="./app.js?v=44"></script>
+    <script src="./app.js?v=45"></script>
   </body>
 </html>
