@@ -8,8 +8,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="apple-touch-icon" href="./icon.svg" />
-    <link rel="stylesheet" href="./styles.css?v=49" />
-    <link rel="stylesheet" href="./calendar-month.css?v=49" />
+    <link rel="stylesheet" href="./styles.css?v=50" />
+    <link rel="stylesheet" href="./calendar-month.css?v=50" />
     <style>
       html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
       body { min-height: 100dvh; }
@@ -102,6 +102,7 @@
       .event-group-chevron { display: grid; place-items: center; width: 24px; height: 24px; margin-left: auto; font-size: 0; transition: transform .16s; }.event-group-chevron::before { content: ""; width: 8px; height: 8px; border-right: 2px solid #4d82a8; border-bottom: 2px solid #4d82a8; transform: rotate(45deg) translate(-1px, -1px); transform-origin: center; }.event-group-trigger[aria-expanded="true"] .event-group-chevron { transform: rotate(180deg); }.event-group-check { display: grid; place-items: center; width: 20px; height: 20px; margin-left: auto; visibility: visible; font-size: 0; }.event-group-check::before { content: ""; width: 6px; height: 11px; border-right: 3px solid #1675b4; border-bottom: 3px solid #1675b4; opacity: 0; transform: rotate(45deg) translate(-1px, -1px); }.event-group-option.is-selected .event-group-check::before { opacity: 1; }
       .event-group-list.is-hidden { display: none; }
       .group-sidebar-toggle { top: 58px; }
+      .calendar-selected-date { padding-left: 40px; }
     </style>
     <title>每日备忘</title>
   </head>
@@ -296,6 +297,6 @@
       </section>
     </dialog>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <script src="./app.js?v=49"></script>
+    <script src="./app.js?v=50"></script>
   </body>
 </html>
