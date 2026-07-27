@@ -1,3 +1,5 @@
+import CryptoJS from "npm:crypto-js@4.2.0";
+
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 
@@ -7,13 +9,21 @@ type WeComConfig = {
   corpId: string;
 };
 
+type WordArray = {
+  sigBytes: number;
+  words: number[];
+};
+
 function text(body: string, status = 200) {
   return new Response(body, { status, headers: { "Content-Type": "text/plain; charset=utf-8" } });
 }
 
-function base64Bytes(value: string) {
-  const binary = atob(value.replace(/ /g, "+"));
-  return Uint8Array.from(binary, (character) => character.charCodeAt(0));
+function wordArrayBytes(value: WordArray) {
+  const bytes = new Uint8Array(value.sigBytes);
+  for (let index = 0; index < value.sigBytes; index += 1) {
+    bytes[index] = (value.words[index >>> 2] >>> (24 - (index % 4) * 8)) & 0xff;
+  }
+  return bytes;
 }
 
 function xmlValue(xml: string, tag: string) {
@@ -32,14 +42,23 @@ async function signatureIsValid(config: WeComConfig, timestamp: string, nonce: s
 }
 
 async function decryptWeComMessage(config: WeComConfig, encrypted: string) {
-  const keyBytes = base64Bytes(`${config.encodingAesKey}=`);
-  if (keyBytes.length !== 32) throw new Error("Invalid EncodingAESKey");
+  const aesKey = CryptoJS.enc.Base64.parse(`${config.encodingAesKey}=`);
+  if (aesKey.sigBytes !== 32) throw new Error("Invalid EncodingAESKey");
 
-  const aesKey = await crypto.subtle.importKey("raw", keyBytes, { name: "AES-CBC" }, false, ["decrypt"]);
-  const decrypted = new Uint8Array(await crypto.subtle.decrypt({ name: "AES-CBC", iv: keyBytes.slice(0, 16) }, aesKey, base64Bytes(encrypted)));
-  const messageLength = new DataView(decrypted.buffer, decrypted.byteOffset, decrypted.byteLength).getUint32(16, false);
-  const message = decoder.decode(decrypted.slice(20, 20 + messageLength));
-  const corpId = decoder.decode(decrypted.slice(20 + messageLength));
+  const ciphertext = CryptoJS.enc.Base64.parse(encrypted.replace(/ /g, "+"));
+  const iv = CryptoJS.lib.WordArray.create(aesKey.words.slice(0, 4), 16);
+  const decrypted = wordArrayBytes(CryptoJS.AES.decrypt(
+    { ciphertext },
+    aesKey,
+    { iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.NoPadding },
+  ));
+  const padding = decrypted.at(-1) || 0;
+  if (padding < 1 || padding > 32) throw new Error("Invalid message padding");
+
+  const content = decrypted.slice(0, -padding);
+  const messageLength = new DataView(content.buffer, content.byteOffset, content.byteLength).getUint32(16, false);
+  const message = decoder.decode(content.slice(20, 20 + messageLength));
+  const corpId = decoder.decode(content.slice(20 + messageLength));
   if (corpId !== config.corpId) throw new Error("Unexpected CorpID");
   return message;
 }
