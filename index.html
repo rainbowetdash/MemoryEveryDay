@@ -8,8 +8,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="apple-touch-icon" href="./icon.svg" />
-    <link rel="stylesheet" href="./styles.css?v=48" />
-    <link rel="stylesheet" href="./calendar-month.css?v=48" />
+    <link rel="stylesheet" href="./styles.css?v=49" />
+    <link rel="stylesheet" href="./calendar-month.css?v=49" />
     <style>
       html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
       body { min-height: 100dvh; }
@@ -127,16 +127,16 @@
             </div>
           </div>
         </header>
-        <div class="month-switcher calendar-month-navigation" aria-label="切换月份">
-          <button class="icon-button" id="previous-month" aria-label="上个月">‹</button>
-          <button type="button" id="calendar-month-trigger" class="calendar-month-trigger" aria-haspopup="dialog" aria-label="选择年份"></button>
-          <button class="icon-button" id="next-month" aria-label="下个月">›</button>
-        </div>
         <section class="calendar-selected-date" aria-live="polite" aria-label="当前选中日期">
           <p id="calendar-selected-year"></p>
           <h1><span id="calendar-selected-date"></span></h1>
           <p id="calendar-selected-weekday"></p>
         </section>
+        <div class="month-switcher calendar-month-navigation" aria-label="切换月份">
+          <button class="icon-button" id="previous-month" aria-label="上个月">‹</button>
+          <button type="button" id="calendar-month-trigger" class="calendar-month-trigger" aria-haspopup="dialog" aria-label="选择年份"></button>
+          <button class="icon-button" id="next-month" aria-label="下个月">›</button>
+        </div>
         <div class="calendar-scroll" id="calendar-scroll"><div class="calendar-canvas"><div class="weekdays" aria-hidden="true"><span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span></div><div class="calendar-grid" id="calendar-grid"></div></div></div>
         <section class="up-next calendar-agenda-section" aria-live="polite" aria-label="所选日期的日程">
           <div class="section-heading"><span id="schedule-count"></span></div>
@@ -296,6 +296,6 @@
       </section>
     </dialog>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <script src="./app.js?v=48"></script>
+    <script src="./app.js?v=49"></script>
   </body>
 </html>
