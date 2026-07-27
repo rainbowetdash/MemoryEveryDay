@@ -37,13 +37,9 @@ async function decryptWeComMessage(config: WeComConfig, encrypted: string) {
 
   const aesKey = await crypto.subtle.importKey("raw", keyBytes, { name: "AES-CBC" }, false, ["decrypt"]);
   const decrypted = new Uint8Array(await crypto.subtle.decrypt({ name: "AES-CBC", iv: keyBytes.slice(0, 16) }, aesKey, base64Bytes(encrypted)));
-  const padding = decrypted.at(-1) || 0;
-  if (padding < 1 || padding > 32) throw new Error("Invalid message padding");
-
-  const content = decrypted.slice(0, -padding);
-  const messageLength = new DataView(content.buffer, content.byteOffset, content.byteLength).getUint32(16, false);
-  const message = decoder.decode(content.slice(20, 20 + messageLength));
-  const corpId = decoder.decode(content.slice(20 + messageLength));
+  const messageLength = new DataView(decrypted.buffer, decrypted.byteOffset, decrypted.byteLength).getUint32(16, false);
+  const message = decoder.decode(decrypted.slice(20, 20 + messageLength));
+  const corpId = decoder.decode(decrypted.slice(20 + messageLength));
   if (corpId !== config.corpId) throw new Error("Unexpected CorpID");
   return message;
 }
