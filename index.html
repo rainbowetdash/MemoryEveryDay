@@ -8,8 +8,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="apple-touch-icon" href="./icon.svg" />
-    <link rel="stylesheet" href="./styles.css?v=50" />
-    <link rel="stylesheet" href="./calendar-month.css?v=50" />
+    <link rel="stylesheet" href="./styles.css?v=51" />
+    <link rel="stylesheet" href="./calendar-month.css?v=51" />
     <style>
       html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
       body { min-height: 100dvh; }
@@ -103,6 +103,10 @@
       .event-group-list.is-hidden { display: none; }
       .group-sidebar-toggle { top: 58px; }
       .calendar-selected-date { padding-left: 40px; }
+      #event-dialog .time-inputs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      #event-dialog .time-inputs label, #event-dialog .time-inputs input { min-width: 0; }
+      #event-dialog .time-inputs input { width: 100%; }
+      @media (max-width: 540px) { #event-dialog { width: calc(100% - 24px); max-height: calc(100dvh - 24px); overflow-y: auto; overscroll-behavior: contain; } #event-dialog form { padding: 20px; } #event-dialog .time-inputs { grid-template-columns: minmax(0, 1fr); gap: 12px; } }
     </style>
     <title>每日备忘</title>
   </head>
@@ -297,6 +301,6 @@
       </section>
     </dialog>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <script src="./app.js?v=50"></script>
+    <script src="./app.js?v=51"></script>
   </body>
 </html>
