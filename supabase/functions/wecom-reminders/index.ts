@@ -31,6 +31,20 @@ type PushConfig = {
 };
 
 const defaultPublicKey = "BBDWcU9vD0HrrR5mkFRTV_pW6Hb-raGQnwxKqvhIPpZk9yZTt5TDCLSXODbjUx4lrBmXxjw7at-z5qQ1FJ6QjJU";
+const encouragements = [
+  "你已经开始了，接下来一步就好。",
+  "按自己的节奏来，你做得到。",
+  "先完成，再慢慢变好。",
+  "现在做一点，之后会轻松很多。",
+  "你的计划值得被认真对待。",
+  "不用追求完美，先向前走。",
+  "把注意力放回眼前这一件事。",
+  "小小的行动也算进步。",
+  "你比想象中更接近目标。",
+  "今天的你也值得被肯定。",
+  "只做下一步，不必一次做完全部。",
+  "给自己一点耐心，继续就好。",
+];
 
 const json = (body: Record<string, unknown>, status = 200) => new Response(JSON.stringify(body), {
   status,
@@ -55,10 +69,11 @@ function shouldSend(reminder: Reminder, now: number) {
 function notificationPayload(reminder: Reminder) {
   const event = reminder.schedule_events;
   if (!event) throw new Error("Reminder event is unavailable");
+  const encouragement = encouragements[Math.floor(Math.random() * encouragements.length)];
   return JSON.stringify({
     title: reminder.sent_count ? "日程还在等你" : "每日备忘",
-    body: `${event.title}\n${event.event_date} ${event.start_time.slice(0, 5)}`,
-    tag: `event-${reminder.event_id}`,
+    body: `${event.title}\n${event.event_date} ${event.start_time.slice(0, 5)}\n${encouragement}`,
+    tag: `event-${reminder.event_id}-${reminder.sent_count + 1}`,
     url: `/?date=${encodeURIComponent(event.event_date)}&event=${encodeURIComponent(reminder.event_id)}`,
   });
 }
