@@ -77,6 +77,35 @@ Deno.serve(async (request) => {
   webpush.setVapidDetails(config.subject, config.publicKey, config.privateKey);
   const supabase = createClient(supabaseUrl, serviceRoleKey);
   const now = Date.now();
+  const dueWindowStart = new Date(now - 15 * 60_000).toISOString();
+  const dueWindowEnd = new Date(now).toISOString();
+  const { data: dueEventRows, error: dueEventError } = await supabase
+    .from("schedule_events")
+    .select("id, user_id, reminder_at")
+    .eq("push_reminder", true)
+    .not("reminder_at", "is", null)
+    .gte("reminder_at", dueWindowStart)
+    .lte("reminder_at", dueWindowEnd);
+  if (dueEventError) return json({ error: "Unable to load due events" }, 500);
+
+  const dueEvents = dueEventRows || [];
+  if (dueEvents.length) {
+    const dueEventIds = dueEvents.map((event) => event.id);
+    const { data: queuedRows, error: queuedError } = await supabase
+      .from("push_reminders")
+      .select("event_id")
+      .in("event_id", dueEventIds);
+    if (queuedError) return json({ error: "Unable to verify reminder queue" }, 500);
+    const queuedIds = new Set((queuedRows || []).map((reminder) => reminder.event_id));
+    const missingReminders = dueEvents
+      .filter((event) => !queuedIds.has(event.id))
+      .map((event) => ({ event_id: event.id, user_id: event.user_id, reminder_at: event.reminder_at }));
+    if (missingReminders.length) {
+      const { error: queueError } = await supabase.from("push_reminders").insert(missingReminders);
+      if (queueError) return json({ error: "Unable to repair reminder queue" }, 500);
+    }
+  }
+
   const { data, error } = await supabase
     .from("push_reminders")
     .select("event_id, user_id, reminder_at, status, last_sent_at, sent_count, schedule_events(title, event_date, start_time)")
@@ -92,7 +121,10 @@ Deno.serve(async (request) => {
     await supabase.from("push_reminders").update({ status: "completed", updated_at: new Date().toISOString() }).in("event_id", expiredEventIds);
   }
   const reminders = loadedReminders.filter((reminder) => shouldSend(reminder, now));
-  if (!reminders.length) return json({ sent: 0 });
+  if (!reminders.length) {
+    console.log("Push reminder run", { dueEvents: dueEvents.length, loaded: loadedReminders.length, ready: 0, sent: 0 });
+    return json({ sent: 0 });
+  }
 
   const userIds = [...new Set(reminders.map((reminder) => reminder.user_id))];
   const { data: subscriptionRows, error: subscriptionError } = await supabase
@@ -139,5 +171,6 @@ Deno.serve(async (request) => {
     }
   }
 
+  console.log("Push reminder run", { dueEvents: dueEvents.length, loaded: loadedReminders.length, ready: reminders.length, subscriptions: subscriptions.length, sent });
   return json({ sent });
 });
