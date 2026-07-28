@@ -49,7 +49,7 @@ function shouldSend(reminder: Reminder, now: number) {
   const reminderAt = new Date(reminder.reminder_at).getTime();
   if (reminder.status === "pending") return reminderAt >= now - 15 * 60_000 && reminderAt <= now;
   const lastSentAt = reminder.last_sent_at ? new Date(reminder.last_sent_at).getTime() : 0;
-  return reminder.sent_count === 1 && now - lastSentAt >= 10 * 60_000;
+  return now - lastSentAt >= 60_000;
 }
 
 function notificationPayload(reminder: Reminder) {
@@ -163,7 +163,7 @@ Deno.serve(async (request) => {
       const nextCount = reminder.sent_count + 1;
       const sentAt = new Date().toISOString();
       await supabase.from("push_reminders").update({
-        status: nextCount >= 2 ? "completed" : "reminding",
+        status: "reminding",
         last_sent_at: sentAt,
         sent_count: nextCount,
         updated_at: sentAt,

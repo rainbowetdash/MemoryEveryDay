@@ -9,9 +9,9 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="apple-touch-icon" href="./wecom-daily-memo-icon.png" />
-    <link rel="stylesheet" href="./styles.css?v=55" />
-    <link rel="stylesheet" href="./calendar-month.css?v=55" />
-    <link rel="stylesheet" href="./push-notifications.css?v=55" />
+    <link rel="stylesheet" href="./styles.css?v=56" />
+    <link rel="stylesheet" href="./calendar-month.css?v=56" />
+    <link rel="stylesheet" href="./push-notifications.css?v=56" />
     <style>
       html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
       body { min-height: 100dvh; }
@@ -205,7 +205,7 @@
         </section>
         <input id="push-reminder" name="pushReminder" type="hidden" value="false" />
         <div class="push-reminder-row">
-          <div><strong>系统通知</strong><small id="push-reminder-copy">到点推送一次，10 分钟后再提醒一次</small></div>
+          <div><strong>系统通知</strong><small id="push-reminder-copy">到点后每分钟提醒，打开日程后停止</small></div>
           <button type="button" id="push-reminder-toggle" class="mode-switch" role="switch" aria-checked="false" aria-label="开启系统通知"><span></span></button>
         </div>
         <div class="form-label">颜色</div>
@@ -321,6 +321,6 @@
       </section>
     </dialog>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <script src="./app.js?v=55"></script>
+    <script src="./app.js?v=56"></script>
   </body>
 </html>
