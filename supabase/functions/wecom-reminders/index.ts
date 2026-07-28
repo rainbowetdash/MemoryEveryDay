@@ -71,9 +71,10 @@ function notificationPayload(reminder: Reminder) {
   if (!event) throw new Error("Reminder event is unavailable");
   const encouragement = encouragements[Math.floor(Math.random() * encouragements.length)];
   return JSON.stringify({
-    title: reminder.sent_count ? "日程还在等你" : "每日备忘",
-    body: `${event.title}\n${event.event_date} ${event.start_time.slice(0, 5)}\n${encouragement}`,
-    tag: `event-${reminder.event_id}-${reminder.sent_count + 1}`,
+    title: event.title,
+    body: encouragement,
+    tag: `event-${reminder.event_id}`,
+    renotify: true,
     url: `/?date=${encodeURIComponent(event.event_date)}&event=${encodeURIComponent(reminder.event_id)}`,
   });
 }

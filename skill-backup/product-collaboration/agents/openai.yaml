@@ -1,0 +1,4 @@
+interface:
+  display_name: "Product Collaboration"
+  short_description: "Collaborate on software in plain, product-first language."
+  default_prompt: "Help me improve this product without technical jargon."

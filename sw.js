@@ -1,5 +1,5 @@
-const cache = 'memory-everyday-v56';
-const files = ['/', '/index.html', '/styles.css?v=56', '/calendar-month.css?v=56', '/push-notifications.css?v=56', '/app.js?v=56', '/manifest.webmanifest', '/icon.svg', '/wecom-daily-memo-icon.png'];
+const cache = 'memory-everyday-v57';
+const files = ['/', '/index.html', '/styles.css?v=57', '/calendar-month.css?v=57', '/push-notifications.css?v=57', '/app.js?v=57', '/manifest.webmanifest', '/icon.svg', '/wecom-daily-memo-icon.png'];
 
 self.addEventListener('install', (event) => event.waitUntil(
   caches.open(cache).then((storage) => storage.addAll(files)).then(() => self.skipWaiting())
@@ -30,10 +30,15 @@ self.addEventListener('notificationclick', (event) => {
   event.notification.close();
   const target = new URL(event.notification.data?.url || '/', self.location.origin).href;
   event.waitUntil(clients.matchAll({ type: 'window', includeUncontrolled: true }).then(async (windows) => {
+    let found = null;
     for (const client of windows) {
-      if ('navigate' in client) await client.navigate(target);
-      return client.focus();
+      if ('navigate' in client) {
+        await client.navigate(target);
+        found = client;
+        break;
+      }
     }
+    if (found) return found.focus();
     return clients.openWindow(target);
   }));
 });
