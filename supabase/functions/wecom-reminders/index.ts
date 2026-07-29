@@ -70,14 +70,8 @@ function notificationPayload(reminder: Reminder) {
   const event = reminder.schedule_events;
   if (!event) throw new Error("Reminder event is unavailable");
   const encouragement = encouragements[Math.floor(Math.random() * encouragements.length)];
-  const now = Date.now();
-  const reminderAt = new Date(reminder.reminder_at).getTime();
-  const eventAt = new Date(`${event.event_date}T${event.start_time}`).getTime();
-  const isEarly = eventAt - reminderAt > 60_000;
-  const titlePrefix = isEarly ? "⏰ 提前提醒" : "";
-  const title = titlePrefix ? `${titlePrefix} · ${event.title}` : event.title;
   return JSON.stringify({
-    title,
+    title: event.title,
     body: encouragement,
     tag: `event-${reminder.event_id}`,
     renotify: true,

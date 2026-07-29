@@ -213,15 +213,11 @@
             <span class="chevron">›</span>
           </button>
           <div id="early-reminder-panel" class="is-hidden" aria-label="提前提醒选项">
-            <div class="early-reminder-list" role="group" aria-label="提前提醒时间">
-              <label class="early-reminder-option"><input type="checkbox" data-minutes="10080" /><span>提前 7 天提醒</span></label>
-              <label class="early-reminder-option"><input type="checkbox" data-minutes="4320" /><span>提前 3 天提醒</span></label>
-              <label class="early-reminder-option"><input type="checkbox" data-minutes="1440" /><span>提前 1 天提醒</span></label>
-              <label class="early-reminder-option"><input type="checkbox" data-minutes="720" /><span>提前 12 小时提醒</span></label>
-              <label class="early-reminder-option"><input type="checkbox" data-minutes="360" /><span>提前 6 小时提醒</span></label>
-              <label class="early-reminder-option"><input type="checkbox" data-minutes="60" /><span>提前 1 小时提醒</span></label>
-              <label class="early-reminder-option"><input type="checkbox" data-minutes="30" /><span>提前 30 分钟提醒</span></label>
-              <label class="early-reminder-option"><input type="checkbox" data-minutes="15" /><span>提前 15 分钟提醒</span></label>
+            <div class="early-reminder-list" id="early-reminder-list" role="group" aria-label="已设置的提前提醒"></div>
+            <div class="early-reminder-add-row">
+              <input type="number" id="early-reminder-value" class="early-reminder-value" min="1" placeholder="数量" inputmode="numeric" />
+              <select id="early-reminder-unit" class="early-reminder-unit"><option value="1440">天</option><option value="60">小时</option><option value="1">分钟</option></select>
+              <button type="button" id="add-early-reminder" class="early-reminder-add-btn">添加</button>
             </div>
           </div>
         </div>
