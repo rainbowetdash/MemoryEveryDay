@@ -168,3 +168,10 @@
   font-size: 12px;
   font-weight: 800;
 }
+
+.early-reminder-trigger{display:flex;align-items:center;gap:11px;width:100%;border:1px solid #cfdbe6;border-radius:8px;background:#f9fcff;padding:10px 12px;color:#18324f;text-align:left;cursor:pointer;margin-bottom:15px}.early-reminder-trigger:hover{background:#f3f8ff;border-color:#b3cfe5}.early-reminder-trigger[aria-expanded="true"]{border-color:#80b5da;background:#edf7ff;margin-bottom:2px;border-radius:8px 8px 0 0}.early-reminder-trigger[aria-expanded="true"] .chevron{transform:rotate(90deg)}.early-reminder-trigger-left{display:flex;align-items:center;gap:10px}.early-reminder-trigger-left span:first-child{font-size:18px}.early-reminder-trigger-left strong,.early-reminder-trigger-left small{display:block}.early-reminder-trigger-left strong{font-size:14px}.early-reminder-trigger-left small{margin-top:2px;color:#6886a0;font-size:12px}.early-reminder-icon{width:30px;height:30px;display:grid;place-items:center;border-radius:50%;background:#dff1ff;color:#1677b8;font-size:17px}
+.early-reminder-panel{border:1px solid #80b5da;border-top:0;border-radius:0 0 8px 8px;background:#f5faff;padding:12px;margin:-2px 0 15px}
+.early-reminder-list{display:grid;gap:2px}
+.early-reminder-option{display:flex;align-items:center;gap:9px;min-height:34px;padding:5px 6px;border-radius:6px;font-size:13px;font-weight:650;color:#335a79;cursor:pointer}.early-reminder-option:hover{background:#e9f5ff}.early-reminder-option input[type="checkbox"]{width:16px;height:16px;accent-color:#1769aa;margin:0;flex:0 0 16px}
+#early-reminder-section.is-hidden{display:none}
+.early-reminder-panel.is-hidden{display:none}

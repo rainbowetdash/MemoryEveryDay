@@ -70,8 +70,14 @@ function notificationPayload(reminder: Reminder) {
   const event = reminder.schedule_events;
   if (!event) throw new Error("Reminder event is unavailable");
   const encouragement = encouragements[Math.floor(Math.random() * encouragements.length)];
+  const now = Date.now();
+  const reminderAt = new Date(reminder.reminder_at).getTime();
+  const eventAt = new Date(`${event.event_date}T${event.start_time}`).getTime();
+  const isEarly = eventAt - reminderAt > 60_000;
+  const titlePrefix = isEarly ? "⏰ 提前提醒" : "";
+  const title = titlePrefix ? `${titlePrefix} · ${event.title}` : event.title;
   return JSON.stringify({
-    title: event.title,
+    title,
     body: encouragement,
     tag: `event-${reminder.event_id}`,
     renotify: true,
@@ -95,6 +101,8 @@ Deno.serve(async (request) => {
   const now = Date.now();
   const dueWindowStart = new Date(now - 15 * 60_000).toISOString();
   const dueWindowEnd = new Date(now).toISOString();
+
+  // --- Sync main reminders ---
   const { data: dueEventRows, error: dueEventError } = await supabase
     .from("schedule_events")
     .select("id, user_id, reminder_at")
@@ -119,6 +127,39 @@ Deno.serve(async (request) => {
     if (missingReminders.length) {
       const { error: queueError } = await supabase.from("push_reminders").insert(missingReminders);
       if (queueError) return json({ error: "Unable to repair reminder queue" }, 500);
+    }
+  }
+
+  // --- Sync early reminders ---
+  const { data: earlyEventRows, error: earlyEventError } = await supabase
+    .from("schedule_events")
+    .select("id, user_id, reminder_at, early_reminders")
+    .eq("push_reminder", true)
+    .not("reminder_at", "is", null)
+    .not("early_reminders", "is", null);
+  if (!earlyEventError && earlyEventRows) {
+    for (const event of earlyEventRows) {
+      const minutes = Array.isArray(event.early_reminders) ? event.early_reminders.filter((m : number) => typeof m === "number" && m > 0) : [];
+      if (!minutes.length) continue;
+      const eventTime = new Date(event.reminder_at).getTime();
+      for (const m of minutes) {
+        const earlyAt = new Date(eventTime - m * 60_000);
+        if (earlyAt.getTime() > now - 15 * 60_000 && earlyAt.getTime() <= now) {
+          const { data: existing } = await supabase
+            .from("push_reminders")
+            .select("event_id")
+            .eq("event_id", event.id)
+            .eq("reminder_at", earlyAt.toISOString())
+            .maybeSingle();
+          if (!existing) {
+            await supabase.from("push_reminders").insert({
+              event_id: event.id,
+              user_id: event.user_id,
+              reminder_at: earlyAt.toISOString(),
+            });
+          }
+        }
+      }
     }
   }
 

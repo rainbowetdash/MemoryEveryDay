@@ -204,8 +204,26 @@
         </section>
         <input id="push-reminder" name="pushReminder" type="hidden" value="false" />
         <div class="push-reminder-row">
-          <div><strong>系统通知</strong><small id="push-reminder-copy">到点后每分钟提醒，打开日程后停止</small></div>
+          <div><strong>系统通知</strong><small id="push-reminder-copy">到点后每 30 秒提醒，打开日程后停止</small></div>
           <button type="button" id="push-reminder-toggle" class="mode-switch" role="switch" aria-checked="false" aria-label="开启系统通知"><span></span></button>
+        </div>
+        <div id="early-reminder-section" class="is-hidden">
+          <button type="button" id="early-reminder-trigger" class="early-reminder-trigger" aria-expanded="false">
+            <div class="early-reminder-trigger-left"><span class="early-reminder-icon">⏰</span><span><strong>提前提醒</strong><small id="early-reminder-summary">未设置</small></span></div>
+            <span class="chevron">›</span>
+          </button>
+          <div id="early-reminder-panel" class="is-hidden" aria-label="提前提醒选项">
+            <div class="early-reminder-list" role="group" aria-label="提前提醒时间">
+              <label class="early-reminder-option"><input type="checkbox" data-minutes="10080" /><span>提前 7 天提醒</span></label>
+              <label class="early-reminder-option"><input type="checkbox" data-minutes="4320" /><span>提前 3 天提醒</span></label>
+              <label class="early-reminder-option"><input type="checkbox" data-minutes="1440" /><span>提前 1 天提醒</span></label>
+              <label class="early-reminder-option"><input type="checkbox" data-minutes="720" /><span>提前 12 小时提醒</span></label>
+              <label class="early-reminder-option"><input type="checkbox" data-minutes="360" /><span>提前 6 小时提醒</span></label>
+              <label class="early-reminder-option"><input type="checkbox" data-minutes="60" /><span>提前 1 小时提醒</span></label>
+              <label class="early-reminder-option"><input type="checkbox" data-minutes="30" /><span>提前 30 分钟提醒</span></label>
+              <label class="early-reminder-option"><input type="checkbox" data-minutes="15" /><span>提前 15 分钟提醒</span></label>
+            </div>
+          </div>
         </div>
         <div class="form-label">颜色</div>
         <input id="event-color" name="color" type="hidden" value="blue" />
