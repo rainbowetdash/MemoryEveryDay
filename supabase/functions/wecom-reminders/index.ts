@@ -63,7 +63,7 @@ function shouldSend(reminder: Reminder, now: number) {
   const reminderAt = new Date(reminder.reminder_at).getTime();
   if (reminder.status === "pending") return reminderAt >= now - 15 * 60_000 && reminderAt <= now;
   const lastSentAt = reminder.last_sent_at ? new Date(reminder.last_sent_at).getTime() : 0;
-  return now - lastSentAt >= 60_000;
+  return now - lastSentAt >= 30_000;
 }
 
 function notificationPayload(reminder: Reminder) {
