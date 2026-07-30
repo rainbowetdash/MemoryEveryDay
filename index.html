@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="./styles.css?v=59" />
     <link rel="stylesheet" href="./calendar-month.css?v=59" />
     <link rel="stylesheet" href="./push-notifications.css?v=59" />
-    <link rel="stylesheet" href="./memo.css?v=1" />
+    <link rel="stylesheet" href="./memo.css?v=2" />
     <style>
       html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
       body { min-height: 100dvh; }
@@ -176,6 +176,16 @@
         <div id="memo-list" class="memo-list"></div>
       </section>
 
+      <section class="screen is-hidden memo-editor-screen" id="memo-editor-screen" aria-label="编辑备忘录">
+        <header class="memo-editor-header"><button type="button" id="close-memo-editor" class="memo-editor-back" aria-label="返回备忘录">‹</button><div><p id="memo-editor-eyebrow">备忘录</p><input id="memo-editor-title" class="memo-editor-title" maxlength="80" placeholder="备忘录标题" /></div><button type="button" id="save-memo-button" class="memo-editor-save">保存</button></header>
+        <button type="button" id="memo-editor-event" class="memo-editor-event is-hidden"></button>
+        <div class="memo-editor-media"><div><strong>图片与语音</strong><small>用图片、录音或语音说明补充你的计划</small></div><div class="memo-attachment-actions"><label class="memo-attachment-button" for="memo-image-input">▧ 图片</label><label class="memo-attachment-button" for="memo-audio-input">● 语音</label></div></div>
+        <input id="memo-image-input" type="file" accept="image/*" multiple hidden /><input id="memo-audio-input" type="file" accept="audio/*" multiple hidden /><div id="memo-attachment-preview" class="memo-attachment-preview" aria-live="polite"></div>
+        <textarea id="memo-content" class="memo-editor-content" maxlength="5000" placeholder="从这里开始写下你的计划、复习方法、重点或想法…"></textarea>
+        <p class="form-error" id="memo-form-error" role="alert"></p>
+        <button type="button" id="delete-memo-button" class="memo-editor-delete">删除这份备忘录</button>
+      </section>
+
       <nav class="tabbar" aria-label="主导航">
         <button class="tab is-active" data-screen="calendar-screen"><span class="tab-icon">▦</span><span>日历</span></button>
         <button class="tab" data-screen="day-screen"><span class="tab-icon">☷</span><span>日程</span></button>
@@ -261,11 +271,13 @@
       <form id="memo-form" novalidate>
         <div class="modal-header"><div><p class="modal-eyebrow" id="memo-dialog-eyebrow">新的备忘录</p><h2 id="memo-dialog-title">写下计划</h2></div><button type="button" id="close-memo-dialog" class="close-button" aria-label="关闭">×</button></div>
         <label>标题<input id="memo-title" maxlength="80" required placeholder="例如：期中复习计划" /></label>
-        <label>关联日程<select id="memo-event"><option value="">暂不关联日程</option></select></label>
-        <label>内容<textarea id="memo-content" maxlength="5000" rows="8" placeholder="写下怎么做、要准备什么，或容易忘记的细节…"></textarea></label>
-        <div class="memo-attachments-field"><div class="form-label">图片与语音</div><div class="memo-attachment-actions"><label class="memo-attachment-button" for="memo-image-input">▧ 添加图片</label><label class="memo-attachment-button" for="memo-audio-input">● 添加语音</label></div><input id="memo-image-input" type="file" accept="image/*" multiple hidden /><input id="memo-audio-input" type="file" accept="audio/*" multiple hidden /><div id="memo-attachment-preview" class="memo-attachment-preview" aria-live="polite"></div></div>
+        <div class="form-label">和日程怎么关联？</div>
+        <div id="memo-link-mode" class="memo-link-mode" role="radiogroup" aria-label="关联日程方式"><button type="button" class="memo-link-choice is-selected" data-memo-link-mode="none" role="radio" aria-checked="true"><span>○</span><strong>暂不关联</strong><small>只写一份独立备忘录</small></button><button type="button" class="memo-link-choice" data-memo-link-mode="existing" role="radio" aria-checked="false"><span>↗</span><strong>关联已有日程</strong><small>补充某个已安排的事项</small></button><button type="button" class="memo-link-choice" data-memo-link-mode="new" role="radio" aria-checked="false"><span>＋</span><strong>同时创建新日程</strong><small>把计划和提醒一起建好</small></button></div>
+        <input id="memo-event" type="hidden" value="" />
+        <div id="memo-existing-event-picker" class="memo-existing-event-picker is-hidden"><button type="button" id="memo-existing-event-trigger" class="memo-existing-event-trigger" aria-expanded="false"><span id="memo-existing-event-label">选择一项日程</span><span class="event-group-chevron" aria-hidden="true"></span></button><div id="memo-existing-event-list" class="memo-existing-event-list is-hidden" role="listbox"></div></div>
+        <div id="memo-new-event-fields" class="memo-new-event-fields is-hidden"><label>日程名称<input id="memo-new-event-title" maxlength="60" placeholder="默认使用备忘录标题" /></label><div class="memo-new-event-time"><label>日期<input id="memo-new-event-date" type="date" /></label><label>时间<input id="memo-new-event-time" type="time" value="09:00" /></label></div></div>
         <p class="form-error" id="memo-form-error" role="alert"></p>
-        <div class="dialog-actions"><button type="button" id="delete-memo-button" class="delete-button is-hidden">删除备忘录</button><button class="save-button" id="save-memo-button" value="default">保存备忘录</button></div>
+        <button class="save-button" id="create-memo-button" value="default">创建并开始写</button>
       </form>
     </dialog>
     <dialog id="group-dialog" class="group-dialog" aria-labelledby="group-dialog-title">
@@ -364,6 +376,6 @@
       </section>
     </dialog>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <script src="./app.js?v=60"></script>
+    <script src="./app.js?v=61"></script>
   </body>
 </html>
