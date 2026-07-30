@@ -1,5 +1,5 @@
-const cache = 'memory-everyday-v61';
-const files = ['/', '/index.html', '/styles.css?v=59', '/calendar-month.css?v=59', '/push-notifications.css?v=59', '/memo.css?v=2', '/app.js?v=61', '/manifest.webmanifest', '/icon.svg', '/wecom-daily-memo-icon.png'];
+const cache = 'memory-everyday-v62';
+const files = ['/', '/index.html', '/styles.css?v=59', '/calendar-month.css?v=59', '/push-notifications.css?v=59', '/memo.css?v=2', '/memo-editor.css?v=1', '/app.js?v=62', '/manifest.webmanifest', '/icon.svg', '/wecom-daily-memo-icon.png'];
 
 self.addEventListener('install', (event) => event.waitUntil(
   caches.open(cache).then((storage) => storage.addAll(files)).then(() => self.skipWaiting())
