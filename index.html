@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="./styles.css?v=59" />
     <link rel="stylesheet" href="./calendar-month.css?v=59" />
     <link rel="stylesheet" href="./push-notifications.css?v=59" />
+    <link rel="stylesheet" href="./memo.css?v=1" />
     <style>
       html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
       body { min-height: 100dvh; }
@@ -166,9 +167,19 @@
         <div class="timeline" id="timeline"></div>
       </section>
 
+      <section class="screen is-hidden memo-screen" id="memo-screen" aria-label="备忘录">
+        <header class="memo-header">
+          <div><p>和未来的安排放在一起</p><h1>备忘录</h1></div>
+          <button type="button" id="new-memo-button" class="memo-new-button">＋ 新建</button>
+        </header>
+        <p id="memo-sync-copy" class="memo-sync-copy">登录后可在所有设备查看你的备忘录</p>
+        <div id="memo-list" class="memo-list"></div>
+      </section>
+
       <nav class="tabbar" aria-label="主导航">
         <button class="tab is-active" data-screen="calendar-screen"><span class="tab-icon">▦</span><span>日历</span></button>
         <button class="tab" data-screen="day-screen"><span class="tab-icon">☷</span><span>日程</span></button>
+        <button class="tab" data-screen="memo-screen"><span class="tab-icon">✦</span><span>备忘录</span></button>
       </nav>
       <button class="add-button" id="add-button" aria-label="添加日程">＋</button>
     </main>
@@ -244,6 +255,17 @@
         </div>
         <p class="form-error" id="form-error" role="alert"></p>
         <div class="dialog-actions"><button type="button" id="delete-event-button" class="delete-button is-hidden">删除日程</button><button class="save-button" id="save-event-button" value="default">保存日程</button></div>
+      </form>
+    </dialog>
+    <dialog id="memo-dialog" class="memo-dialog" aria-labelledby="memo-dialog-title">
+      <form id="memo-form" novalidate>
+        <div class="modal-header"><div><p class="modal-eyebrow" id="memo-dialog-eyebrow">新的备忘录</p><h2 id="memo-dialog-title">写下计划</h2></div><button type="button" id="close-memo-dialog" class="close-button" aria-label="关闭">×</button></div>
+        <label>标题<input id="memo-title" maxlength="80" required placeholder="例如：期中复习计划" /></label>
+        <label>关联日程<select id="memo-event"><option value="">暂不关联日程</option></select></label>
+        <label>内容<textarea id="memo-content" maxlength="5000" rows="8" placeholder="写下怎么做、要准备什么，或容易忘记的细节…"></textarea></label>
+        <div class="memo-attachments-field"><div class="form-label">图片与语音</div><div class="memo-attachment-actions"><label class="memo-attachment-button" for="memo-image-input">▧ 添加图片</label><label class="memo-attachment-button" for="memo-audio-input">● 添加语音</label></div><input id="memo-image-input" type="file" accept="image/*" multiple hidden /><input id="memo-audio-input" type="file" accept="audio/*" multiple hidden /><div id="memo-attachment-preview" class="memo-attachment-preview" aria-live="polite"></div></div>
+        <p class="form-error" id="memo-form-error" role="alert"></p>
+        <div class="dialog-actions"><button type="button" id="delete-memo-button" class="delete-button is-hidden">删除备忘录</button><button class="save-button" id="save-memo-button" value="default">保存备忘录</button></div>
       </form>
     </dialog>
     <dialog id="group-dialog" class="group-dialog" aria-labelledby="group-dialog-title">
@@ -342,6 +364,6 @@
       </section>
     </dialog>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <script src="./app.js?v=59"></script>
+    <script src="./app.js?v=60"></script>
   </body>
 </html>
