@@ -1,0 +1,68 @@
+.memo-header > div {
+  padding-left: 24px;
+}
+
+.memo-editor-title[readonly] {
+  cursor: default;
+}
+
+.memo-editor-event-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.memo-editor-event {
+  min-height: 31px;
+}
+
+.memo-editor-event:hover {
+  background: #d8effd;
+  color: #1769aa;
+}
+
+.memo-open-calendar-button,
+.event-linked-memo-button {
+  border: 1px solid #a8cde6;
+  border-radius: 8px;
+  background: #f2f9fe;
+  color: #246e9f;
+  padding: 7px 10px;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.memo-open-calendar-button:hover,
+.event-linked-memo-button:hover {
+  border-color: #72afd4;
+  background: #e2f3ff;
+}
+
+.event-linked-memo-button {
+  width: 100%;
+  min-height: 46px;
+}
+
+.memo-link-name-note {
+  margin: -5px 0 14px;
+  border-left: 3px solid #74b9df;
+  border-radius: 5px;
+  background: #eff8ff;
+  color: #527994;
+  padding: 8px 10px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+@media (max-width: 380px) {
+  .memo-header > div {
+    padding-left: 15px;
+  }
+
+  .memo-editor-event-actions {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
