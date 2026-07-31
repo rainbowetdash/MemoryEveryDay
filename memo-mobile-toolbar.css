@@ -1,0 +1,1 @@
+@media(max-width:440px){.memo-editor-toolbar{overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;touch-action:pan-x;scrollbar-width:none}.memo-editor-toolbar::-webkit-scrollbar{display:none}.memo-toolbar-divider{flex:0 0 2px;width:2px;height:30px;margin:0 7px;border-radius:2px;background:#82b6d6}.memo-editor-toolbar .memo-attachment-actions{padding-right:8px}}
