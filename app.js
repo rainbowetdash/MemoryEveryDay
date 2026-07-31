@@ -18,7 +18,7 @@ let launchTargetHandled = false;
 const state = {
   selected: new Date(), showing: new Date(), pickerShowing: new Date(), dayPickerShowing: new Date(), editingEventId: null,
   calendarZoom: Math.min(2, Math.max(0, Number(localStorage.getItem(zoomStorageKey)) || 0)),
-  events: readStoredEvents(storageKey), anniversaries: readStoredAnniversaries(anniversaryStorageKey()), groups: readStoredGroups(groupStorageKey()), activeGroupId: 'all', editingGroupId: null, editingMemoId: null, memoAttachments: [], memos: [], memoDatePickerShowing: new Date(), user: null, authReady: false, syncBusy: false, authMode: 'login', groupsInitialized: false
+  events: readStoredEvents(storageKey), anniversaries: readStoredAnniversaries(anniversaryStorageKey(null)), groups: readStoredGroups(groupStorageKey()), activeGroupId: 'all', editingGroupId: null, editingMemoId: null, memoAttachments: [], memos: [], memoDatePickerShowing: new Date(), user: null, authReady: false, syncBusy: false, authMode: 'login', groupsInitialized: false
 };
 const $ = (id) => document.getElementById(id);
 function pushIsSupported() { return 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window; }
