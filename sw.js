@@ -1,5 +1,5 @@
-const cache = 'memory-everyday-v80';
-const files = ['/', '/index.html', '/styles.css?v=59', '/calendar-month.css?v=59', '/push-notifications.css?v=59', '/memo.css?v=2', '/memo-editor.css?v=4', '/memo-popover.css?v=1', '/memo-color-fix.css?v=1', '/memo-mobile-toolbar.css?v=1', '/memo-editor-visibility.css?v=1', '/day-header-position.css?v=1', '/memo-status.css?v=1', '/memo-delete-confirm.css?v=1', '/memo-integration.css?v=1', '/force-sync-confirm.css?v=1', '/memo-inline-media.css?v=1', '/app.js?v=74', '/manifest.webmanifest', '/icon.svg', '/wecom-daily-memo-icon.png'];
+const cache = 'memory-everyday-v81';
+const files = ['/', '/index.html', '/styles.css?v=59', '/calendar-month.css?v=59', '/push-notifications.css?v=59', '/memo.css?v=2', '/memo-editor.css?v=4', '/memo-popover.css?v=1', '/memo-color-fix.css?v=1', '/memo-mobile-toolbar.css?v=1', '/memo-editor-visibility.css?v=1', '/day-header-position.css?v=1', '/memo-status.css?v=1', '/memo-delete-confirm.css?v=1', '/memo-integration.css?v=1', '/force-sync-confirm.css?v=1', '/memo-inline-media.css?v=1', '/memo-bold-fix.css?v=1', '/app.js?v=75', '/manifest.webmanifest', '/icon.svg', '/wecom-daily-memo-icon.png'];
 
 self.addEventListener('install', (event) => event.waitUntil(
   caches.open(cache).then((storage) => storage.addAll(files)).then(() => self.skipWaiting())
