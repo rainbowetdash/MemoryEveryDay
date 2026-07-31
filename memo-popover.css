@@ -1,1 +1,1 @@
-.memo-editor-toolbar{overflow:visible}
+.memo-editor-toolbar{position:relative;z-index:20;overflow:visible}.memo-text-color-list{z-index:30}.memo-editor-content{position:relative;z-index:1}
