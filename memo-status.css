@@ -1,0 +1,21 @@
+#memo-editor-screen .memo-editor-status {
+  color: #4f7f9f;
+  font-weight: 700;
+}
+
+#memo-editor-screen .memo-editor-status[data-tone="success"] {
+  color: #2e7f76;
+}
+
+#memo-editor-screen .memo-editor-status[data-tone="pending"] {
+  color: #357dac;
+}
+
+#memo-editor-screen .memo-editor-status[data-tone="error"] {
+  color: #b6535d;
+}
+
+.memo-editor-delete:disabled {
+  cursor: wait;
+  opacity: .65;
+}
