@@ -1,0 +1,93 @@
+.memo-delete-confirm-dialog {
+  width: min(360px, calc(100% - 36px));
+  border: 1px solid #d9e9f4;
+  border-radius: 20px;
+  background: #fbfdff;
+  box-shadow: 0 24px 68px #173d5a45;
+}
+
+.memo-delete-confirm-dialog::backdrop {
+  background: #153c5f73;
+  backdrop-filter: blur(2px);
+}
+
+.memo-delete-confirm-panel {
+  padding: 25px 23px 21px;
+  text-align: center;
+}
+
+.memo-delete-confirm-icon {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  margin: 0 auto 12px;
+  border-radius: 14px;
+  background: #fff0ef;
+  color: #c6605f;
+  font-size: 23px;
+  font-weight: 850;
+}
+
+.memo-delete-confirm-panel .modal-eyebrow {
+  margin-bottom: 5px;
+  color: #7c99ae;
+}
+
+.memo-delete-confirm-panel h2 {
+  margin: 0;
+  color: #193d5a;
+  font-size: 20px;
+  letter-spacing: -.35px;
+}
+
+.memo-delete-confirm-copy {
+  margin: 9px 0 22px;
+  color: #6f8ba1;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.memo-delete-confirm-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.memo-delete-cancel-button,
+.memo-delete-confirm-button {
+  min-height: 43px;
+  border-radius: 11px;
+  padding: 9px 12px;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.memo-delete-cancel-button {
+  border: 1px solid #c9dfed;
+  background: #f1f8fd;
+  color: #4f7592;
+}
+
+.memo-delete-cancel-button:hover:not(:disabled) {
+  background: #e4f2fb;
+}
+
+.memo-delete-confirm-button {
+  border: 1px solid #d46d6b;
+  background: #d96d6a;
+  color: #fff;
+  box-shadow: 0 6px 13px #c65b5830;
+}
+
+.memo-delete-confirm-button:hover:not(:disabled) {
+  border-color: #c55d5c;
+  background: #c95f5e;
+}
+
+.memo-delete-cancel-button:disabled,
+.memo-delete-confirm-button:disabled {
+  cursor: wait;
+  opacity: .62;
+}
