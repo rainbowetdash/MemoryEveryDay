@@ -23,7 +23,7 @@
 .anniversary-date-trigger i { display:grid; place-items:center; width:20px; height:20px; flex:0 0 20px; }
 .anniversary-date-trigger i::before { content:""; width:7px; height:7px; border-right:2px solid #4d8dba; border-bottom:2px solid #4d8dba; transform:translateY(-2px) rotate(45deg); transition:transform .16s ease; }
 .anniversary-date-trigger[aria-expanded="true"] i::before { transform:translateY(2px) rotate(225deg); }
-.anniversary-date-list { position:absolute; z-index:8; top:calc(100% + 6px); left:0; right:0; display:grid; grid-template-columns:1fr; gap:4px; max-height:190px; overflow-y:auto; border:1px solid #b7d9eb; border-radius:11px; background:#fff; box-shadow:0 14px 28px rgba(29,83,121,.2); padding:6px; }
+.anniversary-date-list { position:absolute; z-index:8; top:calc(100% + 6px); left:0; right:0; display:grid; grid-template-columns:1fr; gap:4px; max-height:148px; overflow-y:auto; border:1px solid #b7d9eb; border-radius:11px; background:#fff; box-shadow:0 14px 28px rgba(29,83,121,.2); padding:6px; }
 .anniversary-date-list.is-hidden { display:none; }
 .anniversary-date-option { min-height:33px; border:0; border-radius:7px; background:transparent; color:#426d8e; font:inherit; font-size:12px; font-weight:750; cursor:pointer; }
 .anniversary-date-option:hover, .anniversary-date-option:focus-visible { background:#e5f5ff; color:#176eae; outline:0; }
