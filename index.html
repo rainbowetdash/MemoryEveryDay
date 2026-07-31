@@ -22,6 +22,7 @@
     <link rel="stylesheet" href="./memo-status.css?v=1" />
     <link rel="stylesheet" href="./memo-delete-confirm.css?v=1" />
     <link rel="stylesheet" href="./memo-integration.css?v=1" />
+    <link rel="stylesheet" href="./force-sync-confirm.css?v=1" />
     <style>
       html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
       body { min-height: 100dvh; }
@@ -372,10 +373,19 @@
             <p id="push-settings-message" class="push-settings-message" role="status"></p>
           </section>
           <p class="auth-message" id="signed-in-message" role="status"></p>
-          <button class="sync-now-button" id="sync-now-button" type="button">立即同步</button>
+          <button class="sync-now-button" id="sync-now-button" type="button">强制同步</button>
           <button class="sign-out-button" id="sign-out-button" type="button">退出登录</button>
         </section>
       </form>
+    </dialog>
+    <dialog id="force-sync-confirm-dialog" class="force-sync-confirm-dialog" aria-labelledby="force-sync-confirm-title">
+      <section class="force-sync-confirm-panel">
+        <div class="force-sync-confirm-icon" aria-hidden="true">↻</div>
+        <p class="modal-eyebrow">本机优先</p>
+        <h2 id="force-sync-confirm-title">强制同步这台设备的日程？</h2>
+        <p class="force-sync-confirm-copy">会把这台设备当前的日程表、日程和设置重新写入云端，并保留尚未完成的删除操作。云端仅有的日程不会被删除。</p>
+        <div class="force-sync-confirm-actions"><button type="button" id="cancel-force-sync-button" class="force-sync-cancel-button">取消</button><button type="button" id="confirm-force-sync-button" class="force-sync-button">确认强制同步</button></div>
+      </section>
     </dialog>
     <dialog id="sync-reminder-dialog" class="sync-reminder-dialog" aria-labelledby="sync-reminder-title">
       <section class="sync-reminder-panel">
@@ -394,6 +404,6 @@
       </section>
     </dialog>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <script src="./app.js?v=72"></script>
+    <script src="./app.js?v=73"></script>
   </body>
 </html>
