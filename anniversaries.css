@@ -20,8 +20,10 @@
 .anniversary-date-field { position: relative; display: grid; gap: 8px; color: #416d90; font-size: 13px; font-weight: 800; }
 .anniversary-date-trigger { display:flex; align-items:center; justify-content:space-between; min-height:48px; width:100%; border:1px solid #bcdcf3; border-radius:11px; background:#f7fbff; color:#234b6c; padding:0 13px; font:inherit; font-weight:700; cursor:pointer; }
 .anniversary-date-trigger:hover, .anniversary-date-trigger[aria-expanded="true"] { border-color:#76b7df; background:#eef9ff; }
-.anniversary-date-trigger i { color:#4d8dba; font-size:17px; font-style:normal; }
-.anniversary-date-list { position:absolute; z-index:8; top:calc(100% + 6px); left:0; right:0; display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:4px; max-height:190px; overflow-y:auto; border:1px solid #b7d9eb; border-radius:11px; background:#fff; box-shadow:0 14px 28px rgba(29,83,121,.2); padding:6px; }
+.anniversary-date-trigger i { display:grid; place-items:center; width:20px; height:20px; flex:0 0 20px; }
+.anniversary-date-trigger i::before { content:""; width:7px; height:7px; border-right:2px solid #4d8dba; border-bottom:2px solid #4d8dba; transform:translateY(-2px) rotate(45deg); transition:transform .16s ease; }
+.anniversary-date-trigger[aria-expanded="true"] i::before { transform:translateY(2px) rotate(225deg); }
+.anniversary-date-list { position:absolute; z-index:8; top:calc(100% + 6px); left:0; right:0; display:grid; grid-template-columns:1fr; gap:4px; max-height:190px; overflow-y:auto; border:1px solid #b7d9eb; border-radius:11px; background:#fff; box-shadow:0 14px 28px rgba(29,83,121,.2); padding:6px; }
 .anniversary-date-option { min-height:33px; border:0; border-radius:7px; background:transparent; color:#426d8e; font:inherit; font-size:12px; font-weight:750; cursor:pointer; }
 .anniversary-date-option:hover, .anniversary-date-option:focus-visible { background:#e5f5ff; color:#176eae; outline:0; }
 .anniversary-form-copy { margin: 16px 0 4px; border-left: 3px solid #78c8ed; padding: 10px 12px; color: #5f88a8; background: #eff9ff; font-size: 14px; line-height: 1.5; }
