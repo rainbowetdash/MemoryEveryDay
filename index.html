@@ -283,7 +283,7 @@
         <div id="memo-link-mode" class="memo-link-mode" role="radiogroup" aria-label="关联日程方式"><button type="button" class="memo-link-choice is-selected" data-memo-link-mode="none" role="radio" aria-checked="true"><span>○</span><strong>暂不关联</strong><small>只写一份独立备忘录</small></button><button type="button" class="memo-link-choice" data-memo-link-mode="existing" role="radio" aria-checked="false"><span>↗</span><strong>关联已有日程</strong><small>补充某个已安排的事项</small></button><button type="button" class="memo-link-choice" data-memo-link-mode="new" role="radio" aria-checked="false"><span>＋</span><strong>同时创建新日程</strong><small>把计划和提醒一起建好</small></button></div>
         <input id="memo-event" type="hidden" value="" />
         <div id="memo-existing-event-picker" class="memo-existing-event-picker is-hidden"><button type="button" id="memo-existing-event-trigger" class="memo-existing-event-trigger" aria-expanded="false"><span id="memo-existing-event-label">选择一项日程</span><span class="event-group-chevron" aria-hidden="true"></span></button><div id="memo-existing-event-list" class="memo-existing-event-list is-hidden" role="listbox"></div></div>
-        <div id="memo-new-event-fields" class="memo-new-event-fields is-hidden"><label>日程名称<input id="memo-new-event-title" maxlength="60" placeholder="默认使用备忘录标题" /></label><div class="memo-new-event-time"><label>日期<input id="memo-new-event-date" type="date" /></label><label>时间<input id="memo-new-event-time" type="time" value="09:00" /></label></div></div>
+        <div id="memo-new-event-fields" class="memo-new-event-fields is-hidden"><label>日程名称<input id="memo-new-event-title" maxlength="60" placeholder="默认使用备忘录标题" /></label><div class="memo-new-event-time"><label>日期<input id="memo-new-event-date" type="hidden" /><div id="memo-date-picker" class="memo-date-picker"><button type="button" id="memo-new-event-date-trigger" class="memo-date-picker-trigger" aria-expanded="false" aria-controls="memo-date-picker-panel"><span id="memo-new-event-date-label"></span><span aria-hidden="true">⌄</span></button><section id="memo-date-picker-panel" class="memo-date-picker-panel is-hidden" aria-label="选择日程日期"><header><button type="button" id="memo-date-previous-month" aria-label="上个月">‹</button><strong id="memo-date-month-label"></strong><button type="button" id="memo-date-next-month" aria-label="下个月">›</button></header><div class="memo-date-weekdays" aria-hidden="true"><span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span></div><div id="memo-date-grid" class="memo-date-grid"></div></section></div></label><label>时间<input id="memo-new-event-time" type="time" value="09:00" /></label></div></div>
         <p id="memo-link-name-note" class="memo-link-name-note is-hidden" role="status"></p>
         <p class="form-error" id="memo-form-error" role="alert"></p>
         <button class="save-button" id="create-memo-button" value="default">创建并开始写</button>
@@ -394,6 +394,6 @@
       </section>
     </dialog>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <script src="./app.js?v=70"></script>
+    <script src="./app.js?v=71"></script>
   </body>
 </html>

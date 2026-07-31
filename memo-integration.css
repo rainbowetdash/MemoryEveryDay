@@ -56,6 +56,117 @@
   line-height: 1.5;
 }
 
+.memo-date-picker {
+  position: relative;
+}
+
+.memo-date-picker-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 39px;
+  border: 1px solid #bdd7e8;
+  border-radius: 8px;
+  background: #fff;
+  color: #244a67;
+  padding: 8px 10px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.memo-date-picker-trigger:hover,
+.memo-date-picker-trigger[aria-expanded="true"] {
+  border-color: #75b8df;
+  background: #f4faff;
+}
+
+.memo-date-picker-panel {
+  position: absolute;
+  z-index: 15;
+  top: calc(100% + 6px);
+  left: 0;
+  width: 285px;
+  border: 1px solid #b9d9eb;
+  border-radius: 13px;
+  background: #fbfdff;
+  box-shadow: 0 16px 31px #17496830;
+  padding: 10px;
+}
+
+.memo-date-picker-panel header {
+  display: grid;
+  grid-template-columns: 32px 1fr 32px;
+  align-items: center;
+  margin-bottom: 7px;
+  text-align: center;
+}
+
+.memo-date-picker-panel header button {
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #2a719f;
+  font-size: 23px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.memo-date-picker-panel header button:hover {
+  background: #e6f4fd;
+}
+
+.memo-date-picker-panel header strong {
+  color: #244a67;
+  font-size: 13px;
+}
+
+.memo-date-weekdays,
+.memo-date-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  text-align: center;
+}
+
+.memo-date-weekdays {
+  margin-bottom: 3px;
+  color: #8ba6ba;
+  font-size: 10px;
+}
+
+.memo-date-day {
+  height: 31px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #315b78;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.memo-date-day:hover {
+  background: #e8f5fd;
+}
+
+.memo-date-day.is-other {
+  color: #b6c7d3;
+}
+
+.memo-date-day.is-today {
+  color: #1873b4;
+}
+
+.memo-date-day.is-selected {
+  background: #1873b4;
+  color: #fff;
+  box-shadow: 0 3px 8px #1873b435;
+}
+
 @media (max-width: 380px) {
   .memo-header > div {
     padding-left: 15px;
@@ -64,5 +175,11 @@
   .memo-editor-event-actions {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .memo-date-picker-panel {
+    right: 0;
+    left: auto;
+    width: min(285px, calc(100vw - 70px));
   }
 }
