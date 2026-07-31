@@ -1,0 +1,26 @@
+@media (max-width: 540px) {
+  .anniversary-dialog {
+    max-height: calc(100dvh - 24px);
+    overflow-y: auto;
+  }
+
+  .anniversary-date-inputs {
+    align-items: start;
+  }
+
+  .anniversary-date-list {
+    position: static;
+  }
+}
+
+@media (max-width: 480px) {
+  .memo-new-event-time {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .memo-new-event-time > label,
+  .memo-new-event-time .memo-date-picker {
+    min-width: 0;
+  }
+}
