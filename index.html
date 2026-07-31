@@ -26,7 +26,7 @@
     <link rel="stylesheet" href="./memo-inline-media.css?v=1" />
     <link rel="stylesheet" href="./memo-bold-fix.css?v=1" />
     <link rel="stylesheet" href="./memo-alignment-integration.css?v=1" />
-    <link rel="stylesheet" href="./anniversaries.css?v=1" />
+    <link rel="stylesheet" href="./anniversaries.css?v=2" />
     <style>
       html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
       body { min-height: 100dvh; }
@@ -291,7 +291,7 @@
       <form id="anniversary-form" novalidate>
         <div class="modal-header"><div><p class="modal-eyebrow">新的纪念日</p><h2 id="anniversary-dialog-title">记下重要的日子</h2></div><button type="button" id="close-anniversary-dialog" class="close-button" aria-label="关闭">×</button></div>
         <label>名称<input id="anniversary-title" maxlength="60" required placeholder="例如：妈妈的生日" /></label>
-        <div class="anniversary-date-inputs"><label>月份<select id="anniversary-month" aria-label="月份"></select></label><label>日期<select id="anniversary-day" aria-label="日期"></select></label></div>
+        <div class="anniversary-date-inputs"><div class="anniversary-date-field"><span>月份</span><input id="anniversary-month" type="hidden" value="" /><button type="button" id="anniversary-month-trigger" class="anniversary-date-trigger" aria-expanded="false"><span id="anniversary-month-label"></span><i aria-hidden="true">⌄</i></button><div id="anniversary-month-list" class="anniversary-date-list is-hidden" role="listbox" aria-label="选择月份"></div></div><div class="anniversary-date-field"><span>日期</span><input id="anniversary-day" type="hidden" value="" /><button type="button" id="anniversary-day-trigger" class="anniversary-date-trigger" aria-expanded="false"><span id="anniversary-day-label"></span><i aria-hidden="true">⌄</i></button><div id="anniversary-day-list" class="anniversary-date-list is-hidden" role="listbox" aria-label="选择日期"></div></div></div>
         <p class="anniversary-form-copy">保存后，每年的这一天都会显示在日历上。</p>
         <p id="anniversary-form-error" class="form-error" role="alert"></p>
         <button class="save-button" id="save-anniversary-button" value="default">保存纪念日</button>
@@ -425,6 +425,6 @@
       </section>
     </dialog>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <script src="./app.js?v=79"></script>
+    <script src="./app.js?v=80"></script>
   </body>
 </html>
