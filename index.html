@@ -11,7 +11,7 @@
     <link rel="apple-touch-icon" href="./wecom-daily-memo-icon.png" />
     <link rel="stylesheet" href="./styles.css?v=59" />
     <link rel="stylesheet" href="./calendar-month.css?v=59" />
-    <link rel="stylesheet" href="./push-notifications.css?v=59" />
+    <link rel="stylesheet" href="./push-notifications.css?v=60" />
     <link rel="stylesheet" href="./memo.css?v=2" />
     <link rel="stylesheet" href="./memo-editor.css?v=4" />
     <link rel="stylesheet" href="./memo-popover.css?v=3" />
@@ -428,13 +428,14 @@
     </dialog>
     <dialog id="push-help-dialog" class="push-help-dialog" aria-labelledby="push-help-title">
       <section class="push-help-panel">
-        <div class="modal-header"><div><p class="modal-eyebrow">系统通知</p><h2 id="push-help-title">安装“每日备忘”</h2></div><button type="button" id="close-push-help-dialog" class="close-button" aria-label="关闭">×</button></div>
+        <div class="modal-header"><div><p class="modal-eyebrow" id="push-help-eyebrow">系统通知</p><h2 id="push-help-title">安装“每日备忘”</h2></div><button type="button" id="close-push-help-dialog" class="close-button" aria-label="关闭">×</button></div>
         <p id="push-help-copy" class="push-help-copy"></p>
         <div class="push-help-steps" id="push-help-steps"></div>
+        <div id="app-download-options" class="app-download-options is-hidden"></div>
         <button type="button" id="finish-push-help-button" class="save-button">我知道了</button>
       </section>
     </dialog>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <script src="./app.js?v=88"></script>
+    <script src="./app.js?v=89"></script>
   </body>
 </html>
