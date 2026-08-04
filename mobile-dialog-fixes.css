@@ -9,7 +9,8 @@
   }
 
   .anniversary-date-list {
-    position: static;
+    position: absolute;
+    z-index: 30;
   }
 }
 
