@@ -29,7 +29,7 @@ const $ = (id) => document.getElementById(id);
 function nativeNotificationsAvailable() { return isNativeShell && Boolean(window.webkit?.messageHandlers?.notifications); }
 function pushIsSupported() { return nativeNotificationsAvailable(); }
 function notificationsEnabled() { return nativeNotificationsAvailable() && nativeNotificationPermission === 'granted'; }
-function postNativeNotification(message) { if (nativeNotificationsAvailable()) window.webkit.messageHandlers.notifications.postMessage(message); }
+function postNativeNotification(message) { if (!nativeNotificationsAvailable()) return; window.location.href = `memoryeveryday://notifications?payload=${encodeURIComponent(JSON.stringify(message))}`; }
 function scheduleNativeNotification(event) { if (!notificationsEnabled() || !event?.pushReminder) return; const at = eventDateTime(event.date, event.time).getTime(); if (at <= Date.now()) return; postNativeNotification({ action: 'schedule', id: event.id, title: event.title, at, earlyReminders: Array.isArray(event.earlyReminders) ? event.earlyReminders : [] }); }
 function cancelNativeNotification(id) { if (nativeNotificationsAvailable() && id) postNativeNotification({ action: 'cancel', id }); }
 function syncNativeNotifications() { if (!notificationsEnabled()) return; state.events.forEach(scheduleNativeNotification); }

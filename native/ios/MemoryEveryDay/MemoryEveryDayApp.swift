@@ -16,11 +16,13 @@ struct MemoryEveryDayApp: App {
 }
 
 private struct AppSplashView: View {
+    private let icon = UIImage(contentsOfFile: Bundle.main.path(forResource: "wecom-daily-memo-icon", ofType: "png") ?? "") ?? UIImage()
+
     var body: some View {
         ZStack {
             Color(red: 0.96, green: 0.98, blue: 0.99).ignoresSafeArea()
             VStack(spacing: 15) {
-                Image("wecom-daily-memo-icon")
+                Image(uiImage: icon)
                     .resizable()
                     .scaledToFit()
                     .frame(width: 88, height: 88)

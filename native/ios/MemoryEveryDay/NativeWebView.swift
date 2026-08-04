@@ -86,8 +86,25 @@ struct NativeWebView: UIViewRepresentable {
             sendNotificationStatus()
         }
 
+        func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+            guard let url = navigationAction.request.url, url.scheme == "memoryeveryday", url.host == "notifications" else {
+                decisionHandler(.allow)
+                return
+            }
+            let payload = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems?.first(where: { $0.name == "payload" })?.value
+            if let payload, let data = payload.data(using: .utf8), let body = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                handleNotificationMessage(body)
+            }
+            decisionHandler(.cancel)
+        }
+
         func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-            guard message.name == "notifications", let body = message.body as? [String: Any], let action = body["action"] as? String else { return }
+            guard message.name == "notifications", let body = message.body as? [String: Any] else { return }
+            handleNotificationMessage(body)
+        }
+
+        private func handleNotificationMessage(_ body: [String: Any]) {
+            guard let action = body["action"] as? String else { return }
             switch action {
             case "request": requestNotificationPermission()
             case "schedule": scheduleNotification(body)
@@ -100,8 +117,10 @@ struct NativeWebView: UIViewRepresentable {
         }
 
         private func requestNotificationPermission() {
-            UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { [weak self] _, _ in
-                DispatchQueue.main.async { self?.sendNotificationStatus() }
+            DispatchQueue.main.async { [weak self] in
+                UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { _, _ in
+                    DispatchQueue.main.async { self?.sendNotificationStatus() }
+                }
             }
         }
 
