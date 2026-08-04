@@ -46,6 +46,44 @@
   min-height: 46px;
 }
 
+.memo-calendar-unavailable-dialog {
+  width: min(370px, calc(100vw - 32px));
+  border: 0;
+  border-radius: 18px;
+  padding: 0;
+  color: #214b6c;
+}
+
+.memo-calendar-unavailable-dialog::backdrop {
+  background: rgba(20, 57, 85, .46);
+  backdrop-filter: blur(2px);
+}
+
+.memo-calendar-unavailable-panel {
+  padding: 26px;
+  text-align: center;
+}
+
+.memo-calendar-unavailable-panel .modal-eyebrow {
+  margin: 0 0 7px;
+}
+
+.memo-calendar-unavailable-panel h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.memo-calendar-unavailable-panel p:not(.modal-eyebrow) {
+  margin: 13px 0 20px;
+  color: #6687a2;
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.memo-calendar-unavailable-panel .save-button {
+  margin: 0;
+}
+
 .memo-link-name-note {
   margin: -5px 0 14px;
   border-left: 3px solid #74b9df;

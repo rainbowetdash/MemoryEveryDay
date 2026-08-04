@@ -21,12 +21,12 @@
     <link rel="stylesheet" href="./day-header-position.css?v=1" />
     <link rel="stylesheet" href="./memo-status.css?v=1" />
     <link rel="stylesheet" href="./memo-delete-confirm.css?v=1" />
-    <link rel="stylesheet" href="./memo-integration.css?v=2" />
+    <link rel="stylesheet" href="./memo-integration.css?v=3" />
     <link rel="stylesheet" href="./force-sync-confirm.css?v=1" />
     <link rel="stylesheet" href="./memo-inline-media.css?v=1" />
     <link rel="stylesheet" href="./memo-bold-fix.css?v=1" />
     <link rel="stylesheet" href="./memo-alignment-integration.css?v=1" />
-    <link rel="stylesheet" href="./anniversaries.css?v=6" />
+    <link rel="stylesheet" href="./anniversaries.css?v=7" />
     <link rel="stylesheet" href="./mobile-dialog-fixes.css?v=1" />
     <style>
       html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
@@ -312,6 +312,14 @@
         <button class="save-button" id="create-memo-button" value="default">创建并开始写</button>
       </form>
     </dialog>
+    <dialog id="memo-calendar-unavailable-dialog" class="memo-calendar-unavailable-dialog" aria-labelledby="memo-calendar-unavailable-title">
+      <section class="memo-calendar-unavailable-panel">
+        <p class="modal-eyebrow">暂时无法查看</p>
+        <h2 id="memo-calendar-unavailable-title">这份备忘录还没有关联日程</h2>
+        <p>请先在新建备忘录时关联已有日程，或同时创建一个新日程，之后就可以从这里跳转到日历。</p>
+        <button type="button" id="close-memo-calendar-unavailable-dialog" class="save-button">知道了</button>
+      </section>
+    </dialog>
     <dialog id="group-dialog" class="group-dialog" aria-labelledby="group-dialog-title">
       <form id="group-form" novalidate>
         <div class="modal-header"><div><p class="modal-eyebrow" id="group-dialog-eyebrow">新的日程表</p><h2 id="group-dialog-title">创建日程表</h2></div><button type="button" id="close-group-dialog" class="close-button" aria-label="关闭">×</button></div>
@@ -426,6 +434,6 @@
       </section>
     </dialog>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <script src="./app.js?v=84"></script>
+    <script src="./app.js?v=85"></script>
   </body>
 </html>
