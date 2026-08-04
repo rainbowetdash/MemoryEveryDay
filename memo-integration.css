@@ -9,12 +9,13 @@
 .memo-editor-event-actions {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 8px;
 }
 
 .memo-editor-event {
   min-height: 31px;
+  margin-right: auto;
 }
 
 .memo-editor-event:hover {

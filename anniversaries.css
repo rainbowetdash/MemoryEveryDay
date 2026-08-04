@@ -16,9 +16,9 @@
 .anniversary-dialog form { padding: 26px; }
 .anniversary-dialog label { display: grid; gap: 8px; font-weight: 800; color: #416d90; }
 .anniversary-dialog input { min-height: 48px; border: 1px solid #bcdcf3; border-radius: 11px; padding: 0 13px; color: #234b6c; background: #f7fbff; font: inherit; }
-.anniversary-date-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 18px; }
-.anniversary-date-field { position: relative; display: grid; gap: 8px; color: #416d90; font-size: 13px; font-weight: 800; }
-.anniversary-date-trigger { display:flex; align-items:center; justify-content:space-between; min-height:48px; width:100%; border:1px solid #bcdcf3; border-radius:11px; background:#f7fbff; color:#234b6c; padding:0 13px; font:inherit; font-weight:700; cursor:pointer; }
+.anniversary-date-inputs { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; margin-top: 18px; }
+.anniversary-date-field { position: relative; display: grid; gap: 8px; min-height: 88px; color: #416d90; font-size: 13px; font-weight: 800; }
+.anniversary-date-trigger { display:flex; align-items:center; justify-content:space-between; min-height:58px; width:100%; border:1px solid #bcdcf3; border-radius:11px; background:#f7fbff; color:#234b6c; padding:0 15px; font:inherit; font-size:15px; font-weight:700; cursor:pointer; }
 .anniversary-date-trigger:hover, .anniversary-date-trigger[aria-expanded="true"] { border-color:#76b7df; background:#eef9ff; }
 .anniversary-date-trigger i { display:grid; place-items:center; width:20px; height:20px; flex:0 0 20px; }
 .anniversary-date-trigger i::before { content:""; width:7px; height:7px; border-right:2px solid #4d8dba; border-bottom:2px solid #4d8dba; transform:translateY(-2px) rotate(45deg); transition:transform .16s ease; }
