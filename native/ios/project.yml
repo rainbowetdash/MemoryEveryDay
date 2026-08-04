@@ -13,6 +13,8 @@ targets:
     platform: iOS
     sources:
       - path: MemoryEveryDay
+      - path: ../../wecom-daily-memo-icon.png
+        buildPhase: resources
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.memoryeveryday.app
