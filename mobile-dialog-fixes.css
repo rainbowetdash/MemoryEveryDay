@@ -11,6 +11,9 @@
   .anniversary-date-list {
     position: absolute;
     z-index: 30;
+    right: 8px;
+    left: 8px;
+    max-height: 118px;
   }
 }
 
