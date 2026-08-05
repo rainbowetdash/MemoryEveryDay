@@ -117,9 +117,16 @@ struct NativeWebView: UIViewRepresentable {
         }
 
         private func requestNotificationPermission() {
-            DispatchQueue.main.async { [weak self] in
-                UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { _, _ in
-                    DispatchQueue.main.async { self?.sendNotificationStatus() }
+            UNUserNotificationCenter.current().getNotificationSettings { [weak self] settings in
+                DispatchQueue.main.async {
+                    guard let self else { return }
+                    guard settings.authorizationStatus == .notDetermined else {
+                        self.sendNotificationStatus()
+                        return
+                    }
+                    UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { _, _ in
+                        DispatchQueue.main.async { self.sendNotificationStatus() }
+                    }
                 }
             }
         }

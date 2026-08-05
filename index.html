@@ -28,7 +28,7 @@
     <link rel="stylesheet" href="./memo-alignment-integration.css?v=1" />
     <link rel="stylesheet" href="./anniversaries.css?v=7" />
     <link rel="stylesheet" href="./mobile-dialog-fixes.css?v=3" />
-    <link rel="stylesheet" href="./app-polish.css?v=1" />
+    <link rel="stylesheet" href="./app-polish.css?v=2" />
     <style>
       html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
       body { min-height: 100dvh; }
@@ -106,7 +106,7 @@
       .sync-reminder-register { min-height: 46px; border: 1px solid #9bc5e4; border-radius: 8px; background: #eef8ff; color: #1769aa; font-weight: 700; cursor: pointer; }
       .group-sidebar-scrim { display: none; }
       #app-shell.is-group-drawer-open .group-sidebar-scrim { display: block; position: absolute; z-index: 19; inset: 0; border: 0; background: #183b6030; cursor: pointer; }
-      .group-sidebar { position: absolute; z-index: 20; inset: 0 auto 0 0; display: flex; flex-direction: column; width: min(286px, calc(100% - 58px)); padding: 26px 16px 22px; background: #fafdff; box-shadow: 12px 0 30px #183b6030; transform: translateX(-104%); visibility: hidden; pointer-events: none; transition: transform .28s cubic-bezier(.2,.85,.28,1), visibility 0s linear .28s; }
+      .group-sidebar { position: absolute; z-index: 20; inset: 0 auto 0 0; display: flex; flex-direction: column; width: min(286px, calc(100% - 58px)); padding: calc(env(safe-area-inset-top) + 74px) 16px 22px; background: #fafdff; box-shadow: 12px 0 30px #183b6030; transform: translateX(-104%); visibility: hidden; pointer-events: none; transition: transform .28s cubic-bezier(.2,.85,.28,1), visibility 0s linear .28s; }
       #app-shell.is-group-drawer-open .group-sidebar { transform: translateX(0); visibility: visible; pointer-events: auto; transition-delay: 0s; }
       .group-sidebar-toggle { position: absolute; z-index: 21; top: 122px; left: 0; display: grid; place-items: center; width: 34px; height: 48px; border: 1px solid #b8d7eb; border-left: 0; border-radius: 0 10px 10px 0; background: #fafdff; color: #1769aa; font-size: 25px; line-height: 1; box-shadow: 3px 5px 12px #1c527b1f; cursor: pointer; transition: left .28s cubic-bezier(.2,.85,.28,1), background .16s; }
       #app-shell.is-group-drawer-open .group-sidebar-toggle { left: min(286px, calc(100% - 58px)); background: #eaf5ff; }
@@ -120,7 +120,7 @@
       .event-group-field { margin-bottom: 15px; }.event-group-field .form-label { margin-bottom: 7px; }.event-group-picker { position: relative; }.event-group-trigger { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 46px; border: 1px solid #cfe0ee; border-radius: 8px; background: #f8fcff; color: #284e6d; padding: 10px 12px; text-align: left; font-size: 14px; font-weight: 700; cursor: pointer; }.event-group-trigger:hover, .event-group-trigger[aria-expanded="true"] { border-color: #80b5da; background: #edf7ff; }.event-group-trigger:focus-visible, .event-group-option:focus-visible { outline: 2px solid #2484c5; outline-offset: 2px; }.event-group-chevron { margin-left: auto; color: #4d82a8; font-size: 20px; line-height: 1; transition: transform .16s; }.event-group-trigger[aria-expanded="true"] .event-group-chevron { transform: rotate(180deg); }.event-group-list { position: absolute; z-index: 8; top: calc(100% + 5px); left: 0; right: 0; display: grid; gap: 3px; max-height: 220px; overflow-y: auto; border: 1px solid #bad5e8; border-radius: 8px; background: #fff; box-shadow: 0 12px 24px #1a5c8a24; padding: 5px; }.event-group-option { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 40px; border: 0; border-radius: 6px; background: transparent; color: #345b7a; padding: 9px; text-align: left; font-size: 13px; font-weight: 700; cursor: pointer; }.event-group-option:hover, .event-group-option.is-selected { background: #edf7ff; color: #176296; }.event-group-check { visibility: hidden; margin-left: auto; color: #1675b4; font-size: 15px; font-weight: 800; }.event-group-option.is-selected .event-group-check { visibility: visible; }.group-dot.navy { background: #3266a7; }.group-dot.cyan { background: #2db3d6; }.group-dot.pink { background: #d96696; }
       .event-group-chevron { display: grid; place-items: center; width: 24px; height: 24px; margin-left: auto; font-size: 0; transition: transform .16s; }.event-group-chevron::before { content: ""; width: 8px; height: 8px; border-right: 2px solid #4d82a8; border-bottom: 2px solid #4d82a8; transform: rotate(45deg) translate(-1px, -1px); transform-origin: center; }.event-group-trigger[aria-expanded="true"] .event-group-chevron { transform: rotate(180deg); }.event-group-check { display: grid; place-items: center; width: 20px; height: 20px; margin-left: auto; visibility: visible; font-size: 0; }.event-group-check::before { content: ""; width: 6px; height: 11px; border-right: 3px solid #1675b4; border-bottom: 3px solid #1675b4; opacity: 0; transform: rotate(45deg) translate(-1px, -1px); }.event-group-option.is-selected .event-group-check::before { opacity: 1; }
       .event-group-list.is-hidden { display: none; }
-      .group-sidebar-toggle { top: 58px; }
+      .group-sidebar-toggle { top: 174px; }
       .calendar-selected-date { padding-left: 40px; }
       #event-dialog .time-inputs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       #event-dialog .time-inputs label, #event-dialog .time-inputs input { min-width: 0; }
@@ -130,7 +130,7 @@
     <title>每日备忘</title>
   </head>
   <body>
-    <main class="app-shell" id="app-shell">
+    <main class="app-shell is-sidebar-available" id="app-shell">
       <button type="button" id="group-sidebar-scrim" class="group-sidebar-scrim" aria-label="收起日程表"></button>
       <aside class="group-sidebar" id="group-sidebar" aria-label="日程表">
         <header class="group-sidebar-header"><div><p>我的日程</p><strong id="current-group-name">总日程表</strong></div><button type="button" class="group-sidebar-close" id="group-sidebar-close" aria-label="收起日程表">×</button></header>
@@ -141,7 +141,7 @@
       <button type="button" class="group-sidebar-toggle" id="group-sidebar-toggle" aria-controls="group-sidebar" aria-expanded="false" aria-label="展开日程表">›</button>
       <section class="screen" id="calendar-screen" aria-label="日历">
         <header class="topbar">
-          <button class="today-button" id="today-button">今天</button>
+          <button class="today-button" id="today-button">回到今天</button>
           <div class="topbar-spacer" aria-hidden="true"></div>
           <div class="topbar-actions">
             <button type="button" id="account-button" class="account-button" aria-label="登录并同步日程"><span class="account-icon">⌁</span><span id="account-button-label">登录同步</span></button>
@@ -436,6 +436,6 @@
       </section>
     </dialog>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <script src="./app.js?v=91"></script>
+    <script src="./app.js?v=92"></script>
   </body>
 </html>
