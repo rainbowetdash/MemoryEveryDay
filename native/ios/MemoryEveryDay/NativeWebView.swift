@@ -86,6 +86,8 @@ struct NativeWebView: UIViewRepresentable {
                 var components = URLComponents(url: self.siteURL, resolvingAgainstBaseURL: false)!
                 components.queryItems = [
                     URLQueryItem(name: "native-shell", value: "1"),
+                    URLQueryItem(name: "native-platform", value: "ios"),
+                    URLQueryItem(name: "app-version", value: Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "0"),
                     URLQueryItem(name: "reload", value: String(Int(Date().timeIntervalSince1970)))
                 ]
                 guard let url = components.url else { return }

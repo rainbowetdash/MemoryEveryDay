@@ -35,7 +35,8 @@ public class MainActivity extends Activity {
 
     private void loadLatest() {
         webView.clearCache(true);
-        webView.loadUrl("https://memoryeveryday.pages.dev/?native-shell=1&reload=" + System.currentTimeMillis());
+        webView.loadUrl("https://memoryeveryday.pages.dev/?native-shell=1&native-platform=android&app-version="
+                + BuildConfig.VERSION_NAME + "&reload=" + System.currentTimeMillis());
     }
 
     @Override

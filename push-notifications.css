@@ -124,6 +124,122 @@
   box-shadow: 0 22px 70px #163b5d38;
 }
 
+.release-notice-dialog {
+  width: min(420px, calc(100% - 30px));
+  margin: auto;
+  border: 0;
+  border-radius: 18px;
+  background: #fafdff;
+  box-shadow: 0 22px 70px #163b5d38;
+}
+
+.release-notice-dialog::backdrop {
+  background: #0c345966;
+  backdrop-filter: blur(2px);
+}
+
+.release-notice-panel {
+  padding: 26px 24px 23px;
+  text-align: center;
+}
+
+.release-notice-icon {
+  display: grid;
+  width: 52px;
+  height: 52px;
+  margin: 0 auto 14px;
+  place-items: center;
+  border-radius: 16px;
+  background: linear-gradient(145deg, #dff2ff, #c7e5fa);
+  color: #1769aa;
+  box-shadow: 0 8px 20px #1769aa24;
+  font-size: 29px;
+  font-weight: 800;
+}
+
+.release-notice-panel .modal-eyebrow {
+  margin-bottom: 5px;
+}
+
+.release-notice-panel h2 {
+  margin: 0;
+  color: #18324f;
+  font-size: 23px;
+  line-height: 1.25;
+}
+
+.release-notice-copy {
+  margin: 11px 0 16px;
+  color: #547895;
+  line-height: 1.6;
+}
+
+.release-notice-items {
+  display: grid;
+  gap: 9px;
+  margin-bottom: 19px;
+  text-align: left;
+}
+
+.release-notice-item {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  gap: 9px;
+  align-items: start;
+  padding: 11px 12px;
+  border-radius: 10px;
+  background: #edf7ff;
+  color: #365974;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.release-notice-item::before {
+  content: "✓";
+  display: grid;
+  width: 21px;
+  height: 21px;
+  place-items: center;
+  border-radius: 50%;
+  background: #fff;
+  color: #1775b4;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.release-notice-actions {
+  display: grid;
+  gap: 9px;
+}
+
+.release-update-button,
+.release-dismiss-button {
+  width: 100%;
+  min-height: 48px;
+  border-radius: 9px;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.release-update-button {
+  border: 0;
+  background: #1769aa;
+  color: #fff;
+  box-shadow: 0 7px 16px #1769aa2e;
+}
+
+.release-dismiss-button {
+  border: 1px solid #c6dce9;
+  background: #fff;
+  color: #4f718c;
+}
+
+.release-update-button:hover { background: #145d96; }
+.release-dismiss-button:hover { background: #f3f9fd; }
+.release-update-button:focus-visible,
+.release-dismiss-button:focus-visible { outline: 2px solid #2484c5; outline-offset: 2px; }
+
 .push-help-dialog::backdrop {
   background: #0c345966;
   backdrop-filter: blur(2px);
@@ -192,9 +308,10 @@
   font: inherit;
 }
 
-.app-download-option.ios { cursor: pointer; }
-.app-download-option.ios:hover { border-color: #70add4; background: #eaf6ff; }
-.app-download-option.android { opacity: .58; cursor: not-allowed; }
+.app-download-option { cursor: pointer; }
+.app-download-option:hover,
+.app-download-option.is-recommended { border-color: #70add4; background: #eaf6ff; }
+.app-download-option.is-recommended { box-shadow: 0 0 0 1px #70add43d; }
 .app-download-option > span:first-child { display: grid; place-items: center; font-size: 23px; }
 .app-download-option strong, .app-download-option small { display: block; }
 .app-download-option strong { font-size: 13px; }

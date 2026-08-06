@@ -11,7 +11,7 @@
     <link rel="apple-touch-icon" href="./wecom-daily-memo-icon.png" />
     <link rel="stylesheet" href="./styles.css?v=59" />
     <link rel="stylesheet" href="./calendar-month.css?v=59" />
-    <link rel="stylesheet" href="./push-notifications.css?v=60" />
+    <link rel="stylesheet" href="./push-notifications.css?v=61" />
     <link rel="stylesheet" href="./memo.css?v=2" />
     <link rel="stylesheet" href="./memo-editor.css?v=4" />
     <link rel="stylesheet" href="./memo-popover.css?v=3" />
@@ -429,6 +429,19 @@
         <div class="sync-reminder-actions"><button type="button" id="sync-reminder-login" class="sync-reminder-login">登录</button><button type="button" id="sync-reminder-register" class="sync-reminder-register">注册账号</button><button type="button" id="sync-reminder-later" class="reminder-later-button">暂不登录</button></div>
       </section>
     </dialog>
+    <dialog id="release-notice-dialog" class="release-notice-dialog" aria-labelledby="release-notice-title">
+      <section class="release-notice-panel">
+        <div class="release-notice-icon" aria-hidden="true">↑</div>
+        <p class="modal-eyebrow" id="release-notice-eyebrow">本次更新</p>
+        <h2 id="release-notice-title">每日备忘有新变化</h2>
+        <p id="release-notice-copy" class="release-notice-copy"></p>
+        <div id="release-notice-items" class="release-notice-items"></div>
+        <div class="release-notice-actions">
+          <button type="button" id="release-update-button" class="release-update-button is-hidden">前往官网下载</button>
+          <button type="button" id="release-dismiss-button" class="release-dismiss-button">知道了</button>
+        </div>
+      </section>
+    </dialog>
     <dialog id="push-help-dialog" class="push-help-dialog" aria-labelledby="push-help-title">
       <section class="push-help-panel">
         <div class="modal-header"><div><p class="modal-eyebrow" id="push-help-eyebrow">系统通知</p><h2 id="push-help-title">安装“每日备忘”</h2></div><button type="button" id="close-push-help-dialog" class="close-button" aria-label="关闭">×</button></div>
@@ -439,6 +452,6 @@
       </section>
     </dialog>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <script src="./app.js?v=98"></script>
+    <script src="./app.js?v=99"></script>
   </body>
 </html>

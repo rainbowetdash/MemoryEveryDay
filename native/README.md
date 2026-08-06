@@ -6,4 +6,4 @@
 
 iOS 工程可以用 Xcode 打开 `ios/MemoryEveryDay.xcodeproj`。在真机导出 IPA 前，需要在 Xcode 的 Signing & Capabilities 中选择已登录 Apple ID 对应的 Personal Team。
 
-每次导出新版 IPA 后，也要更新网站根目录的 `downloads/MemoryEveryDay`。网站的“下载 iPhone IPA”按钮始终指向这个固定文件名，因此用户不需要更换下载链接。
+每次发布新版 IPA 或 APK 后，将安装包放入网站根目录的 `downloads/` 版本化路径，并同步更新根目录的 `release-info.json`。网页下载入口和 App 内的更新提醒都以该发布信息为准。

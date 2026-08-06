@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "apps": {
+    "ios": {
+      "latestVersion": "1.0.5",
+      "downloadUrl": "./downloads/ipa-1-0-5",
+      "downloadName": "MemoryEveryDay-1.0.5.ipa",
+      "label": "iPhone IPA",
+      "hint": "用于 SideStore、AltStore、Sideloadly 等侧载工具"
+    },
+    "android": {
+      "latestVersion": "1.0.1",
+      "downloadUrl": "./downloads/apk-1-0-1",
+      "downloadName": "MemoryEveryDay-1.0.1.apk",
+      "label": "Android APK",
+      "hint": "下载后可直接安装更新"
+    }
+  },
+  "announcement": {
+    "id": "2026-08-06-update-reminders",
+    "eyebrow": "本次更新",
+    "title": "以后有更新，会主动告诉你",
+    "summary": "每日备忘现在会更清楚地告诉你有哪些新变化。",
+    "items": [
+      "IPA 或 APK 发布新版本时，App 会主动提醒并带你前往官方下载。",
+      "网站功能更新后会展示一次更新公告，看过后不再重复打扰。"
+    ]
+  }
+}
