@@ -1,0 +1,37 @@
+.anniversary-swipe {
+  position: relative;
+  overflow: hidden;
+  border-radius: 18px;
+  touch-action: pan-y;
+}
+
+.anniversary-card {
+  position: relative;
+  z-index: 1;
+  transition: transform .2s ease;
+  will-change: transform;
+}
+
+.anniversary-swipe.is-delete-revealed .anniversary-card {
+  transform: translateX(-68px);
+}
+
+.anniversary-delete-swipe {
+  position: absolute;
+  z-index: 0;
+  top: 50%;
+  right: 14px;
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: #d85c57;
+  color: #fff;
+  font-size: 27px;
+  line-height: 1;
+  transform: translateY(-50%);
+  box-shadow: 0 4px 12px #bd484240;
+  cursor: pointer;
+}
