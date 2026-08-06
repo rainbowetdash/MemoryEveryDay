@@ -46,7 +46,7 @@ struct NativeWebView: UIViewRepresentable {
 
     func updateUIView(_ webView: WKWebView, context: Context) { }
 
-    final class Coordinator: NSObject, WKNavigationDelegate, WKScriptMessageHandler {
+    final class Coordinator: NSObject, WKNavigationDelegate, WKScriptMessageHandler, UNUserNotificationCenterDelegate {
         private var isLoading: Binding<Bool>
         private weak var webView: WKWebView?
         private var foregroundObserver: NSObjectProtocol?
@@ -56,6 +56,9 @@ struct NativeWebView: UIViewRepresentable {
 
         func attach(_ webView: WKWebView) {
             self.webView = webView
+            // iOS suppresses notification banners while the app is in the foreground
+            // unless its notification-center delegate explicitly asks to present them.
+            UNUserNotificationCenter.current().delegate = self
             requestNotificationPermissionIfNeeded()
             foregroundObserver = NotificationCenter.default.addObserver(
                 forName: UIApplication.willEnterForegroundNotification,
@@ -201,6 +204,10 @@ struct NativeWebView: UIViewRepresentable {
             content.sound = .default
             let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
             UNUserNotificationCenter.current().add(UNNotificationRequest(identifier: "memoryeveryday-test", content: content, trigger: trigger))
+        }
+
+        func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+            completionHandler([.banner, .list, .sound])
         }
 
         private func openSettings() {
