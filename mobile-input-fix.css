@@ -1,8 +1,3 @@
-.anniversary-date-field.is-picker-open-up .anniversary-date-list {
-  top: auto;
-  bottom: calc(100% + 8px);
-}
-
 @media (max-width: 540px) {
   input:not([type="hidden"]),
   select,
@@ -15,5 +10,14 @@
 
   .memo-editor-title {
     min-height: 42px;
+  }
+
+  .anniversary-dialog {
+    min-height: min(560px, calc(100dvh - 32px));
+  }
+
+  .anniversary-dialog form {
+    min-height: min(560px, calc(100dvh - 32px));
+    padding-bottom: 40px;
   }
 }

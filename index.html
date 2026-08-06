@@ -29,7 +29,7 @@
     <link rel="stylesheet" href="./anniversaries.css?v=7" />
     <link rel="stylesheet" href="./mobile-dialog-fixes.css?v=3" />
     <link rel="stylesheet" href="./app-polish.css?v=4" />
-    <link rel="stylesheet" href="./mobile-input-fix.css?v=1" />
+    <link rel="stylesheet" href="./mobile-input-fix.css?v=2" />
     <style>
       html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
       body { min-height: 100dvh; }
@@ -187,7 +187,7 @@
       <section class="screen is-hidden memo-screen" id="memo-screen" aria-label="备忘录">
         <header class="memo-header">
           <div><p>和未来的安排放在一起</p><h1>备忘录</h1></div>
-          <button type="button" id="new-memo-button" class="memo-new-button">＋ 新建</button>
+          <button type="button" id="new-memo-button" class="memo-new-button" hidden>＋ 新建</button>
         </header>
         <p id="memo-sync-copy" class="memo-sync-copy">登录后可在所有设备查看你的备忘录</p>
         <div id="memo-list" class="memo-list"></div>
@@ -203,7 +203,7 @@
       </section>
 
       <section class="screen is-hidden anniversary-screen" id="anniversary-screen" aria-label="纪念日">
-        <header class="anniversary-header"><div><p>把重要日子记下来</p><h1>纪念日</h1></div><button type="button" id="new-anniversary-button" class="anniversary-new-button">＋ 新建</button></header>
+        <header class="anniversary-header"><div><p>把重要日子记下来</p><h1>纪念日</h1></div><button type="button" id="new-anniversary-button" class="anniversary-new-button" hidden>＋ 新建</button></header>
         <p class="anniversary-copy">每年都会在日历上标记，陪你记住下一次相见。</p>
         <div id="anniversary-list" class="anniversary-list"></div>
       </section>
@@ -437,6 +437,6 @@
       </section>
     </dialog>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <script src="./app.js?v=93"></script>
+    <script src="./app.js?v=94"></script>
   </body>
 </html>
