@@ -15,11 +15,18 @@ struct NativeWebView: UIViewRepresentable {
         configuration.userContentController.addUserScript(WKUserScript(
             source: """
             (function () {
-              var viewport = document.querySelector('meta[name=viewport]');
-              if (!viewport) { viewport = document.createElement('meta'); viewport.name = 'viewport'; document.head.appendChild(viewport); }
-              viewport.content = 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover';
+              var viewportContent = 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover';
+              function lockViewport() {
+                var viewports = document.querySelectorAll('meta[name=viewport]');
+                if (!viewports.length) { var viewport = document.createElement('meta'); viewport.name = 'viewport'; (document.head || document.documentElement).appendChild(viewport); viewports = [viewport]; }
+                viewports.forEach(function (viewport) { viewport.content = viewportContent; });
+              }
+              lockViewport();
+              new MutationObserver(lockViewport).observe(document.documentElement, { childList: true, subtree: true });
               document.addEventListener('gesturestart', function (event) { event.preventDefault(); }, { passive: false });
               document.addEventListener('dblclick', function (event) { event.preventDefault(); }, { passive: false });
+              var lastTouchEnd = 0;
+              document.addEventListener('touchend', function (event) { var now = Date.now(); if (now - lastTouchEnd < 300) event.preventDefault(); lastTouchEnd = now; }, { passive: false });
             })();
             """,
             injectionTime: .atDocumentStart,
@@ -28,6 +35,9 @@ struct NativeWebView: UIViewRepresentable {
         let webView = WKWebView(frame: .zero, configuration: configuration)
         webView.navigationDelegate = context.coordinator
         webView.scrollView.pinchGestureRecognizer?.isEnabled = false
+        webView.scrollView.minimumZoomScale = 1
+        webView.scrollView.maximumZoomScale = 1
+        webView.scrollView.bouncesZoom = false
         webView.scrollView.bounces = false
         webView.scrollView.contentInsetAdjustmentBehavior = .never
         context.coordinator.attach(webView)
@@ -46,6 +56,7 @@ struct NativeWebView: UIViewRepresentable {
 
         func attach(_ webView: WKWebView) {
             self.webView = webView
+            requestNotificationPermissionIfNeeded()
             foregroundObserver = NotificationCenter.default.addObserver(
                 forName: UIApplication.willEnterForegroundNotification,
                 object: nil,
@@ -126,6 +137,17 @@ struct NativeWebView: UIViewRepresentable {
                     }
                     UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { _, _ in
                         DispatchQueue.main.async { self.sendNotificationStatus() }
+                    }
+                }
+            }
+        }
+
+        private func requestNotificationPermissionIfNeeded() {
+            UNUserNotificationCenter.current().getNotificationSettings { [weak self] settings in
+                guard settings.authorizationStatus == .notDetermined else { return }
+                DispatchQueue.main.async {
+                    UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { _, _ in
+                        DispatchQueue.main.async { self?.sendNotificationStatus() }
                     }
                 }
             }
