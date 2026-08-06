@@ -2,7 +2,7 @@ plugins { id("com.android.application") }
 
 android {
     namespace = "com.memoryeveryday.app"
-    compileSdk = 37
+    compileSdk = 35
     defaultConfig {
         applicationId = "com.memoryeveryday.app"
         minSdk = 26
