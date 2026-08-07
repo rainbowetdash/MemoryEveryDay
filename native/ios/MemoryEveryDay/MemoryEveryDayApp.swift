@@ -1,7 +1,29 @@
 import SwiftUI
+import UserNotifications
+
+extension Notification.Name {
+    static let memoryEveryDayTestNotificationPresented = Notification.Name("MemoryEveryDayTestNotificationPresented")
+}
+
+final class MemoryEveryDayAppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
+        UNUserNotificationCenter.current().delegate = self
+        return true
+    }
+
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        completionHandler([.banner, .list, .sound])
+        if notification.request.identifier.hasPrefix("memoryeveryday-test-") {
+            DispatchQueue.main.async {
+                NotificationCenter.default.post(name: .memoryEveryDayTestNotificationPresented, object: nil)
+            }
+        }
+    }
+}
 
 @main
 struct MemoryEveryDayApp: App {
+    @UIApplicationDelegateAdaptor(MemoryEveryDayAppDelegate.self) private var appDelegate
     @State private var isLoading = true
 
     var body: some Scene {

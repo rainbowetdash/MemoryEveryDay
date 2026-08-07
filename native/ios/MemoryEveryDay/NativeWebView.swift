@@ -46,30 +46,36 @@ struct NativeWebView: UIViewRepresentable {
 
     func updateUIView(_ webView: WKWebView, context: Context) { }
 
-    final class Coordinator: NSObject, WKNavigationDelegate, WKScriptMessageHandler, UNUserNotificationCenterDelegate {
+    final class Coordinator: NSObject, WKNavigationDelegate, WKScriptMessageHandler {
         private var isLoading: Binding<Bool>
         private weak var webView: WKWebView?
         private var foregroundObserver: NSObjectProtocol?
+        private var notificationTestObserver: NSObjectProtocol?
         private let siteURL = URL(string: "https://memoryeveryday.pages.dev/")!
 
         init(isLoading: Binding<Bool>) { self.isLoading = isLoading }
 
         func attach(_ webView: WKWebView) {
             self.webView = webView
-            // iOS suppresses notification banners while the app is in the foreground
-            // unless its notification-center delegate explicitly asks to present them.
-            UNUserNotificationCenter.current().delegate = self
             requestNotificationPermissionIfNeeded()
             foregroundObserver = NotificationCenter.default.addObserver(
                 forName: UIApplication.willEnterForegroundNotification,
                 object: nil,
                 queue: .main
             ) { [weak self] _ in self?.loadLatest() }
+            notificationTestObserver = NotificationCenter.default.addObserver(
+                forName: .memoryEveryDayTestNotificationPresented,
+                object: nil,
+                queue: .main
+            ) { [weak self] _ in
+                self?.sendTestNotificationResult(status: "presented", message: "测试成功：系统通知已经显示。")
+            }
             loadLatest()
         }
 
         deinit {
             if let foregroundObserver { NotificationCenter.default.removeObserver(foregroundObserver) }
+            if let notificationTestObserver { NotificationCenter.default.removeObserver(notificationTestObserver) }
         }
 
         func loadLatest() {
@@ -200,16 +206,36 @@ struct NativeWebView: UIViewRepresentable {
         }
 
         private func sendTestNotification() {
-            let content = UNMutableNotificationContent()
-            content.title = "每日备忘"
-            content.body = "测试成功：App 可以显示日程提醒。"
-            content.sound = .default
-            let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
-            UNUserNotificationCenter.current().add(UNNotificationRequest(identifier: "memoryeveryday-test", content: content, trigger: trigger))
+            let center = UNUserNotificationCenter.current()
+            center.getNotificationSettings { [weak self] settings in
+                guard settings.authorizationStatus == .authorized || settings.authorizationStatus == .provisional || settings.authorizationStatus == .ephemeral else {
+                    DispatchQueue.main.async {
+                        self?.sendTestNotificationResult(status: "failed", message: "系统没有允许通知，请到 iPhone 设置中开启通知。")
+                    }
+                    return
+                }
+                let content = UNMutableNotificationContent()
+                content.title = "每日备忘"
+                content.body = "测试成功：App 可以显示日程提醒。"
+                content.sound = .default
+                let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 2, repeats: false)
+                let identifier = "memoryeveryday-test-\(UUID().uuidString)"
+                center.add(UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)) { error in
+                    DispatchQueue.main.async {
+                        if let error {
+                            self?.sendTestNotificationResult(status: "failed", message: "系统未能发送通知：\(error.localizedDescription)")
+                        } else {
+                            self?.sendTestNotificationResult(status: "scheduled", message: "通知已交给 iPhone，约 2 秒后显示…")
+                        }
+                    }
+                }
+            }
         }
 
-        func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-            completionHandler([.banner, .list, .sound])
+        private func sendTestNotificationResult(status: String, message: String) {
+            guard let data = try? JSONSerialization.data(withJSONObject: ["status": status, "message": message]),
+                  let detail = String(data: data, encoding: .utf8) else { return }
+            webView?.evaluateJavaScript("window.dispatchEvent(new CustomEvent('memoryeveryday-native-notification-test',{detail:\(detail)}));")
         }
 
         private func openSettings() {

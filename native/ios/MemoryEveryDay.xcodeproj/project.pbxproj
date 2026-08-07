@@ -10,10 +10,12 @@
 		679057FCCFE10F5F17C72A53 /* MemoryEveryDayApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A190ECCF176AEB43BF2040B /* MemoryEveryDayApp.swift */; };
 		742CC35C04EA5A6DB5B64555 /* NativeWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 707193388A2EF760226F0F53 /* NativeWebView.swift */; };
 		86DC3C3B59053FA5629C2342 /* wecom-daily-memo-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 39EC438F09E292F6A19AF4CF /* wecom-daily-memo-icon.png */; };
+		90C48BCD5D991A30555B38D5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 050668D8E90482CF513E4135 /* Assets.xcassets */; };
 		A179E768B16822E3A8375129 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D2A41037F997210B0F1D58B5 /* LaunchScreen.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		050668D8E90482CF513E4135 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		39EC438F09E292F6A19AF4CF /* wecom-daily-memo-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wecom-daily-memo-icon.png"; sourceTree = "<group>"; };
 		707193388A2EF760226F0F53 /* NativeWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeWebView.swift; sourceTree = "<group>"; };
 		9062D620E4FFA5143828F61E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -43,6 +45,7 @@
 		5B57F307D3EEAF92E7D6A002 /* MemoryEveryDay */ = {
 			isa = PBXGroup;
 			children = (
+				050668D8E90482CF513E4135 /* Assets.xcassets */,
 				9062D620E4FFA5143828F61E /* Info.plist */,
 				D2A41037F997210B0F1D58B5 /* LaunchScreen.storyboard */,
 				9A190ECCF176AEB43BF2040B /* MemoryEveryDayApp.swift */,
@@ -120,6 +123,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				90C48BCD5D991A30555B38D5 /* Assets.xcassets in Resources */,
 				A179E768B16822E3A8375129 /* LaunchScreen.storyboard in Resources */,
 				86DC3C3B59053FA5629C2342 /* wecom-daily-memo-icon.png in Resources */,
 			);

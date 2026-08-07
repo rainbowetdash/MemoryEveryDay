@@ -5,14 +5,14 @@ const zoomStorageKey = 'memory-everyday-calendar-scale-v2';
 const pendingSyncKey = 'memory-everyday-pending-sync';
 const authReminderKey = 'memory-everyday-auth-reminder-shown';
 const floatingActionPositionKey = 'memory-everyday-floating-action-position-v1';
-const releaseInfoUrl = './release-info.json?v=1';
+const releaseInfoUrl = './release-info.json?v=2';
 const releaseAnnouncementStorageKeyBase = 'memory-everyday-release-announcement-seen';
 const launchParams = new URLSearchParams(window.location.search);
 const isNativeShell = launchParams.get('native-shell') === '1';
 const legacyNativeVersions = { ios: '1.0.4', android: '1.0.0' };
 const fallbackReleaseInfo = {
   apps: {
-    ios: { latestVersion: '1.0.5', downloadUrl: './downloads/ipa-1-0-5', downloadName: 'MemoryEveryDay-1.0.5.ipa', label: 'iPhone IPA', hint: '用于 SideStore、AltStore、Sideloadly 等侧载工具' },
+    ios: { latestVersion: '1.0.6', downloadUrl: './downloads/ipa-1-0-6', downloadName: 'MemoryEveryDay-1.0.6.ipa', label: 'iPhone IPA', hint: '用于 SideStore、AltStore、Sideloadly 等侧载工具' },
     android: { latestVersion: '1.0.1', downloadUrl: './downloads/apk-1-0-1', downloadName: 'MemoryEveryDay-1.0.1.apk', label: 'Android APK', hint: '下载后可直接安装更新' }
   },
   announcement: null
@@ -28,6 +28,7 @@ let pushRegistration = null;
 let activePushSubscription = null;
 let nativeNotificationPermission = 'default';
 let resolveNativeNotificationRequest = null;
+let nativeNotificationTestTimer = null;
 let deferredInstallPrompt = null;
 let launchTargetHandled = false;
 let suppressFloatingActionClick = false;
@@ -79,7 +80,7 @@ async function stopRemindersOnOpen() { if (state.authReady && state.user) await 
 async function registerPushWorker() { updatePushUI(); }
 async function enablePushNotifications() { if (!state.user) { setPushMessage('请先登录账号，再开启系统通知', 'error'); openAuthDialog('login'); return false; } if (!isNativeShell) { showPushHelp(); return false; } if (!pushIsSupported()) { setPushMessage('当前 App 暂不支持通知', 'error'); updatePushUI(); return false; } if (nativeNotificationPermission === 'granted') return true; if (nativeNotificationPermission === 'denied') { setPushMessage('请在 iPhone 设置中允许“每日备忘”发送通知', 'error'); return false; } const granted = await new Promise((resolve) => { resolveNativeNotificationRequest = resolve; postNativeNotification({ action: 'request' }); setTimeout(() => { if (resolveNativeNotificationRequest === resolve) { resolveNativeNotificationRequest = null; resolve(false); } }, 15000); }); if (!granted) setPushMessage('没有获得系统通知权限', 'error'); return granted; }
 async function disablePushNotifications() { setPushMessage('如需关闭全部通知，请在 iPhone 的“设置 > 通知 > 每日备忘”中关闭。'); }
-async function testPushNotification() { if (!await enablePushNotifications()) return; postNativeNotification({ action: 'test' }); setPushMessage('测试通知已发送，请查看手机通知中心', 'ok'); }
+async function testPushNotification() { if (!await enablePushNotifications()) return; if (nativeNotificationTestTimer) clearTimeout(nativeNotificationTestTimer); setPushMessage('正在请求 iPhone 显示测试通知…'); postNativeNotification({ action: 'test' }); nativeNotificationTestTimer = setTimeout(() => { setPushMessage('系统没有回报通知已显示。请确认已安装 IPA 1.0.6，并在 iPhone 设置中允许横幅通知。', 'error'); nativeNotificationTestTimer = null; }, 7000); }
 async function installPwa() { if (deferredInstallPrompt) { deferredInstallPrompt.prompt(); await deferredInstallPrompt.userChoice; deferredInstallPrompt = null; updatePushUI(); return; } showPushHelp(); }
 function openLaunchTarget() { if (launchTargetHandled) return; const params = new URLSearchParams(window.location.search), eventId = params.get('event'), launchDate = params.get('date'); if (!eventId && !launchDate) return; if (/^\d{4}-\d{2}-\d{2}$/.test(launchDate || '')) { state.selected = new Date(`${launchDate}T12:00:00`); state.showing = new Date(state.selected); render(); } const event = eventId ? state.events.find((item) => item.id === eventId) : null; if (event) openEventDialog(event); launchTargetHandled = true; window.history.replaceState({}, '', window.location.pathname); }
 const dateKey = (date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
@@ -306,6 +307,7 @@ $('push-settings-button').onclick = async () => { if (!isNativeShell) { showPush
 $('sign-out-button').onclick = async () => { if (activePushSubscription) await disablePushNotifications(); if (supabaseClient) await supabaseClient.auth.signOut(); $('auth-dialog').close(); }; $('sync-now-button').onclick = openForceSyncConfirm; $('cancel-force-sync-button').onclick = () => $('force-sync-confirm-dialog').close(); $('confirm-force-sync-button').onclick = async () => { const confirmButton = $('confirm-force-sync-button'), cancelButton = $('cancel-force-sync-button'), syncButton = $('sync-now-button'); confirmButton.disabled = true; confirmButton.textContent = '正在强制同步…'; cancelButton.disabled = true; syncButton.disabled = true; const result = await forceSyncCurrentUser(); if ($('force-sync-confirm-dialog').open) $('force-sync-confirm-dialog').close(); syncButton.disabled = false; $('signed-in-message').textContent = result?.failed?.length ? `仍有 ${result.failed.length} 项未能同步：${result.detail}` : '强制同步完成：本机日程已写入云端。'; };
 window.addEventListener('beforeinstallprompt', (event) => { event.preventDefault(); deferredInstallPrompt = event; updatePushUI(); }); window.addEventListener('appinstalled', () => { deferredInstallPrompt = null; updatePushUI(); });
 window.addEventListener('memoryeveryday-native-notification-status', (event) => { nativeNotificationPermission = event.detail?.status || 'default'; if (resolveNativeNotificationRequest) { const resolve = resolveNativeNotificationRequest; resolveNativeNotificationRequest = null; resolve(nativeNotificationPermission === 'granted'); } updatePushUI(); syncNativeNotifications(); });
+window.addEventListener('memoryeveryday-native-notification-test', (event) => { const status = event.detail?.status || 'failed', message = event.detail?.message || '系统未能发送测试通知'; if (status === 'presented' || status === 'failed') { if (nativeNotificationTestTimer) clearTimeout(nativeNotificationTestTimer); nativeNotificationTestTimer = null; } setPushMessage(message, status === 'presented' ? 'ok' : status === 'failed' ? 'error' : ''); });
 $('release-notice-dialog').addEventListener('close', () => { markReleaseAnnouncementSeen(); if (!releaseDownloadFlow) finishLaunchNotices(); });
 $('push-help-dialog').addEventListener('close', () => { if (releaseDownloadFlow) { releaseDownloadFlow = false; finishLaunchNotices(); } });
 if (supabaseClient) { supabaseClient.auth.onAuthStateChange((_event, session) => { void handleSession(session?.user || null); }); supabaseClient.auth.getSession().then(({ data }) => handleSession(data.session?.user || null)); } else { state.authReady = true; updateAccountUI(); showAuthReminder(); }
