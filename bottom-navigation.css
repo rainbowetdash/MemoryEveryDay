@@ -1,0 +1,44 @@
+.app-shell {
+  padding-bottom: calc(116px + env(safe-area-inset-bottom));
+}
+
+.tabbar {
+  height: calc(102px + env(safe-area-inset-bottom));
+  padding: 10px 16px env(safe-area-inset-bottom);
+  justify-content: space-around;
+  gap: 0;
+}
+
+.tab {
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 90px;
+  gap: 6px;
+  padding: 6px 0;
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+.tab-icon {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  font-size: 0;
+  line-height: 1;
+}
+
+.tab-icon svg {
+  display: block;
+  width: 25px;
+  height: 25px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.add-button {
+  bottom: calc(81px + env(safe-area-inset-bottom));
+}
