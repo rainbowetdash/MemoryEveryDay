@@ -486,3 +486,14 @@ body[data-app-theme] .calendar-agenda-section .agenda-time { background: var(--t
 .calendar-anniversary-agenda small { display: block; margin-top: 3px; color: #9d7184; font-size: 11px; }
 body[data-app-theme] .calendar-agenda-section .calendar-anniversary-agenda .agenda-time { background: color-mix(in srgb, #d96696 14%, var(--theme-surface)); color: #cf6d95; }
 body[data-app-theme] .calendar-anniversary-agenda small { color: var(--theme-muted) !important; }
+
+/* 日历的阅读顺序：先看日期，再在月历上方直接操作。 */
+.calendar-date-header { flex: 0 0 auto; padding: max(20px, env(safe-area-inset-top)) 10px 15px; }
+#calendar-screen .calendar-date-header .calendar-selected-date { padding-left: 0; }
+.calendar-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex: 0 0 auto; margin: 4px 0 12px; }
+.calendar-toolbar .today-button { min-height: 34px; border: 1px solid var(--theme-border, #cfe2f0); border-radius: 18px; background: var(--theme-card, #f4faff); color: var(--app-accent, #1769aa); padding: 6px 12px; font-size: 13px; font-weight: 750; box-shadow: none; }
+.calendar-toolbar .today-button:hover { background: var(--theme-tint, #e3f2ff); }
+.calendar-toolbar .calendar-zoom-controls { margin-left: auto; }
+body[data-app-theme] .calendar-toolbar .today-button { border-color: var(--theme-border); background: var(--theme-card); color: var(--app-accent); }
+body[data-app-theme] .calendar-toolbar .today-button:hover { background: var(--theme-tint); }
+@media (max-width: 540px) { .calendar-date-header { padding: max(18px, env(safe-area-inset-top)) 8px 13px; } .calendar-toolbar { margin-top: 2px; margin-bottom: 10px; } }

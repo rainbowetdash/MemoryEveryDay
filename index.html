@@ -33,7 +33,7 @@
     <link rel="stylesheet" href="./mobile-input-fix.css?v=2" />
     <link rel="stylesheet" href="./floating-action.css?v=1" />
     <link rel="stylesheet" href="./bottom-navigation.css?v=1" />
-    <link rel="stylesheet" href="./settings.css?v=12" />
+    <link rel="stylesheet" href="./settings.css?v=13" />
     <style>
       html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
       body { min-height: 100dvh; }
@@ -145,23 +145,22 @@
       </aside>
       <button type="button" class="group-sidebar-toggle" id="group-sidebar-toggle" aria-controls="group-sidebar" aria-expanded="false" aria-label="展开日程表">›</button>
       <section class="screen" id="calendar-screen" aria-label="日历">
-        <header class="topbar">
-          <button class="today-button" id="today-button">回到今天</button>
-          <div class="topbar-spacer" aria-hidden="true"></div>
-          <div class="topbar-actions">
-            <div class="calendar-zoom-controls" aria-label="日历显示大小">
-              <button type="button" id="calendar-zoom-out" class="zoom-button" aria-label="缩小月历" title="缩小月历"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
-              <button type="button" id="calendar-zoom-in" class="zoom-button" aria-label="放大月历" title="放大月历"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
-            </div>
-          </div>
+        <header class="calendar-date-header">
+          <section class="calendar-selected-date" aria-live="polite" aria-label="当前选中日期">
+            <h1><span id="calendar-selected-date"></span><span id="calendar-selected-weekday"></span></h1>
+          </section>
         </header>
-        <section class="calendar-selected-date" aria-live="polite" aria-label="当前选中日期">
-          <h1><span id="calendar-selected-date"></span><span id="calendar-selected-weekday"></span></h1>
-        </section>
         <div class="month-switcher calendar-month-navigation" aria-label="切换月份">
           <button class="icon-button" id="previous-month" aria-label="上个月">‹</button>
           <button type="button" id="calendar-month-trigger" class="calendar-month-trigger" aria-haspopup="dialog" aria-label="选择年份"></button>
           <button class="icon-button" id="next-month" aria-label="下个月">›</button>
+        </div>
+        <div class="calendar-toolbar" aria-label="日历操作">
+          <button class="today-button" id="today-button">回到今天</button>
+          <div class="calendar-zoom-controls" aria-label="日历显示大小">
+            <button type="button" id="calendar-zoom-out" class="zoom-button" aria-label="缩小月历" title="缩小月历"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+            <button type="button" id="calendar-zoom-in" class="zoom-button" aria-label="放大月历" title="放大月历"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+          </div>
         </div>
         <div class="calendar-scroll" id="calendar-scroll"><div class="calendar-canvas"><div class="weekdays" aria-hidden="true"><span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span></div><div class="calendar-grid" id="calendar-grid"></div></div></div>
         <section class="up-next calendar-agenda-section" aria-live="polite" aria-label="所选日期的日程">
@@ -476,7 +475,7 @@
       </section>
     </dialog>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <script src="./app.js?v=120"></script>
+    <script src="./app.js?v=121"></script>
     <script src="./settings.js?v=5"></script>
   </body>
 </html>
