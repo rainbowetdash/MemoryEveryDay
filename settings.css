@@ -453,3 +453,29 @@ body[data-app-theme] .settings-download-button small { color: var(--theme-muted)
 #calendar-screen[data-calendar-zoom="2"] .calendar-anniversary { font-size: 10px; }
 #calendar-screen[data-calendar-zoom="0"] + .calendar-agenda-section { margin-top: 12px; }
 body[data-app-theme] .calendar-event-dots small { color: var(--app-accent); }
+
+/* 轻量月历：减少每个日期的卡片感，让日期与日程分布成为主角。 */
+#calendar-screen[data-calendar-zoom="0"] .calendar-selected-date { display: flex; align-items: baseline; gap: 8px; padding: 3px 0 10px; }
+#calendar-screen[data-calendar-zoom="0"] .calendar-selected-date p { font-size: 12px; font-weight: 700; white-space: nowrap; }
+#calendar-screen[data-calendar-zoom="0"] .calendar-selected-date h1 { margin: 0; font-size: 27px; line-height: 1.12; letter-spacing: -.5px; }
+#calendar-screen[data-calendar-zoom="0"] .calendar-month-navigation { margin-bottom: 6px; }
+#calendar-screen[data-calendar-zoom="0"] .calendar-scroll { border-top: 1px solid var(--theme-border, #d7e6f2); background: var(--theme-surface, #fafdff) !important; }
+#calendar-screen[data-calendar-zoom="0"] .calendar-grid { gap: 0; border-left: 1px solid var(--theme-border, #d7e6f2); }
+#calendar-screen[data-calendar-zoom="0"] .day-cell,
+#calendar-screen[data-calendar-zoom="0"] .day-cell.is-empty:not(.is-selected),
+#calendar-screen[data-calendar-zoom="0"] .day-cell.is-other { border: 0 !important; border-right: 1px solid var(--theme-border, #d7e6f2) !important; border-bottom: 1px solid var(--theme-border, #d7e6f2) !important; border-radius: 0; background: transparent !important; box-shadow: none; opacity: 1; }
+#calendar-screen[data-calendar-zoom="0"] .day-cell.is-other { color: var(--theme-muted, #8fa2b3) !important; opacity: .58; }
+#calendar-screen[data-calendar-zoom="0"] .day-cell:hover { background: var(--theme-tint, #eef7ff) !important; }
+#calendar-screen[data-calendar-zoom="0"] .day-cell.is-selected { border: 2px solid var(--app-accent, #1769aa) !important; border-radius: 7px; background: var(--theme-tint, #eef7ff) !important; box-shadow: none; z-index: 1; }
+#calendar-screen[data-calendar-zoom="0"] .day-number { font-weight: 650; }
+#calendar-screen[data-calendar-zoom="0"] .day-cell.is-today .day-number { box-shadow: none; }
+.calendar-agenda-section { border-top: 1px solid var(--theme-border, #d7e6f2); padding-top: 11px; }
+.calendar-agenda-section .section-heading { margin: 0 0 4px; font-size: 15px; }
+.calendar-agenda-section .agenda-list { gap: 0; }
+.calendar-agenda-section .agenda-item { min-height: 58px; gap: 13px; border: 0; border-bottom: 1px solid var(--theme-border, #d7e6f2); border-left: 3px solid #328ccd; border-radius: 0; background: transparent !important; padding: 11px 8px 11px 11px; }
+.calendar-agenda-section .agenda-item.navy { border-left-color: #3266a7; }.calendar-agenda-section .agenda-item.cyan { border-left-color: #2db3d6; }.calendar-agenda-section .agenda-item.mint { border-left-color: #42aaa4; }.calendar-agenda-section .agenda-item.purple { border-left-color: #8a64c7; }.calendar-agenda-section .agenda-item.pink { border-left-color: #d96696; }.calendar-agenda-section .agenda-item.coral { border-left-color: #dc795d; }.calendar-agenda-section .agenda-item.yellow { border-left-color: #c79424; }.calendar-agenda-section .agenda-item.green { border-left-color: #4d9b63; }
+.calendar-agenda-section .agenda-time { display: grid; place-items: center; min-width: 44px; min-height: 30px; border-radius: 7px; background: var(--theme-tint, #eaf5ff); color: var(--app-accent, #1769aa); font-weight: 750; }
+.calendar-agenda-section .agenda-title { font-size: 14px; font-weight: 700; }
+body[data-app-theme] .calendar-agenda-section .agenda-item { background: transparent !important; border-bottom-color: var(--theme-border) !important; color: var(--theme-text); }
+body[data-app-theme] .calendar-agenda-section .agenda-time { background: var(--theme-tint); color: var(--app-accent); }
+@media (max-width: 540px) { #calendar-screen[data-calendar-zoom="0"] .calendar-selected-date h1 { font-size: 25px; } #calendar-screen[data-calendar-zoom="0"] .calendar-selected-date p { font-size: 11px; } }
