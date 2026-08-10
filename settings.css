@@ -380,3 +380,20 @@ body[data-app-theme] :is(.memo-header p, .anniversary-header p, .settings-header
 #calendar-screen[data-calendar-zoom="1"] .calendar-canvas, #calendar-screen[data-calendar-zoom="2"] .calendar-canvas { width: 100% !important; padding-inline: 0 !important; }
 #calendar-screen[data-calendar-zoom="1"] .calendar-grid, #calendar-screen[data-calendar-zoom="2"] .calendar-grid { margin-block: 0 !important; }
 @media (max-width: 540px) { #calendar-screen[data-calendar-zoom="1"] .calendar-scroll { height: min(51dvh, 390px) !important; } #calendar-screen[data-calendar-zoom="2"] .calendar-scroll { height: min(59dvh, 460px) !important; } }
+
+/* 下载与更新弹窗也使用完整主题：标题、版本说明、平台图标和按钮始终清晰。 */
+body[data-app-theme] :is(.release-notice-dialog, .push-help-dialog) { background: var(--theme-surface) !important; color: var(--theme-text) !important; }
+body[data-app-theme] :is(.release-notice-dialog, .push-help-dialog)::backdrop { background: color-mix(in srgb, var(--theme-page) 72%, #000 28%) !important; }
+body[data-app-theme] :is(.release-notice-panel h2, .push-help-panel h2) { color: var(--theme-text) !important; }
+body[data-app-theme] :is(.release-notice-copy, .push-help-copy) { color: var(--theme-muted) !important; }
+body[data-app-theme] :is(.release-notice-dialog, .push-help-dialog) .modal-eyebrow { color: var(--app-accent) !important; }
+body[data-app-theme] :is(.release-notice-icon, .push-help-step span) { background: var(--theme-tint); color: var(--app-accent); box-shadow: none; }
+body[data-app-theme] :is(.release-notice-item, .push-help-step) { background: var(--theme-card); color: var(--theme-text); border: 1px solid var(--theme-border); }
+body[data-app-theme] .release-notice-item::before { background: var(--theme-surface); color: var(--app-accent); }
+body[data-app-theme] .app-download-option { background: var(--theme-card) !important; border-color: var(--theme-border) !important; color: var(--theme-text) !important; }
+body[data-app-theme] .app-download-option:hover, body[data-app-theme] .app-download-option.is-recommended { background: var(--theme-tint) !important; border-color: var(--app-accent) !important; box-shadow: 0 0 0 1px color-mix(in srgb, var(--app-accent) 28%, transparent); }
+body[data-app-theme] .app-download-option strong { color: var(--theme-text) !important; }
+body[data-app-theme] .app-download-option small { color: var(--theme-muted) !important; }
+body[data-app-theme] :is(.app-download-option b, .app-download-option > .app-download-platform-icon) { color: var(--app-accent) !important; }
+body[data-app-theme] .release-dismiss-button { background: var(--theme-card); border-color: var(--theme-border); color: var(--theme-text); }
+body[data-app-theme] .release-dismiss-button:hover { background: var(--theme-tint); }
