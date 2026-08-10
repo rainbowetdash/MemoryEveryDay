@@ -410,3 +410,19 @@ body[data-app-theme] .push-settings-button.is-enabled { background: var(--theme-
 body[data-app-theme] :is(.push-test-button, #install-app-button) { background: var(--theme-card) !important; border-color: var(--theme-border) !important; color: var(--app-accent) !important; }
 body[data-app-theme] .sync-now-button { background: var(--app-accent) !important; color: #fff !important; }
 body[data-app-theme] .sign-out-button { background: color-mix(in srgb, #d56a70 12%, var(--theme-surface)) !important; border-color: color-mix(in srgb, #d56a70 42%, var(--theme-border)) !important; color: #cb6169 !important; }
+
+/* 网页端下载入口放在账号与同步下方；已安装 App 会由脚本隐藏。 */
+.settings-download-section { margin-top: -2px; }
+.settings-download-button { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; align-items: center; gap: 11px; width: 100%; min-height: 66px; border: 1px solid #cfe0ee; border-radius: 12px; background: #f6fbff; color: #264e6f; padding: 11px 13px; text-align: left; cursor: pointer; }
+.settings-download-button:hover { border-color: var(--app-accent, #1769aa); background: #edf7ff; }
+.settings-download-icon { display: grid; width: 40px; height: 40px; place-items: center; border-radius: 12px; background: #dcefff; color: var(--app-accent, #1769aa); }
+.settings-download-icon svg { width: 23px; height: 23px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.settings-download-button strong, .settings-download-button small { display: block; }
+.settings-download-button strong { font-size: 14px; }
+.settings-download-button small { margin-top: 3px; color: #6e8ca4; font-size: 11px; line-height: 1.4; }
+.settings-download-button b { color: var(--app-accent, #1769aa); font-size: 25px; font-weight: 400; }
+body[data-app-theme] .settings-download-button { background: var(--theme-card); border-color: var(--theme-border); color: var(--theme-text); }
+body[data-app-theme] .settings-download-button:hover { background: var(--theme-tint); border-color: var(--app-accent); }
+body[data-app-theme] .settings-download-icon { background: var(--theme-tint); color: var(--app-accent); }
+body[data-app-theme] .settings-download-button strong { color: var(--theme-text) !important; }
+body[data-app-theme] .settings-download-button small { color: var(--theme-muted) !important; }
