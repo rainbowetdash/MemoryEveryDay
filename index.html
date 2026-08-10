@@ -33,6 +33,7 @@
     <link rel="stylesheet" href="./mobile-input-fix.css?v=2" />
     <link rel="stylesheet" href="./floating-action.css?v=1" />
     <link rel="stylesheet" href="./bottom-navigation.css?v=1" />
+    <link rel="stylesheet" href="./settings.css?v=1" />
     <style>
       html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
       body { min-height: 100dvh; }
@@ -148,7 +149,6 @@
           <button class="today-button" id="today-button">回到今天</button>
           <div class="topbar-spacer" aria-hidden="true"></div>
           <div class="topbar-actions">
-            <button type="button" id="account-button" class="account-button" aria-label="登录并同步日程"><span class="account-icon">⌁</span><span id="account-button-label">登录同步</span></button>
             <div class="calendar-zoom-controls" aria-label="日历显示大小">
               <button type="button" id="calendar-zoom-out" class="zoom-button" aria-label="缩小月历" title="缩小月历"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
               <button type="button" id="calendar-zoom-in" class="zoom-button" aria-label="放大月历" title="放大月历"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
@@ -211,11 +211,32 @@
         <div id="anniversary-list" class="anniversary-list"></div>
       </section>
 
+      <section class="screen is-hidden settings-screen" id="settings-screen" aria-label="设置">
+        <header class="settings-header"><div><p>按你的习惯安排每日备忘</p><h1>设置</h1></div></header>
+        <section class="settings-section settings-account-section" aria-labelledby="settings-account-title">
+          <p class="settings-section-label" id="settings-account-title">账号与同步</p>
+          <button type="button" class="settings-account-button" id="settings-account-button"><span class="settings-account-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21a7.5 7.5 0 0 1 15 0"></path></svg></span><span><strong id="settings-account-name">登录并同步</strong><small id="settings-account-status">登录后可在手机和电脑之间同步日程与备忘录</small></span><b aria-hidden="true">›</b></button>
+        </section>
+        <section class="settings-section" aria-labelledby="settings-theme-title">
+          <p class="settings-section-label" id="settings-theme-title">整体外观</p>
+          <div class="settings-theme-list" id="settings-theme-list" role="listbox" aria-label="选择整体外观颜色"></div>
+        </section>
+        <section class="settings-section" aria-labelledby="settings-feature-title">
+          <div class="settings-section-heading"><p class="settings-section-label" id="settings-feature-title">底栏功能</p><small>关闭后会从底栏隐藏</small></div>
+          <div class="settings-feature-list" id="settings-feature-list"></div>
+        </section>
+        <section class="settings-section" aria-labelledby="settings-order-title">
+          <div class="settings-section-heading"><p class="settings-section-label" id="settings-order-title">底栏顺序</p><small>按住后拖动调整</small></div>
+          <div class="settings-order-list" id="settings-order-list" aria-label="调整底栏功能顺序"></div>
+        </section>
+      </section>
+
       <nav class="tabbar" aria-label="主导航">
         <button class="tab is-active" data-screen="calendar-screen"><span class="tab-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="3"></rect><path d="M8 2v4M16 2v4M3 9h18M7 13h2M11 13h2M15 13h2M7 17h2M11 17h2M15 17h2"></path></svg></span><span>日历</span></button>
         <button class="tab" data-screen="day-screen"><span class="tab-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 6h12M9 12h12M9 18h12"></path><circle cx="4" cy="6" r="1.5" fill="currentColor" stroke="none"></circle><circle cx="4" cy="12" r="1.5" fill="currentColor" stroke="none"></circle><circle cx="4" cy="18" r="1.5" fill="currentColor" stroke="none"></circle></svg></span><span>日程</span></button>
         <button class="tab" data-screen="memo-screen"><span class="tab-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 3h11l3 3v15H5zM16 3v4h3M8 11h8M8 15h8M8 19h5"></path></svg></span><span>备忘录</span></button>
         <button class="tab" data-screen="anniversary-screen"><span class="tab-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"></path></svg></span><span>纪念日</span></button>
+        <button class="tab" data-screen="settings-screen"><span class="tab-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.2 2.2-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5v.2h-3.2v-.2a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1-2.2-2.2.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1h-.2v-3.2h.2a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1 2.2-2.2.1.1a1.7 1.7 0 0 0 1.9.3 1.7 1.7 0 0 0 1-1.5v-.2h3.2v.2a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1 2.2 2.2-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.5 1h.2V14h-.2a1.7 1.7 0 0 0-1.5 1z"></path></svg></span><span>设置</span></button>
       </nav>
       <button class="add-button" id="add-button" aria-label="添加日程">＋</button>
     </main>
@@ -453,6 +474,7 @@
       </section>
     </dialog>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <script src="./app.js?v=104"></script>
+    <script src="./app.js?v=107"></script>
+    <script src="./settings.js?v=2"></script>
   </body>
 </html>
