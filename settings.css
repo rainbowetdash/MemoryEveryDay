@@ -497,3 +497,13 @@ body[data-app-theme] .calendar-anniversary-agenda small { color: var(--theme-mut
 body[data-app-theme] .calendar-toolbar .today-button { border-color: var(--theme-border); background: var(--theme-card); color: var(--app-accent); }
 body[data-app-theme] .calendar-toolbar .today-button:hover { background: var(--theme-tint); }
 @media (max-width: 540px) { .calendar-date-header { padding: max(18px, env(safe-area-inset-top)) 8px 13px; } .calendar-toolbar { margin-top: 2px; margin-bottom: 10px; } }
+
+/* 侧栏打开时只保留日程表本身，避免移动端的固定月历标题产生叠层残影。 */
+.group-sidebar { isolation: isolate; overflow: hidden; }
+#app-shell.is-group-drawer-open #calendar-screen { visibility: hidden; }
+
+/* 新建入口改为实线轮廓，避免高分屏上虚线边缘出现毛刺。 */
+.new-group-button { border: 1px solid var(--theme-border, #8fb9d8); background: var(--theme-card, #f4faff); color: var(--app-accent, #1769aa); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--app-accent, #1769aa) 8%, transparent); }
+.new-group-button:hover { border-color: var(--app-accent, #1769aa); background: var(--theme-tint, #e4f3ff); }
+body[data-app-theme] .new-group-button { border-color: var(--theme-border); background: var(--theme-card); color: var(--app-accent); }
+body[data-app-theme] .new-group-button:hover { border-color: var(--app-accent); background: var(--theme-tint); }
