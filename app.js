@@ -5,7 +5,7 @@ const zoomStorageKey = 'memory-everyday-calendar-scale-v2';
 const pendingSyncKey = 'memory-everyday-pending-sync';
 const authReminderKey = 'memory-everyday-auth-reminder-shown';
 const floatingActionPositionKey = 'memory-everyday-floating-action-position-v1';
-const releaseInfoUrl = './release-info.json?v=11';
+const releaseInfoUrl = './release-info.json?v=12';
 const releaseAnnouncementStorageKeyBase = 'memory-everyday-release-announcement-seen';
 const launchParams = new URLSearchParams(window.location.search);
 const isNativeShell = launchParams.get('native-shell') === '1';
@@ -131,7 +131,9 @@ function closeGroupDialog() { $('group-dialog').close(); state.editingGroupId = 
 function deleteEditingGroup() { const groupId = state.editingGroupId; if (!groupId) return; const eventsToDelete = state.events.filter((event) => eventGroupId(event) === groupId); state.events = state.events.filter((event) => eventGroupId(event) !== groupId); state.groups = state.groups.filter((group) => group.id !== groupId); state.activeGroupId = 'all'; save(); saveGroups(); eventsToDelete.forEach((event) => queueOperation({ entity: 'event', type: 'delete', id: event.id })); if (state.user) { state.groupsInitialized = true; queueOperation({ entity: 'group', type: 'delete', id: groupId }); queueGroupSnapshot(); queueSettingsSync(); } void flushPendingOps(); $('group-delete-confirm-dialog').close(); closeGroupDialog(); render(); }
 function updateCalendarZoom() { $('calendar-screen').dataset.calendarZoom = String(state.calendarZoom); $('calendar-zoom-out').disabled = state.calendarZoom === 0; $('calendar-zoom-in').disabled = state.calendarZoom === calendarZoomLevels.length - 1; $('calendar-zoom-out').setAttribute('aria-label', state.calendarZoom === 0 ? '已是最小月历' : '缩小月历'); $('calendar-zoom-in').setAttribute('aria-label', state.calendarZoom === calendarZoomLevels.length - 1 ? '已是最大月历' : '放大月历'); }
 function saveCalendarZoom() { localStorage.setItem(zoomStorageKey, String(state.calendarZoom)); queueOperation({ entity: 'settings', type: 'upsert', id: 'preferences', settings: { calendarZoom: state.calendarZoom, groupsInitialized: state.groupsInitialized } }); void flushPendingOps(); }
-function renderCalendar() {
+function renderCalendar(preserveViewport = false) {
+  const scrollerBeforeRender = $('calendar-scroll');
+  const savedViewport = preserveViewport ? { left: scrollerBeforeRender.scrollLeft, top: scrollerBeforeRender.scrollTop, height: Math.max(1, scrollerBeforeRender.scrollHeight - scrollerBeforeRender.clientHeight) } : null;
   const year = state.showing.getFullYear(), month = state.showing.getMonth(); $('calendar-month-trigger').textContent = `${year}年${month + 1}月`;
   const selected = state.selected; $('calendar-selected-year').textContent = `${selected.getFullYear()}年`; $('calendar-selected-date').textContent = `${selected.getMonth() + 1}月${selected.getDate()}日`; $('calendar-selected-weekday').textContent = new Intl.DateTimeFormat('zh-CN', { weekday: 'long' }).format(selected);
   const first = new Date(year, month, 1), start = new Date(year, month, 1 - first.getDay()), grid = $('calendar-grid'); grid.innerHTML = '';
@@ -147,7 +149,11 @@ function renderCalendar() {
   }
   const selectedCell = grid.querySelector('.is-selected'), scroller = $('calendar-scroll'), weekdays = scroller.querySelector('.weekdays');
   const selectedIsShowing = selected.getFullYear() === year && selected.getMonth() === month;
-  if (selectedCell && selectedIsShowing) {
+  if (savedViewport) {
+    const maxScrollTop = Math.max(0, scroller.scrollHeight - scroller.clientHeight);
+    scroller.scrollLeft = savedViewport.left;
+    scroller.scrollTop = Math.min(maxScrollTop, savedViewport.top / savedViewport.height * maxScrollTop);
+  } else if (selectedCell && selectedIsShowing) {
     const viewport = scroller.getBoundingClientRect(), cell = selectedCell.getBoundingClientRect(), headerHeight = weekdays.offsetHeight + 9;
     const selectedCenterX = scroller.scrollLeft + cell.left - viewport.left + cell.width / 2;
     const selectedTop = scroller.scrollTop + cell.top - viewport.top;
@@ -184,7 +190,7 @@ $('day-date-trigger').onclick = openDayDatePicker; $('close-day-date-dialog').on
 function renderCalendarYearList() { const list = $('calendar-year-list'), selectedYear = state.showing.getFullYear(); list.innerHTML = ''; for (let year = earliestSelectableYear; year <= latestSelectableYear; year += 1) { const option = document.createElement('button'); option.type = 'button'; option.className = `day-year-option ${year === selectedYear ? 'is-selected' : ''}`; option.textContent = `${year}年`; option.onclick = () => { state.showing = new Date(year, state.showing.getMonth(), 1); $('calendar-year-dialog').close(); renderCalendar(); }; list.append(option); } }
 function openCalendarYearPicker() { renderCalendarYearList(); $('calendar-year-dialog').showModal(); $('calendar-year-list').querySelector('.is-selected')?.scrollIntoView({ block: 'center' }); }
 $('calendar-month-trigger').onclick = openCalendarYearPicker; $('close-calendar-year-dialog').onclick = () => $('calendar-year-dialog').close();
-$('calendar-zoom-out').onclick = () => { state.calendarZoom = Math.max(0, state.calendarZoom - 1); saveCalendarZoom(); updateCalendarZoom(); renderCalendar(); }; $('calendar-zoom-in').onclick = () => { state.calendarZoom = Math.min(calendarZoomLevels.length - 1, state.calendarZoom + 1); saveCalendarZoom(); updateCalendarZoom(); renderCalendar(); };
+$('calendar-zoom-out').onclick = () => { state.calendarZoom = Math.max(0, state.calendarZoom - 1); saveCalendarZoom(); updateCalendarZoom(); renderCalendar(true); }; $('calendar-zoom-in').onclick = () => { state.calendarZoom = Math.min(calendarZoomLevels.length - 1, state.calendarZoom + 1); saveCalendarZoom(); updateCalendarZoom(); renderCalendar(true); };
 function displayDate(value) { return new Intl.DateTimeFormat('zh-CN', { month: 'long', day: 'numeric', weekday: 'short' }).format(new Date(`${value}T12:00:00`)); }
 function defaultTime() { const now = new Date(), minutes = Math.ceil((now.getMinutes() + 1) / 5) * 5; if (minutes >= 60) { const next = new Date(now); next.setHours(next.getHours() + 1, 0, 0, 0); return `${String(next.getHours()).padStart(2, '0')}:00`; } return `${String(now.getHours()).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`; }
 function oneHourAfter(time) { const normalized = normalizeTime(time) || '09:00', [hours, minutes] = normalized.split(':').map(Number), total = Math.min(hours * 60 + minutes + 60, 1440); return total === 1440 ? '24:00' : `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`; }
