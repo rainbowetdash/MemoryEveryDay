@@ -10,7 +10,8 @@ const interfaceThemes = [
   { id: 'blue', label: '海雾蓝', color: '#1769aa' },
   { id: 'mint', label: '薄荷绿', color: '#277f75' },
   { id: 'violet', label: '晨雾紫', color: '#7253a6' },
-  { id: 'coral', label: '暖珊瑚', color: '#bf6465' }
+  { id: 'coral', label: '暖珊瑚', color: '#bf6465' },
+  { id: 'night', label: '夜晚模式', color: '#1b2636' }
 ];
 
 function defaultInterfaceSettings() { return { theme: 'blue', order: interfaceTabs.map((item) => item.id), enabled: { calendar: true, day: true, memo: true, anniversary: true, settings: true } }; }
