@@ -529,3 +529,7 @@ body[data-app-theme] .settings-order-feedback { color: var(--theme-muted); }
 /* 入口半收进边缘，保留清晰的点击提示，却不再压住月历首列。 */
 #app-shell .group-sidebar-toggle { left: -14px; }
 #app-shell.is-group-drawer-open .group-sidebar-toggle { left: calc(var(--group-drawer-width, min(286px, calc(100% - 58px))) - 14px); }
+
+/* 下载和更新提示保留当前页面上下文，只做轻度弱化而不是遮住背景。 */
+body[data-app-theme] :is(.release-notice-dialog, .push-help-dialog)::backdrop { background: color-mix(in srgb, var(--app-accent) 14%, transparent) !important; backdrop-filter: blur(.5px); }
+body[data-app-theme="night"] :is(.release-notice-dialog, .push-help-dialog)::backdrop { background: rgb(2 10 20 / .24) !important; }
