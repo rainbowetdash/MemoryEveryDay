@@ -312,3 +312,28 @@ body[data-app-theme="night"] :is(.settings-account-icon, .memo-card-mark) { back
 body[data-app-theme="night"] .settings-theme-choice.is-selected { background: #243957 !important; border-color: #8bb9ff !important; color: #fff !important; }
 body[data-app-theme="night"] dialog::backdrop { background: #000b !important; }
 body[data-app-theme="night"] .group-sidebar-scrim { background: #000a !important; }
+
+/* 每种配色不仅改变图标，也改变页面、卡片和日历的整套色调。 */
+body[data-app-theme="blue"] { --theme-page: #eaf5ff; --theme-surface: #fafdff; --theme-card: #f4faff; --theme-border: #cfe2f0; --theme-text: #183b60; --theme-muted: #6f8fa9; --theme-tint: #e3f2ff; }
+body[data-app-theme="mint"] { --theme-page: #edf9f5; --theme-surface: #fbfffd; --theme-card: #f1fbf7; --theme-border: #b8dfd2; --theme-text: #1c4b43; --theme-muted: #6f968c; --theme-tint: #dff3eb; }
+body[data-app-theme="violet"] { --theme-page: #f5f1ff; --theme-surface: #fdfbff; --theme-card: #f5efff; --theme-border: #d5c7ee; --theme-text: #3f315c; --theme-muted: #8a7da5; --theme-tint: #ece3ff; }
+body[data-app-theme="coral"] { --theme-page: #fff4f2; --theme-surface: #fffdfc; --theme-card: #fff3f0; --theme-border: #f0c9c3; --theme-text: #613938; --theme-muted: #9d7774; --theme-tint: #ffe5e0; }
+body[data-app-theme="night"] { --theme-page: #080d15; --theme-surface: #111823; --theme-card: #182230; --theme-border: #324155; --theme-text: #edf4ff; --theme-muted: #aebdce; --theme-tint: #213a58; }
+
+body[data-app-theme] { background: var(--theme-page); color: var(--theme-text); }
+body[data-app-theme] .app-shell, body[data-app-theme] .screen, body[data-app-theme] .tabbar { background: var(--theme-surface) !important; }
+body[data-app-theme] .tabbar { border-color: var(--theme-border); }
+body[data-app-theme] :is(.calendar-scroll, .calendar-scroll .weekdays, .day-cell, .day-cell.is-empty:not(.is-selected), .memo-card, .memo-empty, .anniversary-card, .anniversary-empty, .settings-account-button, .settings-theme-choice, .settings-feature-row, .settings-order-row, .group-sidebar, dialog) { background: var(--theme-card) !important; border-color: var(--theme-border) !important; color: var(--theme-text); }
+body[data-app-theme] :is(.calendar-selected-date p, .day-header p, .day-summary, .memo-sync-copy, .anniversary-copy, .settings-section-label, .settings-section-heading small, .weekdays, .time-label, .empty-state, .settings-account-button small, .settings-order-row small) { color: var(--theme-muted) !important; }
+body[data-app-theme] :is(.calendar-selected-date h1, .day-header h1, .memo-header h1, .anniversary-header h1, .settings-header h1, .day-number, .memo-card h2, .anniversary-card strong, .settings-account-button strong) { color: var(--theme-text) !important; }
+body[data-app-theme] :is(.agenda-item, .event-card, .calendar-event, .memo-event-link, .account-summary, .schedule-editor) { background: var(--theme-tint); }
+body[data-app-theme] :is(input, select, textarea, .anniversary-date-trigger, .color-picker-trigger, .event-group-trigger, .schedule-editor-trigger, .memo-date-picker-trigger, .early-reminder-trigger) { background: var(--theme-surface) !important; border-color: var(--theme-border) !important; color: var(--theme-text) !important; }
+body[data-app-theme] .settings-theme-choice.is-selected { background: var(--theme-tint) !important; color: var(--theme-text) !important; }
+body[data-app-theme] :is(.day-cell.is-selected, .mini-day.is-selected) { border-color: var(--app-accent) !important; background: var(--theme-tint) !important; color: var(--theme-text) !important; box-shadow: 0 3px 10px color-mix(in srgb, var(--app-accent) 28%, transparent); }
+body[data-app-theme] :is(.day-cell.is-today .day-number, .add-button, .save-button, .push-settings-button, .release-update-button) { background: var(--app-accent); }
+body[data-app-theme] :is(.today-button, .group-sidebar-toggle, .calendar-month-trigger) { border-color: var(--theme-border); color: var(--app-accent); }
+
+/* 固定周标题层与滚动月历同色，避免暮夜蓝出现一条白色横栏。 */
+body[data-app-theme="night"] .calendar-scroll .weekdays { background: #182230 !important; color: #aebdce !important; }
+body[data-app-theme="night"] .calendar-scroll { scrollbar-color: #52667d transparent; }
+body[data-app-theme="night"] .calendar-scroll::-webkit-scrollbar-thumb { background: #52667d; }
