@@ -5,7 +5,7 @@ const zoomStorageKey = 'memory-everyday-calendar-scale-v2';
 const pendingSyncKey = 'memory-everyday-pending-sync';
 const authReminderKey = 'memory-everyday-auth-reminder-shown';
 const floatingActionPositionKey = 'memory-everyday-floating-action-position-v1';
-const releaseInfoUrl = './release-info.json?v=15';
+const releaseInfoUrl = './release-info.json?v=16';
 const releaseAnnouncementStorageKeyBase = 'memory-everyday-release-announcement-seen';
 const launchParams = new URLSearchParams(window.location.search);
 const isNativeShell = launchParams.get('native-shell') === '1';
@@ -17,7 +17,7 @@ const fallbackReleaseInfo = {
   },
   announcement: null
 };
-const calendarZoomLevels = [{ previewLimit: 2 }, { previewLimit: 3 }, { previewLimit: 4 }];
+const calendarZoomLevels = [{ previewLimit: 0 }, { previewLimit: 1 }, { previewLimit: 4 }];
 const earliestSelectableYear = new Date().getFullYear() - 5;
 const latestSelectableYear = 2070;
 const supabaseUrl = 'https://ojhukmhpjovwswnmxoig.supabase.co';
@@ -143,9 +143,16 @@ function renderCalendar(preserveViewport = false) {
     const cell = document.createElement('div'); cell.className = `day-cell ${sameMonth ? '' : 'is-other'} ${dayEvents.length || dayAnniversaries.length ? '' : 'is-empty'} ${dateKey(d) === dateKey(state.selected) ? 'is-selected' : ''} ${dateKey(d) === dateKey(new Date()) ? 'is-today' : ''}`; cell.setAttribute('role', 'button'); cell.setAttribute('tabindex', '0'); cell.setAttribute('aria-label', `${formatDate(d)}，${dayEvents.length}项日程，${dayAnniversaries.length}个纪念日`);
     const number = document.createElement('span'); number.className = 'day-number'; number.textContent = d.getDate(); cell.append(number);
     const previews = document.createElement('div'); previews.className = 'day-event-previews';
-    dayEvents.slice(0, calendarZoomLevels[state.calendarZoom].previewLimit).forEach((event) => { const preview = document.createElement('button'); preview.type = 'button'; preview.className = `calendar-event ${event.color || 'blue'} ${isEventPast(event) ? 'is-past' : ''}`; preview.dataset.eventId = event.id; preview.setAttribute('aria-label', `${eventTimeLabel(event)} ${event.title}`); const time = document.createElement('span'); time.className = 'calendar-event-time'; time.textContent = eventTimeLabel(event); const title = document.createElement('span'); title.className = 'calendar-event-title'; title.textContent = event.title; preview.append(time, title); preview.onclick = (click) => { click.stopPropagation(); openEventDialog(event); }; previews.append(preview); });
-    dayAnniversaries.forEach((item) => { const badge = document.createElement('span'); badge.className = 'calendar-anniversary'; badge.textContent = `✦ ${item.title}`; previews.append(badge); });
-    if (dayEvents.length > calendarZoomLevels[state.calendarZoom].previewLimit) { const more = document.createElement('span'); more.className = 'more-events'; more.textContent = `+${dayEvents.length - calendarZoomLevels[state.calendarZoom].previewLimit}项`; previews.append(more); }
+    if (state.calendarZoom === 0) {
+      const dots = document.createElement('span'); dots.className = 'calendar-event-dots';
+      [...dayEvents.map((event) => event.color || 'blue'), ...dayAnniversaries.map(() => 'anniversary')].slice(0, 6).forEach((color) => { const dot = document.createElement('i'); dot.className = `calendar-event-dot ${color}`; dots.append(dot); });
+      if (dayEvents.length + dayAnniversaries.length > 6) { const more = document.createElement('small'); more.textContent = '+'; dots.append(more); }
+      previews.append(dots);
+    } else {
+      dayEvents.slice(0, calendarZoomLevels[state.calendarZoom].previewLimit).forEach((event) => { const preview = document.createElement('button'); preview.type = 'button'; preview.className = `calendar-event ${event.color || 'blue'} ${isEventPast(event) ? 'is-past' : ''}`; preview.dataset.eventId = event.id; preview.setAttribute('aria-label', `${eventTimeLabel(event)} ${event.title}`); const time = document.createElement('span'); time.className = 'calendar-event-time'; time.textContent = eventTimeLabel(event); const title = document.createElement('span'); title.className = 'calendar-event-title'; title.textContent = event.title; preview.append(time, title); preview.onclick = (click) => { click.stopPropagation(); openEventDialog(event); }; previews.append(preview); });
+      dayAnniversaries.forEach((item) => { const badge = document.createElement('span'); badge.className = 'calendar-anniversary'; badge.textContent = `✦ ${item.title}`; previews.append(badge); });
+      if (dayEvents.length > calendarZoomLevels[state.calendarZoom].previewLimit) { const more = document.createElement('span'); more.className = 'more-events'; more.textContent = `+${dayEvents.length - calendarZoomLevels[state.calendarZoom].previewLimit}项`; previews.append(more); }
+    }
     cell.append(previews); cell.onclick = () => { state.selected = d; state.showing = new Date(d); render(); }; cell.onkeydown = (event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); cell.click(); } }; grid.append(cell);
   }
   const selectedCell = grid.querySelector('.is-selected'), scroller = $('calendar-scroll'), weekdays = scroller.querySelector('.weekdays');
@@ -166,7 +173,7 @@ function renderCalendar(preserveViewport = false) {
 }
 function eventMarkup(e, card = false) { const time = eventTimeLabel(e); return `<div class="${card ? 'event-card' : 'agenda-item'} ${e.color || 'blue'} ${isEventPast(e) ? 'is-past' : ''}" data-event-id="${escapeHtml(e.id)}" role="button" tabindex="0"><span class="${card ? '' : 'agenda-time'}">${escapeHtml(time)}</span><div><strong class="${card ? '' : 'agenda-title'}">${escapeHtml(e.title)}</strong>${card ? `<small>${e.mode === 'range' ? '时间段' : `${escapeHtml(time)} 提醒`}</small>` : ''}</div></div>`; }
 function bindEventDetails() { document.querySelectorAll('.agenda-item[data-event-id], .event-card[data-event-id]').forEach((element) => { const open = () => { const event = state.events.find((item) => item.id === element.dataset.eventId); if (event) openEventDialog(event); }; element.onclick = open; element.onkeydown = (keyEvent) => { if (keyEvent.key === 'Enter' || keyEvent.key === ' ') { keyEvent.preventDefault(); open(); } }; }); }
-function renderAgenda() { const events = eventsFor(state.selected); $('schedule-count').textContent = events.length ? `${events.length} 项日程` : ''; $('calendar-agenda').innerHTML = events.length ? events.map((event) => eventMarkup(event)).join('') : '<div class="empty-state">这一天还没有安排，点右下角加一个吧</div>'; bindEventDetails(); }
+function renderAgenda() { const events = eventsFor(state.selected), selected = state.selected; $('schedule-count').textContent = `${selected.getMonth() + 1}月${selected.getDate()}日 · ${events.length ? `${events.length} 项日程` : '暂无日程'}`; $('calendar-agenda').innerHTML = events.length ? events.map((event) => eventMarkup(event)).join('') : '<div class="empty-state">这一天还没有安排，点右下角加一个吧</div>'; bindEventDetails(); }
 function renderDay() { const d = state.selected; $('day-weekday').textContent = new Intl.DateTimeFormat('zh-CN', { weekday: 'long' }).format(d); $('day-year').textContent = `${d.getFullYear()}年`; $('day-title').textContent = new Intl.DateTimeFormat('zh-CN', { month: 'long', day: 'numeric' }).format(d); const events = eventsFor(d); $('day-summary').textContent = events.length ? `今天有 ${events.length} 项安排` : '今天留给自己慢慢安排'; let html = ''; for (let h = 6; h <= 22; h += 1) { const time = `${String(h).padStart(2, '0')}:00`; html += `<div class="time-row"><span class="time-label">${time}</span><div class="time-line"></div>${events.filter((e) => e.time.slice(0, 2) === String(h).padStart(2, '0')).map((e) => eventMarkup(e, true)).join('')}</div>`; } $('timeline').innerHTML = html; bindEventDetails(); }
 function memoEvent(eventId) { return state.events.find((event) => event.id === eventId) || null; }
 function memoEventText(eventId) { const event = memoEvent(eventId); return event ? `${event.date.slice(5).replace('-', '月')}日 · ${eventTimeLabel(event)} · ${event.title}` : ''; }
@@ -191,7 +198,7 @@ $('day-date-trigger').onclick = openDayDatePicker; $('close-day-date-dialog').on
 function renderCalendarYearList() { const list = $('calendar-year-list'), selectedYear = state.showing.getFullYear(); list.innerHTML = ''; for (let year = earliestSelectableYear; year <= latestSelectableYear; year += 1) { const option = document.createElement('button'); option.type = 'button'; option.className = `day-year-option ${year === selectedYear ? 'is-selected' : ''}`; option.textContent = `${year}年`; option.onclick = () => { state.showing = new Date(year, state.showing.getMonth(), 1); $('calendar-year-dialog').close(); renderCalendar(); }; list.append(option); } }
 function openCalendarYearPicker() { renderCalendarYearList(); $('calendar-year-dialog').showModal(); $('calendar-year-list').querySelector('.is-selected')?.scrollIntoView({ block: 'center' }); }
 $('calendar-month-trigger').onclick = openCalendarYearPicker; $('close-calendar-year-dialog').onclick = () => $('calendar-year-dialog').close();
-$('calendar-zoom-out').onclick = () => { state.calendarZoom = Math.max(0, state.calendarZoom - 1); saveCalendarZoom(); updateCalendarZoom(); renderCalendar(true); }; $('calendar-zoom-in').onclick = () => { state.calendarZoom = Math.min(calendarZoomLevels.length - 1, state.calendarZoom + 1); saveCalendarZoom(); updateCalendarZoom(); renderCalendar(true); };
+$('calendar-zoom-out').onclick = () => { state.calendarZoom = Math.max(0, state.calendarZoom - 1); saveCalendarZoom(); updateCalendarZoom(); renderCalendar(false); }; $('calendar-zoom-in').onclick = () => { state.calendarZoom = Math.min(calendarZoomLevels.length - 1, state.calendarZoom + 1); saveCalendarZoom(); updateCalendarZoom(); renderCalendar(false); };
 function displayDate(value) { return new Intl.DateTimeFormat('zh-CN', { month: 'long', day: 'numeric', weekday: 'short' }).format(new Date(`${value}T12:00:00`)); }
 function defaultTime() { const now = new Date(), minutes = Math.ceil((now.getMinutes() + 1) / 5) * 5; if (minutes >= 60) { const next = new Date(now); next.setHours(next.getHours() + 1, 0, 0, 0); return `${String(next.getHours()).padStart(2, '0')}:00`; } return `${String(now.getHours()).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`; }
 function oneHourAfter(time) { const normalized = normalizeTime(time) || '09:00', [hours, minutes] = normalized.split(':').map(Number), total = Math.min(hours * 60 + minutes + 60, 1440); return total === 1440 ? '24:00' : `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`; }
