@@ -5,7 +5,7 @@ const zoomStorageKey = 'memory-everyday-calendar-scale-v2';
 const pendingSyncKey = 'memory-everyday-pending-sync';
 const authReminderKey = 'memory-everyday-auth-reminder-shown';
 const floatingActionPositionKey = 'memory-everyday-floating-action-position-v1';
-const releaseInfoUrl = './release-info.json?v=18';
+const releaseInfoUrl = './release-info.json?v=19';
 const releaseAnnouncementStorageKeyBase = 'memory-everyday-release-announcement-seen';
 const launchParams = new URLSearchParams(window.location.search);
 const isNativeShell = launchParams.get('native-shell') === '1';
@@ -136,7 +136,7 @@ function renderCalendar(preserveViewport = false) {
   const scrollerBeforeRender = $('calendar-scroll');
   const savedViewport = preserveViewport ? { left: scrollerBeforeRender.scrollLeft, top: scrollerBeforeRender.scrollTop, height: Math.max(1, scrollerBeforeRender.scrollHeight - scrollerBeforeRender.clientHeight) } : null;
   const year = state.showing.getFullYear(), month = state.showing.getMonth(); $('calendar-month-trigger').textContent = `${year}年${month + 1}月`;
-  const selected = state.selected; $('calendar-selected-year').textContent = `${selected.getFullYear()}年`; $('calendar-selected-date').textContent = `${selected.getMonth() + 1}月${selected.getDate()}日`; $('calendar-selected-weekday').textContent = new Intl.DateTimeFormat('zh-CN', { weekday: 'long' }).format(selected);
+  const selected = state.selected; $('calendar-selected-date').textContent = `${selected.getMonth() + 1}月${selected.getDate()}日`; $('calendar-selected-weekday').textContent = new Intl.DateTimeFormat('zh-CN', { weekday: 'long' }).format(selected);
   const first = new Date(year, month, 1), start = new Date(year, month, 1 - first.getDay()), grid = $('calendar-grid'); grid.innerHTML = '';
   for (let i = 0; i < 42; i += 1) {
     const d = new Date(start); d.setDate(start.getDate() + i); const sameMonth = d.getMonth() === month, dayEvents = eventsFor(d), dayAnniversaries = anniversariesFor(d);
