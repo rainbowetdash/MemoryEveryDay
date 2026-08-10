@@ -9,21 +9,22 @@
       "hint": "用于 SideStore、AltStore、Sideloadly 等侧载工具"
     },
     "android": {
-      "latestVersion": "1.0.1",
-      "downloadUrl": "./downloads/apk-1-0-1",
-      "downloadName": "MemoryEveryDay-1.0.1.apk",
+      "latestVersion": "1.0.2",
+      "downloadUrl": "./downloads/apk-1-0-2",
+      "downloadName": "MemoryEveryDay-1.0.2.apk",
       "label": "Android APK",
       "hint": "下载后可直接安装更新"
     }
   },
   "announcement": {
-    "id": "2026-08-07-bottom-navigation",
+    "id": "2026-08-09-android-experience",
     "eyebrow": "本次更新",
-    "title": "底部导航更清楚、更好点",
-    "summary": "这次优化了每天都会使用的底部导航。",
+    "title": "Android 体验已升级",
+    "summary": "Android 版现在也能更安心地接收提醒、快速打开和稳定使用。",
     "items": [
-      "底部栏整体加高，图标和文字之间更舒展，点击也更轻松。",
-      "日历、日程、备忘录和纪念日图标已统一大小与风格。"
+      "首次打开会主动询问通知权限；允许后可开启、测试并接收日程提醒。",
+      "桌面图标与启动页已补齐，打开时不再出现白屏等待。",
+      "App 内已锁定缩放，双指和双击不会再意外放大页面。"
     ]
   }
 }

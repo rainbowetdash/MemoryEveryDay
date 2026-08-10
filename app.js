@@ -5,7 +5,7 @@ const zoomStorageKey = 'memory-everyday-calendar-scale-v2';
 const pendingSyncKey = 'memory-everyday-pending-sync';
 const authReminderKey = 'memory-everyday-auth-reminder-shown';
 const floatingActionPositionKey = 'memory-everyday-floating-action-position-v1';
-const releaseInfoUrl = './release-info.json?v=3';
+const releaseInfoUrl = './release-info.json?v=4';
 const releaseAnnouncementStorageKeyBase = 'memory-everyday-release-announcement-seen';
 const launchParams = new URLSearchParams(window.location.search);
 const isNativeShell = launchParams.get('native-shell') === '1';
@@ -13,7 +13,7 @@ const legacyNativeVersions = { ios: '1.0.4', android: '1.0.0' };
 const fallbackReleaseInfo = {
   apps: {
     ios: { latestVersion: '1.0.6', downloadUrl: './downloads/ipa-1-0-6', downloadName: 'MemoryEveryDay-1.0.6.ipa', label: 'iPhone IPA', hint: '用于 SideStore、AltStore、Sideloadly 等侧载工具' },
-    android: { latestVersion: '1.0.1', downloadUrl: './downloads/apk-1-0-1', downloadName: 'MemoryEveryDay-1.0.1.apk', label: 'Android APK', hint: '下载后可直接安装更新' }
+    android: { latestVersion: '1.0.2', downloadUrl: './downloads/apk-1-0-2', downloadName: 'MemoryEveryDay-1.0.2.apk', label: 'Android APK', hint: '下载后可直接安装更新' }
   },
   announcement: null
 };
@@ -45,14 +45,10 @@ const state = {
 state.calendarZoom = 0;
 localStorage.setItem(zoomStorageKey, '0');
 const $ = (id) => document.getElementById(id);
-function nativeNotificationsAvailable() { return isNativeShell && Boolean(window.webkit?.messageHandlers?.notifications); }
+function nativeNotificationsAvailable() { return isNativeShell && Boolean(window.webkit?.messageHandlers?.notifications || window.MemoryEveryDayNativeNotifications?.postMessage); }
 function pushIsSupported() { return nativeNotificationsAvailable(); }
 function notificationsEnabled() { return nativeNotificationsAvailable() && nativeNotificationPermission === 'granted'; }
-function postNativeNotification(message) {
-  const handler = window.webkit?.messageHandlers?.notifications;
-  if (!isNativeShell || !handler) return;
-  handler.postMessage(message);
-}
+function postNativeNotification(message) { const handler = window.webkit?.messageHandlers?.notifications; if (!isNativeShell) return; if (handler?.postMessage) handler.postMessage(message); else if (window.MemoryEveryDayNativeNotifications?.postMessage) window.MemoryEveryDayNativeNotifications.postMessage(JSON.stringify(message)); }
 function scheduleNativeNotification(event) { if (!notificationsEnabled() || !event?.pushReminder) return; const at = eventDateTime(event.date, event.time).getTime(); if (at <= Date.now()) return; postNativeNotification({ action: 'schedule', id: event.id, title: event.title, at, earlyReminders: Array.isArray(event.earlyReminders) ? event.earlyReminders : [] }); }
 function cancelNativeNotification(id) { if (nativeNotificationsAvailable() && id) postNativeNotification({ action: 'cancel', id }); }
 function syncNativeNotifications() { if (!notificationsEnabled()) return; state.events.forEach(scheduleNativeNotification); }
@@ -78,9 +74,9 @@ async function acknowledgePushReminder(eventId) { if (!supabaseClient || !state.
 async function acknowledgeAllPushReminders() { if (!supabaseClient || !state.user) return; const pending = readPending(); const pendingAck = pending.filter((op) => op.type === 'delete').map((op) => op.id); for (const event of state.events) { if (!event.pushReminder) continue; const reminderTime = eventDateTime(event.date, event.time); if (reminderTime <= new Date() && !pendingAck.includes(event.id)) { await supabaseClient.rpc('acknowledge_push_reminder', { target_event_id: event.id }).catch(() => {}); } } }
 async function stopRemindersOnOpen() { if (state.authReady && state.user) await acknowledgeAllPushReminders(); }
 async function registerPushWorker() { updatePushUI(); }
-async function enablePushNotifications() { if (!state.user) { setPushMessage('请先登录账号，再开启系统通知', 'error'); openAuthDialog('login'); return false; } if (!isNativeShell) { showPushHelp(); return false; } if (!pushIsSupported()) { setPushMessage('当前 App 暂不支持通知', 'error'); updatePushUI(); return false; } if (nativeNotificationPermission === 'granted') return true; if (nativeNotificationPermission === 'denied') { setPushMessage('请在 iPhone 设置中允许“每日备忘”发送通知', 'error'); return false; } const granted = await new Promise((resolve) => { resolveNativeNotificationRequest = resolve; postNativeNotification({ action: 'request' }); setTimeout(() => { if (resolveNativeNotificationRequest === resolve) { resolveNativeNotificationRequest = null; resolve(false); } }, 15000); }); if (!granted) setPushMessage('没有获得系统通知权限', 'error'); return granted; }
-async function disablePushNotifications() { setPushMessage('如需关闭全部通知，请在 iPhone 的“设置 > 通知 > 每日备忘”中关闭。'); }
-async function testPushNotification() { if (!await enablePushNotifications()) return; if (nativeNotificationTestTimer) clearTimeout(nativeNotificationTestTimer); setPushMessage('正在请求 iPhone 显示测试通知…'); postNativeNotification({ action: 'test' }); nativeNotificationTestTimer = setTimeout(() => { setPushMessage('系统没有回报通知已显示。请确认已安装 IPA 1.0.6，并在 iPhone 设置中允许横幅通知。', 'error'); nativeNotificationTestTimer = null; }, 7000); }
+async function enablePushNotifications() { if (!state.user) { setPushMessage('请先登录账号，再开启系统通知', 'error'); openAuthDialog('login'); return false; } if (!isNativeShell) { showPushHelp(); return false; } if (!pushIsSupported()) { setPushMessage('当前 App 暂不支持通知', 'error'); updatePushUI(); return false; } if (nativeNotificationPermission === 'granted') return true; if (nativeNotificationPermission === 'denied') { setPushMessage(`请在${nativePlatform() === 'android' ? '手机' : 'iPhone'}设置中允许“每日备忘”发送通知`, 'error'); return false; } const granted = await new Promise((resolve) => { resolveNativeNotificationRequest = resolve; postNativeNotification({ action: 'request' }); setTimeout(() => { if (resolveNativeNotificationRequest === resolve) { resolveNativeNotificationRequest = null; resolve(false); } }, 15000); }); if (!granted) setPushMessage('没有获得系统通知权限', 'error'); return granted; }
+async function disablePushNotifications() { setPushMessage(`如需关闭全部通知，请在${nativePlatform() === 'android' ? '手机' : 'iPhone'}的“设置 > 通知 > 每日备忘”中关闭。`); }
+async function testPushNotification() { if (!await enablePushNotifications()) return; if (nativeNotificationTestTimer) clearTimeout(nativeNotificationTestTimer); const platform = nativePlatform() === 'android' ? 'Android' : 'iPhone'; setPushMessage(`正在请求 ${platform} 显示测试通知…`); postNativeNotification({ action: 'test' }); nativeNotificationTestTimer = setTimeout(() => { setPushMessage(`系统没有回报通知已显示。请确认已安装 ${platform} 最新版，并在系统设置中允许横幅通知。`, 'error'); nativeNotificationTestTimer = null; }, 7000); }
 async function installPwa() { if (deferredInstallPrompt) { deferredInstallPrompt.prompt(); await deferredInstallPrompt.userChoice; deferredInstallPrompt = null; updatePushUI(); return; } showPushHelp(); }
 function openLaunchTarget() { if (launchTargetHandled) return; const params = new URLSearchParams(window.location.search), eventId = params.get('event'), launchDate = params.get('date'); if (!eventId && !launchDate) return; if (/^\d{4}-\d{2}-\d{2}$/.test(launchDate || '')) { state.selected = new Date(`${launchDate}T12:00:00`); state.showing = new Date(state.selected); render(); } const event = eventId ? state.events.find((item) => item.id === eventId) : null; if (event) openEventDialog(event); launchTargetHandled = true; window.history.replaceState({}, '', window.location.pathname); }
 const dateKey = (date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
