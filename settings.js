@@ -214,18 +214,59 @@ function setupSettingsOrderDrag(orderList) {
   let dragging = null,
     pointerId = null,
     startY = 0,
-    moved = false;
+    moved = false,
+    lastPosition = -1;
+  const feedback = document.getElementById("settings-order-feedback");
+  const updateFeedback = (message) => {
+    if (feedback) feedback.textContent = message;
+  };
+  const clearDropMarkers = () => {
+    orderList
+      .querySelectorAll(".is-drop-target, .is-drop-last")
+      .forEach((row) => row.classList.remove("is-drop-target", "is-drop-last"));
+  };
+  const animateReflow = (before) => {
+    orderList.querySelectorAll("[data-interface-order]").forEach((row) => {
+      const previous = before.get(row);
+      if (!previous) return;
+      const offset = previous.top - row.getBoundingClientRect().top;
+      if (!offset) return;
+      row.style.transition = "none";
+      row.style.transform = `translateY(${offset}px)`;
+      requestAnimationFrame(() => {
+        row.style.transition = "";
+        row.style.transform = "";
+      });
+    });
+  };
   const moveBeforeTarget = (clientX, clientY) => {
     if (!dragging) return;
     const target = document
       .elementFromPoint(clientX, clientY)
       ?.closest("[data-interface-order]");
     if (!target || target === dragging || !orderList.contains(target)) return;
-    const rect = target.getBoundingClientRect();
+    const rect = target.getBoundingClientRect(),
+      before = new Map(
+        [...orderList.querySelectorAll("[data-interface-order]")].map((row) => [
+          row,
+          row.getBoundingClientRect(),
+        ]),
+      ),
+      insertAfter = clientY > rect.top + rect.height / 2;
     orderList.insertBefore(
       dragging,
-      clientY > rect.top + rect.height / 2 ? target.nextSibling : target,
+      insertAfter ? target.nextSibling : target,
     );
+    animateReflow(before);
+    clearDropMarkers();
+    const next = dragging.nextElementSibling;
+    if (next) next.classList.add("is-drop-target");
+    else dragging.classList.add("is-drop-last");
+    const position = [...orderList.querySelectorAll("[data-interface-order]")].indexOf(dragging) + 1;
+    if (position !== lastPosition) {
+      lastPosition = position;
+      updateFeedback(`正在将「${tabById(dragging.dataset.interfaceOrder)?.label || "功能"}」移动到第 ${position} 位`);
+    }
   };
   const start = (row, event) => {
     if (dragging) return;
@@ -234,6 +275,9 @@ function setupSettingsOrderDrag(orderList) {
     pointerId = event.pointerId ?? "mouse";
     startY = event.clientY;
     moved = false;
+    lastPosition = [...orderList.querySelectorAll("[data-interface-order]")].indexOf(row) + 1;
+    clearDropMarkers();
+    updateFeedback(`已选中「${tabById(row.dataset.interfaceOrder)?.label || "功能"}」，向上或向下拖动即可调整`);
     document.body.classList.add("is-reordering-navigation");
     row.setPointerCapture?.(event.pointerId);
   };
@@ -257,10 +301,19 @@ function setupSettingsOrderDrag(orderList) {
       return;
     const row = dragging;
     row.classList.remove("is-dragging");
+    clearDropMarkers();
     document.body.classList.remove("is-reordering-navigation");
     dragging = null;
     pointerId = null;
-    if (moved) saveSettingsOrder(orderList);
+    if (moved) {
+      const position = [...orderList.querySelectorAll("[data-interface-order]")].indexOf(row) + 1,
+        label = tabById(row.dataset.interfaceOrder)?.label || "功能";
+      saveSettingsOrder(orderList);
+      document.getElementById("settings-order-feedback").textContent = `已将「${label}」调整到第 ${position} 位`;
+      const tabbar = document.querySelector(".tabbar");
+      tabbar?.classList.remove("is-order-updated");
+      requestAnimationFrame(() => tabbar?.classList.add("is-order-updated"));
+    } else updateFeedback("按住任一项目即可调整顺序");
   };
   orderList.querySelectorAll("[data-interface-order]").forEach((row) => {
     row.draggable = false;

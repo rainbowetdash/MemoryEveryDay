@@ -212,13 +212,26 @@
   font-weight: 800;
   cursor: grab;
   touch-action: none;
+  position: relative;
+  transition: transform .2s cubic-bezier(.2,.85,.28,1), box-shadow .2s ease, border-color .2s ease, background .2s ease, opacity .2s ease;
 }
 .settings-order-row.is-dragging {
-  opacity: 0.65;
+  opacity: 1;
   border-color: var(--app-accent, #1769aa);
-  background: #eef8ff;
+  background: var(--theme-tint, #eef8ff);
   cursor: grabbing;
+  z-index: 2;
+  transform: scale(1.025);
+  box-shadow: 0 10px 20px color-mix(in srgb, var(--app-accent, #1769aa) 25%, transparent);
 }
+.settings-order-row.is-drop-target::before,
+.settings-order-row.is-drop-last::after { position: absolute; z-index: 3; left: 12px; right: 12px; height: 3px; border-radius: 99px; background: var(--app-accent, #1769aa); box-shadow: 0 0 0 3px color-mix(in srgb, var(--app-accent, #1769aa) 14%, transparent); content: ""; }
+.settings-order-row.is-drop-target::before { top: -6px; }
+.settings-order-row.is-drop-last::after { bottom: -6px; }
+.settings-order-feedback { min-height: 20px; margin: 9px 3px 0; color: var(--theme-muted, #6686a2); font-size: 11px; font-weight: 700; line-height: 1.45; }
+.tabbar.is-order-updated .tab { animation: tab-order-settle .36s cubic-bezier(.2,.85,.28,1) both; }
+.tabbar.is-order-updated .tab:nth-child(2) { animation-delay: .035s; }.tabbar.is-order-updated .tab:nth-child(3) { animation-delay: .07s; }.tabbar.is-order-updated .tab:nth-child(4) { animation-delay: .105s; }.tabbar.is-order-updated .tab:nth-child(5) { animation-delay: .14s; }
+@keyframes tab-order-settle { 0% { opacity: .35; transform: translateY(8px) scale(.94); } 100% { opacity: 1; transform: none; } }
 .settings-drag-handle {
   color: #9bb3c3;
   font-size: 18px;
@@ -508,6 +521,10 @@ body[data-app-theme] .calendar-toolbar .today-button:hover { background: var(--t
 .new-group-button:hover { border-color: var(--app-accent, #1769aa); background: var(--theme-tint, #e4f3ff); }
 body[data-app-theme] .new-group-button { border-color: var(--theme-border); background: var(--theme-card); color: var(--app-accent); }
 body[data-app-theme] .new-group-button:hover { border-color: var(--app-accent); background: var(--theme-tint); }
+
+/* 排序中的浮起状态在所有主题下都保持清晰。 */
+body[data-app-theme] .settings-order-row.is-dragging { background: var(--theme-tint) !important; border-color: var(--app-accent) !important; color: var(--theme-text) !important; }
+body[data-app-theme] .settings-order-feedback { color: var(--theme-muted); }
 
 /* 入口半收进边缘，保留清晰的点击提示，却不再压住月历首列。 */
 #app-shell .group-sidebar-toggle { left: -14px; }
