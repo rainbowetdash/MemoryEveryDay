@@ -373,3 +373,10 @@ body[data-app-theme] .zoom-button:disabled { color: var(--theme-muted); }
 /* 侧拉日程表入口与各页面顶部提示文字同步跟随主题。 */
 body[data-app-theme] :is(.group-sidebar-toggle, #app-shell.is-group-drawer-open .group-sidebar-toggle) { background: var(--theme-card) !important; border-color: var(--theme-border) !important; color: var(--app-accent) !important; box-shadow: 3px 5px 12px color-mix(in srgb, var(--theme-text) 14%, transparent); }
 body[data-app-theme] :is(.memo-header p, .anniversary-header p, .settings-header p, .group-sidebar-header p, .memo-editor-header p) { color: var(--theme-muted) !important; }
+
+/* 三档缩放直接改变月历的格子尺寸与可视区域，避免只改变按钮状态。 */
+#calendar-screen[data-calendar-zoom="1"] .calendar-scroll { height: 390px !important; --calendar-row-height: 138px !important; --calendar-cell-padding: 7px !important; --calendar-number-size: 23px !important; --calendar-number-font: 14px !important; --calendar-time-font: 10px !important; --calendar-title-font: 11px !important; --calendar-more-font: 10px !important; --calendar-event-padding: 4px 5px !important; }
+#calendar-screen[data-calendar-zoom="2"] .calendar-scroll { height: 460px !important; --calendar-row-height: 172px !important; --calendar-cell-padding: 9px !important; --calendar-number-size: 27px !important; --calendar-number-font: 16px !important; --calendar-time-font: 11px !important; --calendar-title-font: 13px !important; --calendar-more-font: 11px !important; --calendar-event-padding: 5px 6px !important; }
+#calendar-screen[data-calendar-zoom="1"] .calendar-canvas, #calendar-screen[data-calendar-zoom="2"] .calendar-canvas { width: 100% !important; padding-inline: 0 !important; }
+#calendar-screen[data-calendar-zoom="1"] .calendar-grid, #calendar-screen[data-calendar-zoom="2"] .calendar-grid { margin-block: 0 !important; }
+@media (max-width: 540px) { #calendar-screen[data-calendar-zoom="1"] .calendar-scroll { height: min(51dvh, 390px) !important; } #calendar-screen[data-calendar-zoom="2"] .calendar-scroll { height: min(59dvh, 460px) !important; } }

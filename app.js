@@ -5,7 +5,7 @@ const zoomStorageKey = 'memory-everyday-calendar-scale-v2';
 const pendingSyncKey = 'memory-everyday-pending-sync';
 const authReminderKey = 'memory-everyday-auth-reminder-shown';
 const floatingActionPositionKey = 'memory-everyday-floating-action-position-v1';
-const releaseInfoUrl = './release-info.json?v=10';
+const releaseInfoUrl = './release-info.json?v=11';
 const releaseAnnouncementStorageKeyBase = 'memory-everyday-release-announcement-seen';
 const launchParams = new URLSearchParams(window.location.search);
 const isNativeShell = launchParams.get('native-shell') === '1';
@@ -17,7 +17,7 @@ const fallbackReleaseInfo = {
   },
   announcement: null
 };
-const calendarZoomLevels = [{ previewLimit: 2 }, { previewLimit: 2 }, { previewLimit: 3 }];
+const calendarZoomLevels = [{ previewLimit: 2 }, { previewLimit: 3 }, { previewLimit: 4 }];
 const earliestSelectableYear = new Date().getFullYear() - 5;
 const latestSelectableYear = 2070;
 const supabaseUrl = 'https://ojhukmhpjovwswnmxoig.supabase.co';
@@ -42,8 +42,6 @@ const state = {
   calendarZoom: Math.min(2, Math.max(0, Number(localStorage.getItem(zoomStorageKey)) || 0)),
   events: readStoredEvents(storageKey), anniversaries: readStoredAnniversaries(anniversaryStorageKey(null)), groups: readStoredGroups(groupStorageKey()), activeGroupId: 'all', editingGroupId: null, editingMemoId: null, memoAttachments: [], memos: [], memoDatePickerShowing: new Date(), user: null, authReady: false, syncBusy: false, authMode: 'login', groupsInitialized: false
 };
-state.calendarZoom = 0;
-localStorage.setItem(zoomStorageKey, '0');
 const $ = (id) => document.getElementById(id);
 function nativeNotificationsAvailable() { return isNativeShell && Boolean(window.webkit?.messageHandlers?.notifications || window.MemoryEveryDayNativeNotifications?.postMessage); }
 function pushIsSupported() { return nativeNotificationsAvailable(); }
