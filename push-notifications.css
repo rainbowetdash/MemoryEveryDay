@@ -312,7 +312,10 @@
 .app-download-option:hover,
 .app-download-option.is-recommended { border-color: #70add4; background: #eaf6ff; }
 .app-download-option.is-recommended { box-shadow: 0 0 0 1px #70add43d; }
-.app-download-option > span:first-child { display: grid; place-items: center; font-size: 23px; }
+.app-download-option > .app-download-platform-icon { display: grid; place-items: center; width: 26px; height: 28px; color: #296d9d; }
+.app-download-platform-icon svg { display: block; width: 23px; height: 23px; fill: currentColor; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.app-download-option.android .app-download-platform-icon svg { fill: none; }
+.app-download-platform-icon svg path { vector-effect: non-scaling-stroke; }
 .app-download-option strong, .app-download-option small { display: block; }
 .app-download-option strong { font-size: 13px; }
 .app-download-option small { margin-top: 3px; color: #6e8ca4; font-size: 11px; line-height: 1.35; }
