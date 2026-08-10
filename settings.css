@@ -397,3 +397,16 @@ body[data-app-theme] .app-download-option small { color: var(--theme-muted) !imp
 body[data-app-theme] :is(.app-download-option b, .app-download-option > .app-download-platform-icon) { color: var(--app-accent) !important; }
 body[data-app-theme] .release-dismiss-button { background: var(--theme-card); border-color: var(--theme-border); color: var(--theme-text); }
 body[data-app-theme] .release-dismiss-button:hover { background: var(--theme-tint); }
+
+/* 账号内的系统通知区域也跟随主题，避免暮夜蓝下出现浅色底搭配浅色字。 */
+body[data-app-theme] .account-summary { background: var(--theme-tint) !important; border-color: var(--theme-border) !important; }
+body[data-app-theme] :is(.account-summary strong, .push-settings-copy strong) { color: var(--theme-text) !important; }
+body[data-app-theme] :is(.account-summary small, .auth-copy, .auth-note, .auth-message, .push-settings-copy small, .push-settings-message) { color: var(--theme-muted) !important; }
+body[data-app-theme] .account-summary-icon { background: var(--app-accent); color: #fff; }
+body[data-app-theme] .push-settings-card { background: var(--theme-surface) !important; border-color: var(--theme-border) !important; }
+body[data-app-theme] .push-settings-icon { background: var(--theme-tint); color: var(--app-accent); }
+body[data-app-theme] .push-settings-button { background: var(--app-accent) !important; color: #fff !important; }
+body[data-app-theme] .push-settings-button.is-enabled { background: var(--theme-card) !important; border-color: var(--theme-border) !important; color: var(--theme-text) !important; }
+body[data-app-theme] :is(.push-test-button, #install-app-button) { background: var(--theme-card) !important; border-color: var(--theme-border) !important; color: var(--app-accent) !important; }
+body[data-app-theme] .sync-now-button { background: var(--app-accent) !important; color: #fff !important; }
+body[data-app-theme] .sign-out-button { background: color-mix(in srgb, #d56a70 12%, var(--theme-surface)) !important; border-color: color-mix(in srgb, #d56a70 42%, var(--theme-border)) !important; color: #cb6169 !important; }
