@@ -5,7 +5,7 @@ const zoomStorageKey = 'memory-everyday-calendar-scale-v2';
 const pendingSyncKey = 'memory-everyday-pending-sync';
 const authReminderKey = 'memory-everyday-auth-reminder-shown';
 const floatingActionPositionKey = 'memory-everyday-floating-action-position-v1';
-const releaseInfoUrl = './release-info.json?v=9';
+const releaseInfoUrl = './release-info.json?v=10';
 const releaseAnnouncementStorageKeyBase = 'memory-everyday-release-announcement-seen';
 const launchParams = new URLSearchParams(window.location.search);
 const isNativeShell = launchParams.get('native-shell') === '1';

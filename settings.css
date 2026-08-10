@@ -359,3 +359,17 @@ body[data-app-theme="night"] .calendar-event-title { color: #f3f8ff !important; 
 .settings-order-row, .settings-order-row * { user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
 .settings-order-row { -webkit-user-drag: none; }
 body.is-reordering-navigation, body.is-reordering-navigation * { user-select: none !important; -webkit-user-select: none !important; cursor: grabbing !important; }
+
+/* 设置内容仍可滚动，但不再占用右侧一条显眼的滚动条。 */
+.settings-screen { scrollbar-width: none; }
+.settings-screen::-webkit-scrollbar { display: none; width: 0; height: 0; }
+
+/* 恢复日历右上角的缩放控制，并让它使用当前主题。 */
+.calendar-zoom-controls { display: flex !important; }
+body[data-app-theme] .zoom-button { background: var(--theme-card); border-color: var(--theme-border); color: var(--app-accent); }
+body[data-app-theme] .zoom-button:hover:not(:disabled) { background: var(--theme-tint); }
+body[data-app-theme] .zoom-button:disabled { color: var(--theme-muted); }
+
+/* 侧拉日程表入口与各页面顶部提示文字同步跟随主题。 */
+body[data-app-theme] :is(.group-sidebar-toggle, #app-shell.is-group-drawer-open .group-sidebar-toggle) { background: var(--theme-card) !important; border-color: var(--theme-border) !important; color: var(--app-accent) !important; box-shadow: 3px 5px 12px color-mix(in srgb, var(--theme-text) 14%, transparent); }
+body[data-app-theme] :is(.memo-header p, .anniversary-header p, .settings-header p, .group-sidebar-header p, .memo-editor-header p) { color: var(--theme-muted) !important; }
