@@ -479,3 +479,10 @@ body[data-app-theme] .calendar-event-dots small { color: var(--app-accent); }
 body[data-app-theme] .calendar-agenda-section .agenda-item { background: transparent !important; border-bottom-color: var(--theme-border) !important; color: var(--theme-text); }
 body[data-app-theme] .calendar-agenda-section .agenda-time { background: var(--theme-tint); color: var(--app-accent); }
 @media (max-width: 540px) { #calendar-screen[data-calendar-zoom="0"] .calendar-selected-date h1 { font-size: 25px; } #calendar-screen[data-calendar-zoom="0"] .calendar-selected-date p { font-size: 11px; } }
+
+/* 纪念日与当天日程一起呈现，使用温和的粉色标记区分全天的重要日子。 */
+.calendar-agenda-section .calendar-anniversary-agenda { border-left-color: #d96696; }
+.calendar-agenda-section .calendar-anniversary-agenda .agenda-time { color: #c75586; background: #fff0f6; font-size: 17px; }
+.calendar-anniversary-agenda small { display: block; margin-top: 3px; color: #9d7184; font-size: 11px; }
+body[data-app-theme] .calendar-agenda-section .calendar-anniversary-agenda .agenda-time { background: color-mix(in srgb, #d96696 14%, var(--theme-surface)); color: #cf6d95; }
+body[data-app-theme] .calendar-anniversary-agenda small { color: var(--theme-muted) !important; }
