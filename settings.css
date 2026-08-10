@@ -337,3 +337,25 @@ body[data-app-theme] :is(.today-button, .group-sidebar-toggle, .calendar-month-t
 body[data-app-theme="night"] .calendar-scroll .weekdays { background: #182230 !important; color: #aebdce !important; }
 body[data-app-theme="night"] .calendar-scroll { scrollbar-color: #52667d transparent; }
 body[data-app-theme="night"] .calendar-scroll::-webkit-scrollbar-thumb { background: #52667d; }
+
+/* 日程在月历中以独立高对比卡片呈现，标题与时间都能一眼看清。 */
+body[data-app-theme] .calendar-event {
+  min-height: 38px;
+  border: 1px solid color-mix(in srgb, var(--app-accent) 72%, #fff) !important;
+  border-left: 4px solid var(--app-accent) !important;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--app-accent) 16%, var(--theme-surface)) !important;
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--app-accent) 18%, transparent);
+  color: var(--theme-text) !important;
+  padding: 4px 5px;
+}
+body[data-app-theme] .calendar-event-time { color: color-mix(in srgb, var(--app-accent) 72%, var(--theme-text)) !important; font-size: max(9px, var(--calendar-time-font)); font-weight: 850; }
+body[data-app-theme] .calendar-event-title { color: var(--theme-text) !important; font-size: max(10px, var(--calendar-title-font)); font-weight: 850; }
+body[data-app-theme="night"] .calendar-event { background: #213a58 !important; border-color: #75adf7 !important; color: #f3f8ff !important; }
+body[data-app-theme="night"] .calendar-event-time { color: #b9d5ff !important; }
+body[data-app-theme="night"] .calendar-event-title { color: #f3f8ff !important; }
+
+/* 排序操作专用：从按下开始停止文字选择，避免电脑和手机拖动时干扰。 */
+.settings-order-row, .settings-order-row * { user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+.settings-order-row { -webkit-user-drag: none; }
+body.is-reordering-navigation, body.is-reordering-navigation * { user-select: none !important; -webkit-user-select: none !important; cursor: grabbing !important; }
