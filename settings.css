@@ -507,3 +507,7 @@ body[data-app-theme] .calendar-toolbar .today-button:hover { background: var(--t
 .new-group-button:hover { border-color: var(--app-accent, #1769aa); background: var(--theme-tint, #e4f3ff); }
 body[data-app-theme] .new-group-button { border-color: var(--theme-border); background: var(--theme-card); color: var(--app-accent); }
 body[data-app-theme] .new-group-button:hover { border-color: var(--app-accent); background: var(--theme-tint); }
+
+/* 入口半收进边缘，保留清晰的点击提示，却不再压住月历首列。 */
+#app-shell .group-sidebar-toggle { left: -14px; }
+#app-shell.is-group-drawer-open .group-sidebar-toggle { left: calc(var(--group-drawer-width, min(286px, calc(100% - 58px))) - 14px); }
