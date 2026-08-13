@@ -33,7 +33,7 @@
     <link rel="stylesheet" href="./mobile-input-fix.css?v=2" />
     <link rel="stylesheet" href="./floating-action.css?v=1" />
     <link rel="stylesheet" href="./bottom-navigation.css?v=1" />
-    <link rel="stylesheet" href="./settings.css?v=18" />
+    <link rel="stylesheet" href="./settings.css?v=19" />
     <style>
       html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
       body { min-height: 100dvh; }
@@ -272,6 +272,20 @@
           <div class="time-inputs"><label>提醒时间<input id="event-time-input" inputmode="numeric" autocomplete="off" maxlength="5" placeholder="09:00 或 0900" value="09:00" /></label><label id="end-time-field" class="is-hidden">结束时间（可填 24:00）<input id="event-end-time-input" inputmode="numeric" autocomplete="off" maxlength="5" placeholder="24:00 或 2400" value="10:00" /></label></div>
           <p class="time-input-note">可只输入数字：900 会自动变为 09:00；结束时间可输入 2400。</p>
         </section>
+        <div class="form-label">重复提醒</div>
+        <button type="button" id="weekly-repeat-trigger" class="schedule-editor-trigger weekly-repeat-trigger" aria-label="展开重复提醒" aria-expanded="false"><span class="schedule-editor-icon">↻</span><span><strong>重复提醒</strong><small id="weekly-repeat-summary">不重复</small></span><span class="chevron" aria-hidden="true"></span></button>
+        <section id="weekly-repeat-editor" class="weekly-repeat-editor is-hidden" aria-label="设置每周重复">
+          <div class="weekly-repeat-heading"><div><strong>每周重复</strong><small>勾选上课日后，一个日程会自动出现在每周对应日期</small></div><button type="button" id="weekly-repeat-toggle" class="mode-switch" role="switch" aria-checked="false" aria-label="开启每周重复"><span></span></button></div>
+          <div id="weekly-day-choices" class="weekly-day-choices" role="group" aria-label="选择每周重复日期">
+            <button type="button" class="weekly-day-choice" data-weekly-day="1" aria-pressed="false"><span>一</span><small>周一</small></button>
+            <button type="button" class="weekly-day-choice" data-weekly-day="2" aria-pressed="false"><span>二</span><small>周二</small></button>
+            <button type="button" class="weekly-day-choice" data-weekly-day="3" aria-pressed="false"><span>三</span><small>周三</small></button>
+            <button type="button" class="weekly-day-choice" data-weekly-day="4" aria-pressed="false"><span>四</span><small>周四</small></button>
+            <button type="button" class="weekly-day-choice" data-weekly-day="5" aria-pressed="false"><span>五</span><small>周五</small></button>
+            <button type="button" class="weekly-day-choice" data-weekly-day="6" aria-pressed="false"><span>六</span><small>周六</small></button>
+            <button type="button" class="weekly-day-choice" data-weekly-day="0" aria-pressed="false"><span>日</span><small>周日</small></button>
+          </div>
+        </section>
         <input id="push-reminder" name="pushReminder" type="hidden" value="false" />
         <div class="push-reminder-row">
           <div><strong>系统通知</strong><small id="push-reminder-copy">到点后每 30 秒提醒，打开日程后停止</small></div>
@@ -476,7 +490,7 @@
       </section>
     </dialog>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <script src="./app.js?v=126"></script>
+    <script src="./app.js?v=127"></script>
     <script src="./settings.js?v=6"></script>
   </body>
 </html>

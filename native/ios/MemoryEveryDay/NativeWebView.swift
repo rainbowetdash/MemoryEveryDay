@@ -130,6 +130,7 @@ struct NativeWebView: UIViewRepresentable {
             switch action {
             case "request": requestNotificationPermission()
             case "schedule": scheduleNotification(body)
+            case "schedule-recurring": scheduleRecurringNotifications(body)
             case "cancel": if let id = body["id"] as? String { cancelNotifications(for: id) }
             case "status": sendNotificationStatus()
             case "test": sendTestNotification()
@@ -188,6 +189,22 @@ struct NativeWebView: UIViewRepresentable {
             }
         }
 
+        private func scheduleRecurringNotifications(_ body: [String: Any]) {
+            guard let id = body["id"] as? String, let title = body["title"] as? String, let occurrences = body["occurrences"] as? [[String: Any]] else { return }
+            cancelNotifications(for: id)
+            let reminders = body["earlyReminders"] as? [NSNumber] ?? []
+            for (index, occurrence) in occurrences.enumerated() {
+                guard let at = (occurrence["at"] as? NSNumber)?.doubleValue else { continue }
+                let date = Date(timeIntervalSince1970: at / 1000)
+                let occurrenceId = "\(id)-repeat-\(index)"
+                schedule(id: occurrenceId, title: title, body: "该去处理这项日程了", at: date)
+                for minutes in reminders {
+                    let earlyDate = date.addingTimeInterval(-minutes.doubleValue * 60)
+                    if earlyDate > Date() { schedule(id: "\(occurrenceId)-early-\(minutes)", title: title, body: "日程即将开始", at: earlyDate) }
+                }
+            }
+        }
+
         private func schedule(id: String, title: String, body: String, at date: Date) {
             guard date > Date() else { return }
             let content = UNMutableNotificationContent()
@@ -200,7 +217,7 @@ struct NativeWebView: UIViewRepresentable {
 
         private func cancelNotifications(for id: String) {
             UNUserNotificationCenter.current().getPendingNotificationRequests { requests in
-                let ids = requests.map(\.identifier).filter { $0 == id || $0.hasPrefix("\(id)-early-") }
+                let ids = requests.map(\.identifier).filter { $0 == id || $0.hasPrefix("\(id)-") }
                 UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: ids)
             }
         }

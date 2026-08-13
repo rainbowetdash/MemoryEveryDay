@@ -533,3 +533,20 @@ body[data-app-theme] .settings-order-feedback { color: var(--theme-muted); }
 /* 下载和更新提示保留当前页面上下文，只做轻度弱化而不是遮住背景。 */
 body[data-app-theme] :is(.release-notice-dialog, .push-help-dialog)::backdrop { background: color-mix(in srgb, var(--app-accent) 14%, transparent) !important; backdrop-filter: blur(.5px); }
 body[data-app-theme="night"] :is(.release-notice-dialog, .push-help-dialog)::backdrop { background: rgb(2 10 20 / .24) !important; }
+
+/* 课程表式的每周重复：一个日程本体，勾选上课日后在日历中自动持续出现。 */
+.weekly-repeat-editor { margin: -3px 0 15px; border: 1px solid var(--theme-border, #cfe0ee); border-radius: 10px; background: var(--theme-card, #f8fcff); padding: 13px; }
+.weekly-repeat-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.weekly-repeat-heading strong, .weekly-repeat-heading small { display: block; }
+.weekly-repeat-heading strong { color: var(--theme-text, #284e6d); font-size: 14px; }
+.weekly-repeat-heading small { margin-top: 3px; color: var(--theme-muted, #6a89a4); font-size: 11px; line-height: 1.45; }
+.weekly-day-choices { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; margin-top: 13px; }
+.weekly-day-choice { display: grid; place-items: center; gap: 2px; min-height: 52px; border: 1px solid var(--theme-border, #cfe0ee); border-radius: 9px; background: var(--theme-surface, #fff); color: var(--theme-muted, #6686a2); cursor: pointer; }
+.weekly-day-choice span { display: grid; place-items: center; width: 22px; height: 22px; border: 1px solid currentColor; border-radius: 50%; font-size: 12px; font-weight: 850; }
+.weekly-day-choice small { font-size: 9px; font-weight: 700; }
+.weekly-day-choice.is-selected { border-color: var(--app-accent, #1769aa); background: var(--theme-tint, #eaf5ff); color: var(--app-accent, #1769aa); box-shadow: 0 0 0 1px color-mix(in srgb, var(--app-accent, #1769aa) 20%, transparent); }
+.weekly-repeat-editor:not(.is-enabled) .weekly-day-choices { opacity: .42; pointer-events: none; }
+body[data-app-theme] .weekly-repeat-editor { border-color: var(--theme-border); background: var(--theme-card); }
+body[data-app-theme] .weekly-day-choice { border-color: var(--theme-border); background: var(--theme-surface); color: var(--theme-muted); }
+body[data-app-theme] .weekly-day-choice.is-selected { border-color: var(--app-accent); background: var(--theme-tint); color: var(--app-accent); }
+@media (max-width: 380px) { .weekly-day-choices { gap: 4px; }.weekly-day-choice { min-height: 47px; } }

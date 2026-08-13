@@ -160,6 +160,29 @@ public class MainActivity extends Activity {
         preferences().edit().putStringSet("scheduled_" + id, keys).apply();
     }
 
+    private void scheduleRecurringNotifications(String id, String title, JSONArray occurrences, JSONArray earlyReminders) {
+        cancelNotifications(id);
+        Set<String> keys = new HashSet<>();
+        for (int index = 0; index < occurrences.length(); index++) {
+            JSONObject occurrence = occurrences.optJSONObject(index);
+            long at = occurrence == null ? 0L : occurrence.optLong("at", 0L);
+            if (at <= System.currentTimeMillis()) continue;
+            String occurrenceId = id + "-repeat-" + index;
+            keys.add(occurrenceId);
+            scheduleAlarm(occurrenceId, title, "该去处理这项日程了", at);
+            for (int reminderIndex = 0; reminderIndex < earlyReminders.length(); reminderIndex++) {
+                int minutes = earlyReminders.optInt(reminderIndex, 0);
+                long earlyAt = at - minutes * 60_000L;
+                if (minutes > 0 && earlyAt > System.currentTimeMillis()) {
+                    String key = occurrenceId + "-early-" + minutes;
+                    keys.add(key);
+                    scheduleAlarm(key, title, "日程即将开始", earlyAt);
+                }
+            }
+        }
+        preferences().edit().putStringSet("scheduled_" + id, keys).apply();
+    }
+
     private void scheduleAlarm(String id, String title, String body, long at) {
         Intent intent = new Intent(this, NotificationReceiver.class).putExtra(NotificationReceiver.EXTRA_ID, id).putExtra(NotificationReceiver.EXTRA_TITLE, title).putExtra(NotificationReceiver.EXTRA_BODY, body);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, id.hashCode(), intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
@@ -204,6 +227,7 @@ public class MainActivity extends Activity {
                         case "test": sendTestNotification(); break;
                         case "cancel": cancelNotifications(message.optString("id")); break;
                         case "schedule": scheduleNotification(message.optString("id"), message.optString("title"), message.optLong("at"), message.optJSONArray("earlyReminders") == null ? new JSONArray() : message.optJSONArray("earlyReminders")); break;
+                        case "schedule-recurring": scheduleRecurringNotifications(message.optString("id"), message.optString("title"), message.optJSONArray("occurrences") == null ? new JSONArray() : message.optJSONArray("occurrences"), message.optJSONArray("earlyReminders") == null ? new JSONArray() : message.optJSONArray("earlyReminders")); break;
                         default: break;
                     }
                 });

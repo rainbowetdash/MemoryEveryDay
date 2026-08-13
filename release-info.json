@@ -9,22 +9,22 @@
       "hint": "用于 SideStore、AltStore、Sideloadly 等侧载工具"
     },
     "android": {
-      "latestVersion": "1.0.2",
-      "downloadUrl": "./downloads/apk-1-0-2",
-      "downloadName": "MemoryEveryDay-1.0.2.apk",
+      "latestVersion": "1.0.3",
+      "downloadUrl": "./downloads/apk-1-0-3",
+      "downloadName": "MemoryEveryDay-1.0.3.apk",
       "label": "Android APK",
       "hint": "下载后可直接安装更新"
     }
   },
   "announcement": {
-    "id": "2026-08-10-download-dialog-background",
+    "id": "2026-08-13-weekly-course-reminders",
     "eyebrow": "本次更新",
-    "title": "下载提示保留当前界面",
-    "summary": "打开下载与更新提示时，背景日历会继续可见，仅用柔和遮罩降低干扰。",
+    "title": "课程表式每周重复",
+    "summary": "只需创建一次日程，勾选上课日后，它会在每周对应日期持续显示并按时提醒。",
     "items": [
-      "背景内容不再被深色遮罩几乎完全盖住。",
-      "下载和更新提示保持清晰聚焦。",
-      "所有主题下都采用更轻的背景遮罩。"
+      "在“重复提醒”中勾选周一至周日。",
+      "同一个课程日程会自动出现在每周相应日期。",
+      "Android 新版会自动安排后续课程提醒；iPhone 版会随下一次安装包更新。"
     ]
   }
 }
