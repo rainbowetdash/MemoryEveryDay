@@ -545,14 +545,18 @@ body[data-app-theme="night"] :is(.release-notice-dialog, .push-help-dialog)::bac
 .weekly-day-choice span { display: grid; place-items: center; width: 22px; height: 22px; border: 1px solid currentColor; border-radius: 50%; font-size: 12px; font-weight: 850; }
 .weekly-day-choice small { font-size: 9px; font-weight: 700; }
 .weekly-day-choice.is-selected { border-color: var(--app-accent, #1769aa); background: var(--theme-tint, #eaf5ff); color: var(--app-accent, #1769aa); box-shadow: 0 0 0 1px color-mix(in srgb, var(--app-accent, #1769aa) 20%, transparent); }
-.weekly-repeat-range { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: end; gap: 7px; margin-top: 13px; }
+.weekly-repeat-range { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: end; gap: 11px; margin-top: 13px; }
 .weekly-repeat-range label { display: grid; gap: 5px; color: var(--theme-muted, #6686a2); font-size: 10px; font-weight: 760; }
-.weekly-repeat-range input { width: 100%; min-width: 0; box-sizing: border-box; min-height: 35px; border: 1px solid var(--theme-border, #cfe0ee); border-radius: 8px; padding: 5px 6px; background: var(--theme-surface, #fff); color: var(--theme-text, #284e6d); font: inherit; font-size: 11px; }
-.weekly-repeat-range > span { padding-bottom: 10px; color: var(--theme-muted, #6686a2); font-weight: 800; }
+.weekly-repeat-range input { width: 100%; min-width: 0; max-width: 100%; box-sizing: border-box; min-height: 38px; border: 1px solid var(--theme-border, #cfe0ee); border-radius: 8px; padding: 5px 4px; background: var(--theme-surface, #fff); color: var(--theme-text, #284e6d); font: inherit; font-size: 10px; letter-spacing: -.25px; }
+.weekly-repeat-range > span { display: none; }
 .weekly-repeat-range-note { display: block; margin-top: 7px; color: var(--theme-muted, #6686a2); font-size: 10px; }
 .weekly-repeat-editor:not(.is-enabled) :is(.weekly-day-choices, .weekly-repeat-range, .weekly-repeat-range-note) { opacity: .42; pointer-events: none; }
 body[data-app-theme] .weekly-repeat-editor { border-color: var(--theme-border); background: var(--theme-card); }
 body[data-app-theme] .weekly-day-choice { border-color: var(--theme-border); background: var(--theme-surface); color: var(--theme-muted); }
 body[data-app-theme] .weekly-repeat-range input { border-color: var(--theme-border); background: var(--theme-surface); color: var(--theme-text); }
+/* 系统通知卡片跟随主题，避免深色文字规则落在浅色卡片上。 */
+body[data-app-theme] .push-reminder-row { border-color: var(--theme-border); background: var(--theme-card); color: var(--theme-text); }
+body[data-app-theme] .push-reminder-row strong { color: var(--theme-text) !important; }
+body[data-app-theme] .push-reminder-row small, body[data-app-theme] #push-reminder-copy { color: var(--theme-muted) !important; }
 body[data-app-theme] .weekly-day-choice.is-selected { border-color: var(--app-accent); background: var(--theme-tint); color: var(--app-accent); }
 @media (max-width: 380px) { .weekly-day-choices { gap: 4px; }.weekly-day-choice { min-height: 47px; } }
