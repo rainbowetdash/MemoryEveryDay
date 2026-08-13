@@ -2,9 +2,9 @@
   "schemaVersion": 1,
   "apps": {
     "ios": {
-      "latestVersion": "1.0.6",
-      "downloadUrl": "./downloads/ipa-1-0-6",
-      "downloadName": "MemoryEveryDay-1.0.6.ipa",
+      "latestVersion": "1.0.7",
+      "downloadUrl": "./downloads/ipa-1-0-7",
+      "downloadName": "MemoryEveryDay-1.0.7.ipa",
       "label": "iPhone IPA",
       "hint": "用于 SideStore、AltStore、Sideloadly 等侧载工具"
     },
@@ -24,7 +24,7 @@
     "items": [
       "在“重复提醒”中勾选周一至周日。",
       "同一个课程日程会自动出现在每周相应日期。",
-      "Android 新版会自动安排后续课程提醒；iPhone 版会随下一次安装包更新。"
+      "Android 与 iPhone 新版都会自动安排后续课程提醒。"
     ]
   }
 }

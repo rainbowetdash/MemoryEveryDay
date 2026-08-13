@@ -1,4 +1,4 @@
-const cache = "memory-everyday-v140";
+const cache = "memory-everyday-v141";
 const files = [
   "/",
   "/index.html",
@@ -26,9 +26,9 @@ const files = [
   "/floating-action.css?v=1",
   "/bottom-navigation.css?v=1",
   "/settings.css?v=19",
-  "/app.js?v=127",
+  "/app.js?v=128",
   "/settings.js?v=6",
-  "/release-info.json?v=26",
+  "/release-info.json?v=27",
   "/manifest.webmanifest",
   "/icon.svg",
   "/wecom-daily-memo-icon.png",
