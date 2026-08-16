@@ -26,7 +26,7 @@
     <link rel="stylesheet" href="./memo-inline-media.css?v=1" />
     <link rel="stylesheet" href="./memo-bold-fix.css?v=1" />
     <link rel="stylesheet" href="./memo-alignment-integration.css?v=1" />
-    <link rel="stylesheet" href="./anniversaries.css?v=11" />
+    <link rel="stylesheet" href="./anniversaries.css?v=12" />
     <link rel="stylesheet" href="./anniversary-swipe.css?v=1" />
     <link rel="stylesheet" href="./mobile-dialog-fixes.css?v=3" />
     <link rel="stylesheet" href="./app-polish.css?v=4" />
@@ -347,19 +347,7 @@
           <button type="button" id="anniversary-push-reminder-toggle" class="mode-switch" role="switch" aria-checked="false" aria-label="开启纪念日系统通知"><span></span></button>
         </div>
         <div id="anniversary-early-reminder-section" class="is-hidden">
-          <div id="anniversary-time-picker" class="anniversary-time-field">
-            <span class="anniversary-time-label">提醒时间</span>
-            <input id="anniversary-reminder-time" type="hidden" value="09:00" />
-            <button type="button" id="anniversary-time-trigger" class="anniversary-time-trigger" aria-expanded="false" aria-haspopup="dialog" aria-controls="anniversary-time-panel"><span class="anniversary-time-spacer" aria-hidden="true"></span><strong id="anniversary-time-value">09:00</strong><i aria-hidden="true"></i></button>
-            <div id="anniversary-time-panel" class="anniversary-time-panel is-hidden" aria-label="选择提醒时间">
-              <div class="anniversary-time-columns">
-                <section><span>小时</span><div id="anniversary-hour-list" class="anniversary-time-list" role="listbox" aria-label="选择小时"></div></section>
-                <b aria-hidden="true">:</b>
-                <section><span>分钟</span><div id="anniversary-minute-list" class="anniversary-time-list" role="listbox" aria-label="选择分钟"></div></section>
-              </div>
-              <button type="button" id="anniversary-time-done" class="anniversary-time-done">完成</button>
-            </div>
-          </div>
+          <label class="anniversary-time-field">提醒时间<input id="anniversary-reminder-time" inputmode="numeric" autocomplete="off" maxlength="5" placeholder="09:00 或 0900" value="09:00" /><small>可只输入数字，900 会自动变为 09:00</small></label>
           <button type="button" id="anniversary-early-reminder-trigger" class="early-reminder-trigger" aria-expanded="false">
             <div class="early-reminder-trigger-left"><span class="early-reminder-icon anniversary-early-reminder-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7.5 10a4.5 4.5 0 0 1 9 0v3.1l1.5 2.4H6l1.5-2.4V10Z"></path><path d="M10 18h4M8 4 5.5 6.5M16 4l2.5 2.5"></path></svg></span><span><strong>提前提醒</strong><small id="anniversary-early-reminder-summary">未设置</small></span></div>
             <span class="chevron" aria-hidden="true"></span>
@@ -544,7 +532,7 @@
       </section>
     </dialog>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <script src="./app.js?v=132"></script>
+    <script src="./app.js?v=133"></script>
     <script src="./settings.js?v=6"></script>
   </body>
 </html>

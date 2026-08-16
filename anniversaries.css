@@ -33,25 +33,9 @@
 .anniversary-date-option { min-height:33px; border:0; border-radius:7px; background:transparent; color:#426d8e; font:inherit; font-size:12px; font-weight:750; cursor:pointer; }
 .anniversary-date-option:hover, .anniversary-date-option:focus-visible { background:#e5f5ff; color:#176eae; outline:0; }
 .anniversary-form-copy { margin: 16px 0 4px; border-left: 3px solid #78c8ed; padding: 10px 12px; color: var(--theme-muted, #5f88a8); background: var(--theme-card, #eff9ff); font-size: 14px; line-height: 1.5; }
-.anniversary-time-field { position: relative; display: grid; gap: 8px; width: 100%; min-width: 0; max-width: 100%; margin: 14px 0; }
-.anniversary-time-label { color: #416d90; font-size: 14px; font-weight: 800; }
-.anniversary-time-trigger { display: grid; grid-template-columns: 28px minmax(0, 1fr) 28px; align-items: center; width: 100%; min-width: 0; min-height: 48px; border: 1px solid var(--theme-border, #bcdcf3); border-radius: 11px; background: var(--theme-surface, #f7fbff); color: var(--theme-text, #234b6c); padding: 0 13px; font: inherit; cursor: pointer; }
-.anniversary-time-trigger:hover, .anniversary-time-trigger[aria-expanded="true"] { border-color: var(--app-accent, #76b7df); background: var(--theme-tint, #eef9ff); }
-.anniversary-time-trigger:disabled { cursor: default; opacity: .58; }
-.anniversary-time-trigger strong { grid-column: 2; justify-self: center; font-size: 17px; font-variant-numeric: tabular-nums; letter-spacing: .4px; }
-.anniversary-time-trigger i { grid-column: 3; justify-self: end; width: 9px; height: 9px; border-right: 2px solid var(--app-accent, #4d8dba); border-bottom: 2px solid var(--app-accent, #4d8dba); transform: translateY(-2px) rotate(45deg); transition: transform .16s ease; }
-.anniversary-time-trigger[aria-expanded="true"] i { transform: translateY(2px) rotate(225deg); }
-.anniversary-time-panel { border: 1px solid var(--theme-border, #b7d9eb); border-radius: 12px; background: var(--theme-card, #f7fbff); padding: 12px; box-shadow: 0 12px 26px color-mix(in srgb, var(--theme-text, #1d5379) 15%, transparent); }
-.anniversary-time-panel.is-hidden { display: none; }
-.anniversary-time-columns { display: grid; grid-template-columns: minmax(0, 1fr) 18px minmax(0, 1fr); align-items: center; gap: 7px; }
-.anniversary-time-columns section { display: grid; gap: 6px; min-width: 0; }
-.anniversary-time-columns section > span { color: var(--theme-muted, #6886a0); font-size: 12px; font-weight: 750; text-align: center; }
-.anniversary-time-columns > b { color: var(--theme-muted, #6886a0); font-size: 22px; text-align: center; }
-.anniversary-time-list { height: 132px; overflow-y: auto; overscroll-behavior: contain; scroll-snap-type: y mandatory; scrollbar-width: none; border: 1px solid var(--theme-border, #c6dceb); border-radius: 10px; background: var(--theme-surface, #fff); padding: 44px 5px; }
-.anniversary-time-list::-webkit-scrollbar { display: none; }
-.anniversary-time-option { display: block; width: 100%; height: 42px; scroll-snap-align: center; border: 0; border-radius: 8px; background: transparent; color: var(--theme-muted, #6a879d); font: inherit; font-size: 15px; font-weight: 750; font-variant-numeric: tabular-nums; cursor: pointer; }
-.anniversary-time-option.is-selected { background: var(--theme-tint, #e5f5ff); color: var(--theme-text, #176eae); font-size: 18px; font-weight: 850; }
-.anniversary-time-done { width: 100%; min-height: 42px; margin-top: 10px; border: 0; border-radius: 9px; background: var(--app-accent, #1769aa); color: #fff; font: inherit; font-size: 14px; font-weight: 800; cursor: pointer; }
+.anniversary-time-field { display: grid; gap: 8px; width: 100%; min-width: 0; max-width: 100%; margin: 14px 0; }
+#anniversary-reminder-time { display: block; width: 100%; min-width: 0; max-width: 100%; box-sizing: border-box; text-align: center; font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: .4px; }
+.anniversary-time-field small { color: var(--theme-muted, #6886a0); font-size: 11px; font-weight: 600; line-height: 1.4; }
 .anniversary-push-reminder-row { margin-top: 3px; }
 .anniversary-early-reminder-add-row { display: grid; grid-template-columns: minmax(0, 1fr) 88px auto; align-items: stretch; }
 .anniversary-early-reminder-add-row > * { min-width: 0; }
@@ -74,8 +58,6 @@
 body[data-app-theme="night"] #anniversary-early-reminder-panel { background: #182230; }
 body[data-app-theme="night"] .anniversary-early-reminder-add-row { background: #111823; }
 body[data-app-theme="night"] .anniversary-early-reminder-add-row .early-reminder-value, body[data-app-theme="night"] .anniversary-early-reminder-add-row .early-reminder-unit-trigger, body[data-app-theme="night"] #anniversary-early-reminder-unit-list { background: #131c28; }
-body[data-app-theme="night"] .anniversary-time-panel { background: #182230; }
-body[data-app-theme="night"] .anniversary-time-list { background: #111823; }
 .calendar-anniversary { display: block; overflow: hidden; color: #ad568e; font-size: 11px; font-weight: 800; line-height: 1.35; text-overflow: ellipsis; white-space: nowrap; }
 @media (max-width: 540px) { .tabbar { gap: 16px; } .tab { min-width: 0; } .anniversary-screen { padding-left: 20px; } .anniversary-dialog { width: calc(100% - 24px); max-width: calc(100% - 24px); margin: auto; } .anniversary-dialog[open] { animation: none !important; transform: none !important; } .anniversary-dialog form { min-height: 0; padding: 20px; } .anniversary-date-inputs { gap: 9px; } }
 @media (max-width: 390px) { .anniversary-early-reminder-add-row { grid-template-columns: minmax(0, 1fr) 82px; } .anniversary-early-reminder-add-row .early-reminder-add-btn { grid-column: 1 / -1; width: 100%; min-height: 42px; } }
