@@ -1,4 +1,4 @@
-.anniversary-screen { overflow-y: auto; padding: 34px 0 26px 30px; }
+.anniversary-screen { overflow-y: auto; padding: 34px 30px 26px; }
 .anniversary-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 .anniversary-header p { margin: 8px 0 5px; color: #6686a2; font-size: 12px; font-weight: 700; }
 .anniversary-header h1 { margin: 0; color: #18324f; font-size: 28px; letter-spacing: -.6px; }
@@ -59,5 +59,5 @@ body[data-app-theme="night"] #anniversary-early-reminder-panel { background: #18
 body[data-app-theme="night"] .anniversary-early-reminder-add-row { background: #111823; }
 body[data-app-theme="night"] .anniversary-early-reminder-add-row .early-reminder-value, body[data-app-theme="night"] .anniversary-early-reminder-add-row .early-reminder-unit-trigger, body[data-app-theme="night"] #anniversary-early-reminder-unit-list { background: #131c28; }
 .calendar-anniversary { display: block; overflow: hidden; color: #ad568e; font-size: 11px; font-weight: 800; line-height: 1.35; text-overflow: ellipsis; white-space: nowrap; }
-@media (max-width: 540px) { .tabbar { gap: 16px; } .tab { min-width: 0; } .anniversary-screen { padding-left: 20px; } .anniversary-dialog { width: calc(100% - 24px); max-width: calc(100% - 24px); margin: auto; } .anniversary-dialog[open] { animation: none !important; transform: none !important; } .anniversary-dialog form { min-height: 0; padding: 20px; } .anniversary-date-inputs { gap: 9px; } }
+@media (max-width: 540px) { .tabbar { gap: 16px; } .tab { min-width: 0; } .anniversary-screen { padding: 28px 20px 26px; } .anniversary-dialog { width: calc(100% - 24px); max-width: calc(100% - 24px); margin: auto; } .anniversary-dialog[open] { animation: none !important; transform: none !important; } .anniversary-dialog form { min-height: 0; padding: 20px; } .anniversary-date-inputs { gap: 9px; } }
 @media (max-width: 390px) { .anniversary-early-reminder-add-row { grid-template-columns: minmax(0, 1fr) 82px; } .anniversary-early-reminder-add-row .early-reminder-add-btn { grid-column: 1 / -1; width: 100%; min-height: 42px; } }
