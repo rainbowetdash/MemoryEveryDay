@@ -33,12 +33,29 @@
 .anniversary-date-option { min-height:33px; border:0; border-radius:7px; background:transparent; color:#426d8e; font:inherit; font-size:12px; font-weight:750; cursor:pointer; }
 .anniversary-date-option:hover, .anniversary-date-option:focus-visible { background:#e5f5ff; color:#176eae; outline:0; }
 .anniversary-form-copy { margin: 16px 0 4px; border-left: 3px solid #78c8ed; padding: 10px 12px; color: var(--theme-muted, #5f88a8); background: var(--theme-card, #eff9ff); font-size: 14px; line-height: 1.5; }
-.anniversary-time-field { min-width: 0; margin: 14px 0; }
-.anniversary-time-field input { width: 100%; }
+.anniversary-time-field { display: grid; width: 100%; min-width: 0; max-width: 100%; margin: 14px 0; overflow: hidden; contain: inline-size; }
+.anniversary-time-field input, #anniversary-reminder-time { display: block; inline-size: 100% !important; width: 100% !important; min-inline-size: 0 !important; min-width: 0 !important; max-inline-size: 100% !important; max-width: 100% !important; box-sizing: border-box; }
+#anniversary-reminder-time::-webkit-date-and-time-value { min-width: 0; text-align: center; }
 .anniversary-push-reminder-row { margin-top: 3px; }
 .anniversary-early-reminder-add-row { display: grid; grid-template-columns: minmax(0, 1fr) 88px auto; }
 .anniversary-early-reminder-add-row > * { min-width: 0; }
-#anniversary-early-reminder-section { margin-top: 12px; }
+#anniversary-early-reminder-section { width: 100%; min-width: 0; max-width: 100%; margin-top: 12px; }
+#anniversary-early-reminder-trigger { border-color: var(--theme-border, #cfdbe6); background: var(--theme-card, #f9fcff); color: var(--theme-text, #18324f); }
+#anniversary-early-reminder-trigger:hover, #anniversary-early-reminder-trigger[aria-expanded="true"] { border-color: var(--app-accent, #80b5da); background: var(--theme-card, #edf7ff); }
+#anniversary-early-reminder-trigger small { color: var(--theme-muted, #6886a0); }
+.anniversary-early-reminder-icon { border: 1px solid color-mix(in srgb, var(--app-accent, #1769aa) 25%, transparent); background: var(--theme-tint, #dcefff); color: var(--app-accent, #1769aa); }
+.anniversary-early-reminder-icon svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+#anniversary-early-reminder-panel { border-color: var(--theme-border, #80b5da); background: var(--theme-card, #eef8ff); }
+.anniversary-early-reminder-add-row { border: 1px solid var(--theme-border, #c8dce9); background: var(--theme-surface, #fff); }
+.anniversary-early-reminder-add-row .early-reminder-value, .anniversary-early-reminder-add-row .early-reminder-unit-trigger { border-color: var(--theme-border, #a3c8e5); background: var(--theme-card, #fff); color: var(--theme-text, #18324f); }
+.anniversary-early-reminder-add-row .early-reminder-value::placeholder { color: var(--theme-muted, #8aa5ba); }
+#anniversary-early-reminder-unit-list { border-color: var(--theme-border, #bad5e8); background: var(--theme-card, #fff); }
+#anniversary-early-reminder-unit-list .early-reminder-unit-option { color: var(--theme-text, #345b7a); }
+#anniversary-early-reminder-unit-list .early-reminder-unit-option:hover, #anniversary-early-reminder-unit-list .early-reminder-unit-option.is-selected { background: var(--theme-tint, #edf7ff); color: var(--app-accent, #176296); }
+#anniversary-early-reminder-panel .early-reminder-add-btn { background: var(--app-accent, #1769aa); color: #fff; }
+body[data-app-theme="night"] #anniversary-early-reminder-panel { background: #182230; }
+body[data-app-theme="night"] .anniversary-early-reminder-add-row { background: #111823; }
+body[data-app-theme="night"] .anniversary-early-reminder-add-row .early-reminder-value, body[data-app-theme="night"] .anniversary-early-reminder-add-row .early-reminder-unit-trigger, body[data-app-theme="night"] #anniversary-early-reminder-unit-list { background: #131c28; }
 .calendar-anniversary { display: block; overflow: hidden; color: #ad568e; font-size: 11px; font-weight: 800; line-height: 1.35; text-overflow: ellipsis; white-space: nowrap; }
-@media (max-width: 540px) { .tabbar { gap: 16px; } .tab { min-width: 0; } .anniversary-screen { padding-left: 20px; } .anniversary-dialog { width: calc(100% - 24px); max-width: calc(100% - 24px); margin: auto; } .anniversary-dialog[open] { animation: none !important; transform: none !important; } .anniversary-dialog form { min-height: 0; padding: 20px; } .anniversary-date-inputs { gap: 9px; } }
+@media (max-width: 540px) { .tabbar { gap: 16px; } .tab { min-width: 0; } .anniversary-screen { padding-left: 20px; } .anniversary-dialog { width: calc(100% - 24px); max-width: calc(100% - 24px); margin: auto; } .anniversary-dialog[open] { animation: none !important; transform: none !important; } .anniversary-dialog form { min-height: 0; padding: 20px; } .anniversary-date-inputs { gap: 9px; } #anniversary-reminder-time { appearance: none; -webkit-appearance: none; } }
 @media (max-width: 390px) { .anniversary-early-reminder-add-row { grid-template-columns: minmax(0, 1fr) 82px; } .anniversary-early-reminder-add-row .early-reminder-add-btn { grid-column: 1 / -1; width: 100%; min-height: 42px; } }
