@@ -26,7 +26,7 @@
     <link rel="stylesheet" href="./memo-inline-media.css?v=1" />
     <link rel="stylesheet" href="./memo-bold-fix.css?v=1" />
     <link rel="stylesheet" href="./memo-alignment-integration.css?v=1" />
-    <link rel="stylesheet" href="./anniversaries.css?v=8" />
+    <link rel="stylesheet" href="./anniversaries.css?v=9" />
     <link rel="stylesheet" href="./anniversary-swipe.css?v=1" />
     <link rel="stylesheet" href="./mobile-dialog-fixes.css?v=3" />
     <link rel="stylesheet" href="./app-polish.css?v=4" />
@@ -341,13 +341,13 @@
         <div class="modal-header"><div><p class="modal-eyebrow" id="anniversary-dialog-eyebrow">新的纪念日</p><h2 id="anniversary-dialog-title">记下重要的日子</h2></div><button type="button" id="close-anniversary-dialog" class="close-button" aria-label="关闭">×</button></div>
         <label>名称<input id="anniversary-title" maxlength="60" required placeholder="例如：妈妈的生日" /></label>
         <div class="anniversary-date-inputs"><div class="anniversary-date-field"><span>月份</span><input id="anniversary-month" type="hidden" value="" /><button type="button" id="anniversary-month-trigger" class="anniversary-date-trigger" aria-expanded="false"><span id="anniversary-month-label"></span><i aria-hidden="true"></i></button><div id="anniversary-month-list" class="anniversary-date-list is-hidden" role="listbox" aria-label="选择月份"></div></div><div class="anniversary-date-field"><span>日期</span><input id="anniversary-day" type="hidden" value="" /><button type="button" id="anniversary-day-trigger" class="anniversary-date-trigger" aria-expanded="false"><span id="anniversary-day-label"></span><i aria-hidden="true"></i></button><div id="anniversary-day-list" class="anniversary-date-list is-hidden" role="listbox" aria-label="选择日期"></div></div></div>
-        <label class="anniversary-time-field">提醒时间<input id="anniversary-reminder-time" type="time" value="09:00" /></label>
         <input id="anniversary-push-reminder" type="hidden" value="false" />
         <div class="push-reminder-row anniversary-push-reminder-row">
           <div><strong>系统通知</strong><small id="anniversary-push-reminder-copy">在每日备忘 App 内开启纪念日提醒</small></div>
           <button type="button" id="anniversary-push-reminder-toggle" class="mode-switch" role="switch" aria-checked="false" aria-label="开启纪念日系统通知"><span></span></button>
         </div>
         <div id="anniversary-early-reminder-section" class="is-hidden">
+          <label class="anniversary-time-field">提醒时间<input id="anniversary-reminder-time" type="time" value="09:00" /></label>
           <button type="button" id="anniversary-early-reminder-trigger" class="early-reminder-trigger" aria-expanded="false">
             <div class="early-reminder-trigger-left"><span class="early-reminder-icon">⏰</span><span><strong>提前提醒</strong><small id="anniversary-early-reminder-summary">未设置</small></span></div>
             <span class="chevron" aria-hidden="true"></span>
@@ -355,13 +355,21 @@
           <div id="anniversary-early-reminder-panel" class="early-reminder-panel is-hidden" aria-label="纪念日提前提醒选项">
             <div class="early-reminder-list" id="anniversary-early-reminder-list" role="group" aria-label="已设置的提前提醒"></div>
             <div class="early-reminder-add-row anniversary-early-reminder-add-row">
-              <input type="number" id="anniversary-early-reminder-value" class="early-reminder-value" min="1" max="365" placeholder="提前几天" inputmode="numeric" />
-              <span class="anniversary-early-reminder-unit">天</span>
+              <input type="number" id="anniversary-early-reminder-value" class="early-reminder-value" min="1" placeholder="提前多久" inputmode="numeric" />
+              <input id="anniversary-early-reminder-unit" type="hidden" value="day" />
+              <div id="anniversary-early-reminder-unit-picker" class="early-reminder-unit-picker">
+                <button type="button" id="anniversary-early-reminder-unit-trigger" class="early-reminder-unit-trigger" aria-expanded="false" aria-haspopup="listbox" aria-controls="anniversary-early-reminder-unit-list"><span id="anniversary-early-reminder-unit-label">天</span><span class="early-reminder-unit-chevron" aria-hidden="true"></span></button>
+                <div id="anniversary-early-reminder-unit-list" class="early-reminder-unit-list is-hidden" role="listbox" aria-label="纪念日提前提醒单位">
+                  <button type="button" class="early-reminder-unit-option" data-anniversary-early-reminder-unit="month" role="option" aria-selected="false">月</button>
+                  <button type="button" class="early-reminder-unit-option is-selected" data-anniversary-early-reminder-unit="day" role="option" aria-selected="true">天</button>
+                  <button type="button" class="early-reminder-unit-option" data-anniversary-early-reminder-unit="hour" role="option" aria-selected="false">小时</button>
+                </div>
+              </div>
               <button type="button" id="add-anniversary-early-reminder" class="early-reminder-add-btn">添加</button>
             </div>
           </div>
         </div>
-        <p class="anniversary-form-copy">每年都会在日历上显示；开启通知后，会在当天和你设置的提前日期提醒。</p>
+        <p class="anniversary-form-copy">每年都会在日历上显示；开启通知后，可按月、天或小时设置多个提前提醒。</p>
         <p id="anniversary-form-error" class="form-error" role="alert"></p>
         <div class="dialog-actions"><button type="button" id="delete-anniversary-button" class="delete-button is-hidden">删除纪念日</button><button class="save-button" id="save-anniversary-button" value="default">保存纪念日</button></div>
       </form>
@@ -524,7 +532,7 @@
       </section>
     </dialog>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <script src="./app.js?v=130"></script>
+    <script src="./app.js?v=131"></script>
     <script src="./settings.js?v=6"></script>
   </body>
 </html>

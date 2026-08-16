@@ -14,13 +14,14 @@
 .anniversary-card .anniversary-reminder-status { color: #748fa5; font-size: 12px; }
 .anniversary-mark { display: grid; place-items: center; width: 37px; height: 37px; border-radius: 12px; color: #b05b91; background: #fff0f7; font-size: 20px; }
 .anniversary-empty { padding: 42px 20px; color: #7c9ab2; text-align: center; border-style: dashed; }
-.anniversary-dialog { width: min(430px, calc(100vw - 32px)); border: 0; border-radius: 22px; padding: 0; color: #1f4a6a; box-shadow: 0 22px 56px rgba(24, 66, 98, .28); }
+.anniversary-dialog { width: min(430px, calc(100% - 32px)); max-width: 430px; max-height: calc(100dvh - 24px); border: 0; border-radius: 22px; padding: 0; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; color: #1f4a6a; box-shadow: 0 22px 56px rgba(24, 66, 98, .28); }
 .anniversary-dialog::backdrop { background: rgba(28, 62, 88, .46); backdrop-filter: blur(2px); }
-.anniversary-dialog form { padding: 26px; }
+.anniversary-dialog form { width: 100%; min-width: 0; padding: 26px; overflow-x: clip; }
+.anniversary-dialog form > * { max-width: 100%; }
 .anniversary-dialog label { display: grid; gap: 8px; font-weight: 800; color: #416d90; }
 .anniversary-dialog input { min-height: 48px; border: 1px solid #bcdcf3; border-radius: 11px; padding: 0 13px; color: #234b6c; background: #f7fbff; font: inherit; }
 .anniversary-date-inputs { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; margin-top: 18px; }
-.anniversary-date-field { position: relative; display: grid; align-content: start; gap: 7px; min-height: 112px; border: 1px solid #c6e0f2; border-radius: 14px; background: #f5fbff; padding: 10px; color: #416d90; font-size: 13px; font-weight: 800; }
+.anniversary-date-field { position: relative; display: grid; align-content: start; gap: 7px; min-width: 0; min-height: 112px; border: 1px solid #c6e0f2; border-radius: 14px; background: #f5fbff; padding: 10px; color: #416d90; font-size: 13px; font-weight: 800; }
 .anniversary-date-field > span { padding-left: 2px; }
 .anniversary-date-trigger { display:flex; align-items:center; justify-content:space-between; min-height: 68px; width:100%; border:1px solid #bcdcf3; border-radius:10px; background:#fff; color:#234b6c; padding:0 15px; font:inherit; font-size:17px; font-weight:800; cursor:pointer; }
 .anniversary-date-trigger:hover, .anniversary-date-trigger[aria-expanded="true"] { border-color:#76b7df; background:#eef9ff; }
@@ -32,11 +33,12 @@
 .anniversary-date-option { min-height:33px; border:0; border-radius:7px; background:transparent; color:#426d8e; font:inherit; font-size:12px; font-weight:750; cursor:pointer; }
 .anniversary-date-option:hover, .anniversary-date-option:focus-visible { background:#e5f5ff; color:#176eae; outline:0; }
 .anniversary-form-copy { margin: 16px 0 4px; border-left: 3px solid #78c8ed; padding: 10px 12px; color: var(--theme-muted, #5f88a8); background: var(--theme-card, #eff9ff); font-size: 14px; line-height: 1.5; }
-.anniversary-time-field { margin-top: 17px; }
+.anniversary-time-field { min-width: 0; margin: 14px 0; }
 .anniversary-time-field input { width: 100%; }
 .anniversary-push-reminder-row { margin-top: 3px; }
-.anniversary-early-reminder-add-row { display: grid; grid-template-columns: minmax(0, 1fr) 42px auto; }
-.anniversary-early-reminder-unit { display: grid; min-height: 42px; place-items: center; border: 1px solid var(--theme-border, #c8dce9); border-radius: 8px; background: var(--theme-surface, #fff); color: var(--theme-text, #42627f); font-size: 13px; font-weight: 750; }
+.anniversary-early-reminder-add-row { display: grid; grid-template-columns: minmax(0, 1fr) 88px auto; }
+.anniversary-early-reminder-add-row > * { min-width: 0; }
 #anniversary-early-reminder-section { margin-top: 12px; }
 .calendar-anniversary { display: block; overflow: hidden; color: #ad568e; font-size: 11px; font-weight: 800; line-height: 1.35; text-overflow: ellipsis; white-space: nowrap; }
-@media (max-width: 540px) { .tabbar { gap: 16px; } .tab { min-width: 0; } .anniversary-screen { padding-left: 20px; } .anniversary-dialog form { padding: 20px; } .anniversary-date-inputs { gap: 9px; } }
+@media (max-width: 540px) { .tabbar { gap: 16px; } .tab { min-width: 0; } .anniversary-screen { padding-left: 20px; } .anniversary-dialog { width: calc(100% - 24px); max-width: calc(100% - 24px); margin: auto; } .anniversary-dialog[open] { animation: none !important; transform: none !important; } .anniversary-dialog form { min-height: 0; padding: 20px; } .anniversary-date-inputs { gap: 9px; } }
+@media (max-width: 390px) { .anniversary-early-reminder-add-row { grid-template-columns: minmax(0, 1fr) 82px; } .anniversary-early-reminder-add-row .early-reminder-add-btn { grid-column: 1 / -1; width: 100%; min-height: 42px; } }
