@@ -1,0 +1,29 @@
+body[data-app-theme] .memo-link-choice {
+  border-color: var(--theme-border);
+  background: color-mix(in srgb, var(--theme-card) 82%, var(--theme-surface));
+  color: var(--theme-muted);
+}
+
+body[data-app-theme] .memo-link-choice > span {
+  background: var(--theme-tint);
+  color: var(--app-accent);
+}
+
+body[data-app-theme] .memo-link-choice strong {
+  color: var(--theme-text) !important;
+}
+
+body[data-app-theme] .memo-link-choice small {
+  color: var(--theme-muted);
+}
+
+body[data-app-theme] .memo-link-choice.is-selected {
+  border-color: var(--app-accent);
+  background: color-mix(in srgb, var(--app-accent) 14%, var(--theme-card));
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--app-accent) 24%, transparent);
+}
+
+body[data-app-theme] .memo-link-choice:is(:hover, :focus-visible) {
+  border-color: var(--app-accent);
+  outline: 0;
+}
