@@ -1,0 +1,24 @@
+.memo-editor-content > h2 {
+  margin: 0 0 10px;
+  color: var(--theme-text, #173b58) !important;
+  font-family: var(--memo-body-font) !important;
+  font-size: 23px;
+  font-weight: 800 !important;
+  line-height: 1.4;
+  letter-spacing: -.35px;
+}
+
+.memo-editor-content > h2:only-child {
+  margin-bottom: 0;
+}
+
+.memo-editor-content .memo-pasted-plain {
+  color: var(--theme-text, #284d69) !important;
+  font-family: var(--memo-body-font) !important;
+  font-size: 15px !important;
+  font-style: normal !important;
+  font-weight: 400 !important;
+  letter-spacing: normal !important;
+  text-decoration: none !important;
+  white-space: pre-wrap;
+}
