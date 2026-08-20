@@ -19,3 +19,9 @@
   cursor: wait;
   opacity: .65;
 }
+
+#memo-editor-screen .memo-editor-status:empty::before {
+  content: '修改后会自动保存';
+  color: #7894a9;
+  font-weight: 600;
+}
