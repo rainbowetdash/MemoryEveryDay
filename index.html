@@ -22,6 +22,7 @@
     <link rel="stylesheet" href="./memo-editor-visibility.css?v=1" />
     <link rel="stylesheet" href="./day-header-position.css?v=1" />
     <link rel="stylesheet" href="./memo-status.css?v=2" />
+    <link rel="stylesheet" href="./event-notes.css?v=1" />
     <link rel="stylesheet" href="./memo-delete-confirm.css?v=1" />
     <link rel="stylesheet" href="./memo-integration.css?v=3" />
     <link rel="stylesheet" href="./force-sync-confirm.css?v=1" />
@@ -249,6 +250,7 @@
       <form method="dialog" id="event-form" novalidate>
         <div class="modal-header"><div><p class="modal-eyebrow" id="event-dialog-eyebrow">新的安排</p><h2 id="event-dialog-title">添加日程</h2></div><button type="button" id="close-event-dialog" class="close-button" aria-label="关闭">×</button></div>
         <label>内容<input id="event-title" name="title" required maxlength="60" placeholder="例如：和朋友喝咖啡" /></label>
+        <label class="event-note-field">备注<input id="event-note" name="note" maxlength="140" placeholder="例如：带上作业和水杯（可选）" /></label>
         <input id="event-date" name="date" type="hidden" />
         <input id="event-time" name="time" type="hidden" value="09:00" />
         <input id="event-end-time" name="endTime" type="hidden" />
@@ -534,7 +536,7 @@
       </section>
     </dialog>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <script src="./app.js?v=138"></script>
+    <script src="./app.js?v=139"></script>
     <script src="./settings.js?v=6"></script>
   </body>
 </html>

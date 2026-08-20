@@ -1,0 +1,35 @@
+.event-note-field {
+  margin-top: -3px;
+}
+
+.event-note-field input {
+  background: #f8fcff;
+}
+
+.event-note-preview {
+  display: -webkit-box;
+  overflow: hidden;
+  margin: 4px 0 0;
+  color: #67869f;
+  font-size: 12px;
+  line-height: 1.45;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.event-note-preview b {
+  color: #3d7096;
+  font-weight: 750;
+}
+
+body[data-app-theme="night"] .event-note-field input {
+  background: #172332;
+}
+
+body[data-app-theme="night"] .event-note-preview {
+  color: #a9c3d7;
+}
+
+body[data-app-theme="night"] .event-note-preview b {
+  color: #d3e6f5;
+}
