@@ -49,7 +49,6 @@ struct NativeWebView: UIViewRepresentable {
     final class Coordinator: NSObject, WKNavigationDelegate, WKScriptMessageHandler {
         private var isLoading: Binding<Bool>
         private weak var webView: WKWebView?
-        private var foregroundObserver: NSObjectProtocol?
         private var notificationTestObserver: NSObjectProtocol?
         private let siteURL = URL(string: "https://memoryeveryday.pages.dev/")!
 
@@ -58,11 +57,6 @@ struct NativeWebView: UIViewRepresentable {
         func attach(_ webView: WKWebView) {
             self.webView = webView
             requestNotificationPermissionIfNeeded()
-            foregroundObserver = NotificationCenter.default.addObserver(
-                forName: UIApplication.willEnterForegroundNotification,
-                object: nil,
-                queue: .main
-            ) { [weak self] _ in self?.loadLatest() }
             notificationTestObserver = NotificationCenter.default.addObserver(
                 forName: .memoryEveryDayTestNotificationPresented,
                 object: nil,
@@ -74,7 +68,6 @@ struct NativeWebView: UIViewRepresentable {
         }
 
         deinit {
-            if let foregroundObserver { NotificationCenter.default.removeObserver(foregroundObserver) }
             if let notificationTestObserver { NotificationCenter.default.removeObserver(notificationTestObserver) }
         }
 

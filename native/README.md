@@ -1,6 +1,6 @@
 # 每日备忘原生壳
 
-`ios/` 和 `android/` 都以 `https://memoryeveryday.pages.dev` 为唯一内容源。每次启动或从后台回到前台时，原生壳会清除网页静态缓存与旧 Service Worker，并附带新的 `reload` 参数重新请求页面；登录等本地数据不会被清除。
+`ios/` 和 `android/` 都以 `https://memoryeveryday.pages.dev` 为唯一内容源。iOS 原生壳仅在 App 启动时清除网页静态缓存与旧 Service Worker，并附带新的 `reload` 参数重新请求页面；普通切到后台再返回会保留当前页面和编辑状态，登录等本地数据不会被清除。
 
 用 Android Studio 打开 `android/` 后即可构建调试安装包，输出路径为 `android/app/build/outputs/apk/debug/app-debug.apk`。
 
