@@ -2,9 +2,9 @@
   "schemaVersion": 1,
   "apps": {
     "ios": {
-      "latestVersion": "1.0.7",
-      "downloadUrl": "./downloads/ipa-1-0-7",
-      "downloadName": "MemoryEveryDay-1.0.7.ipa",
+      "latestVersion": "1.0.8",
+      "downloadUrl": "./downloads/ipa-1-0-8",
+      "downloadName": "MemoryEveryDay-1.0.8.ipa",
       "label": "iPhone IPA",
       "hint": "用于 SideStore、AltStore、Sideloadly 等侧载工具"
     },
@@ -17,14 +17,14 @@
     }
   },
   "announcement": {
-    "id": "2026-08-16-anniversary-reminder-fix",
-    "eyebrow": "本次更新",
-    "title": "纪念日设置已修复",
-    "summary": "纪念日详情页现在可以稳定操作，并支持按月、天或小时设置提前提醒。",
+    "id": "2026-08-20-ios-1-0-8",
+    "eyebrow": "iPhone App 更新",
+    "title": "iPhone 版 1.0.8 已发布",
+    "summary": "切回每日备忘时会保留当前页面和编辑内容，不再重新加载。",
     "items": [
-      "修复手机端详情页无法点击和左右滑动错位的问题。",
-      "可自由添加多个提前月数、天数或小时数。",
-      "已有的提前天数会自动保留，无需重新设置。"
+      "从后台回到 App 时，保留正在查看或编辑的页面。",
+      "备忘录现已自动保存，短暂停顿后会直接写入账号。",
+      "继续支持 SideStore、AltStore、Sideloadly 等侧载安装。"
     ]
   }
 }

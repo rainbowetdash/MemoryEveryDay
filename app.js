@@ -5,14 +5,14 @@ const zoomStorageKey = 'memory-everyday-calendar-scale-v2';
 const pendingSyncKey = 'memory-everyday-pending-sync';
 const authReminderKey = 'memory-everyday-auth-reminder-shown';
 const floatingActionPositionKey = 'memory-everyday-floating-action-position-v1';
-const releaseInfoUrl = './release-info.json?v=29';
+const releaseInfoUrl = './release-info.json?v=30';
 const releaseAnnouncementStorageKeyBase = 'memory-everyday-release-announcement-seen';
 const launchParams = new URLSearchParams(window.location.search);
 const isNativeShell = launchParams.get('native-shell') === '1';
 const legacyNativeVersions = { ios: '1.0.4', android: '1.0.0' };
 const fallbackReleaseInfo = {
   apps: {
-    ios: { latestVersion: '1.0.7', downloadUrl: './downloads/ipa-1-0-7', downloadName: 'MemoryEveryDay-1.0.7.ipa', label: 'iPhone IPA', hint: '用于 SideStore、AltStore、Sideloadly 等侧载工具' },
+    ios: { latestVersion: '1.0.8', downloadUrl: './downloads/ipa-1-0-8', downloadName: 'MemoryEveryDay-1.0.8.ipa', label: 'iPhone IPA', hint: '用于 SideStore、AltStore、Sideloadly 等侧载工具' },
     android: { latestVersion: '1.0.3', downloadUrl: './downloads/apk-1-0-3', downloadName: 'MemoryEveryDay-1.0.3.apk', label: 'Android APK', hint: '下载后可直接安装更新' }
   },
   announcement: null

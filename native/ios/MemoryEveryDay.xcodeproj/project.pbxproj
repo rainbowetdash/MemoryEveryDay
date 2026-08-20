@@ -21,7 +21,7 @@
 		9062D620E4FFA5143828F61E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		9A190ECCF176AEB43BF2040B /* MemoryEveryDayApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryEveryDayApp.swift; sourceTree = "<group>"; };
 		D2A41037F997210B0F1D58B5 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
-		F1A8094CAA3344A70B07E0DC /* MemoryEveryDay.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = MemoryEveryDay.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F1A8094CAA3344A70B07E0DC /* MemoryEveryDay.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MemoryEveryDay.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -94,7 +94,6 @@
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
 					C83516F3D23D01A915A149A5 = {
-						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -207,6 +206,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 6X7732M9V3;
 				INFOPLIST_FILE = MemoryEveryDay/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -288,6 +288,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 6X7732M9V3;
 				INFOPLIST_FILE = MemoryEveryDay/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
