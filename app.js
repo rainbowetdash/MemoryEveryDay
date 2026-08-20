@@ -241,7 +241,43 @@ function handleMemoPaste(event) {
   if (titleFirstLine) editor.replaceChildren(fragment); else { range.deleteContents(); range.insertNode(fragment); }
   const caret = document.createRange(); caret.setStartAfter(lastNode); caret.collapse(true); selection?.removeAllRanges(); selection?.addRange(caret); rememberMemoSelection();
 }
-$('memo-content').addEventListener('paste', handleMemoPaste);
+function prepareMemoTypedTitle(event) {
+  const isTextEntry = event.inputType === 'insertText' && !/[\r\n]/.test(event.data || ''), isCompositionEntry = ['insertCompositionText', 'insertFromComposition'].includes(event.inputType);
+  if (!isTextEntry && !isCompositionEntry) return;
+  const editor = $('memo-content'), visibleText = (editor.innerText || editor.textContent || '').trim();
+  if (visibleText || editor.querySelector('[data-memo-attachment-id]')) return;
+  const heading = document.createElement('h2'), breakNode = document.createElement('br'); heading.append(breakNode); editor.replaceChildren(heading);
+  const selection = window.getSelection(), range = document.createRange(); range.setStart(heading, 0); range.collapse(true); selection?.removeAllRanges(); selection?.addRange(range);
+}
+function normalizeMemoTypedTitle() {
+  const editor = $('memo-content'), visibleText = (editor.innerText || editor.textContent || '').trim();
+  if (!visibleText && !editor.querySelector('[data-memo-attachment-id]')) { editor.replaceChildren(); return; }
+  if (editor.querySelector(':scope > h2') || editor.querySelector('[data-memo-attachment-id]')) return;
+  const firstNode = [...editor.childNodes].find((node) => node.nodeType === Node.TEXT_NODE ? node.textContent.trim() : node.nodeType === Node.ELEMENT_NODE && node.tagName !== 'BR');
+  if (!firstNode) return;
+  const heading = document.createElement('h2');
+  if (firstNode.nodeType === Node.TEXT_NODE && !firstNode.textContent.includes('\n')) { firstNode.before(heading); heading.append(firstNode); }
+  else if (firstNode.nodeType === Node.ELEMENT_NODE && ['DIV', 'P'].includes(firstNode.tagName)) { firstNode.before(heading); heading.append(...firstNode.childNodes); firstNode.remove(); }
+}
+function splitMemoTitleOnEnter(event) {
+  const isParagraph = event.inputType === 'insertParagraph', isTextReturn = event.inputType === 'insertText' && /[\r\n]/.test(event.data || '');
+  if (!isParagraph && !isTextReturn) return;
+  const editor = $('memo-content'), selection = window.getSelection();
+  if (!selection?.rangeCount) return;
+  const range = selection.getRangeAt(0), startElement = range.startContainer.nodeType === Node.ELEMENT_NODE ? range.startContainer : range.startContainer.parentElement, heading = startElement?.closest('h2');
+  if (!heading || heading.parentElement !== editor || !heading.contains(range.endContainer)) return;
+  event.preventDefault(); range.deleteContents();
+  const tailRange = document.createRange(); tailRange.setStart(range.startContainer, range.startOffset); tailRange.setEnd(heading, heading.childNodes.length); const tail = tailRange.extractContents(), body = document.createElement('div');
+  if (tail.childNodes.length) body.append(tail); else body.append(document.createElement('br'));
+  if (!heading.textContent.trim() && !heading.querySelector('br')) heading.append(document.createElement('br'));
+  heading.after(body);
+  const caret = document.createRange(); caret.setStart(body, 0); caret.collapse(true); selection.removeAllRanges(); selection.addRange(caret); rememberMemoSelection();
+}
+const memoContentEditor = $('memo-content');
+memoContentEditor.addEventListener('beforeinput', prepareMemoTypedTitle);
+memoContentEditor.addEventListener('beforeinput', splitMemoTitleOnEnter);
+memoContentEditor.addEventListener('input', normalizeMemoTypedTitle);
+memoContentEditor.addEventListener('paste', handleMemoPaste);
 function renderMemos() { const list = $('memo-list'), signedIn = Boolean(state.user); $('memo-sync-copy').textContent = signedIn ? '已同步到你的账号，换设备登录后也能继续查看和编辑' : '登录后可新建备忘录，并在所有设备查看'; $('new-memo-button').textContent = signedIn ? '＋ 新建' : '登录后新建'; if (!state.memos.length) { list.innerHTML = `<div class="memo-empty">${signedIn ? '把复习方法、要准备的东西，或一段语音放在这里。\n还可以关联到某项日程。' : '登录后即可建立会随账号同步的备忘录。'}</div>`; return; } list.innerHTML = state.memos.map((memo) => { const eventText = memoEventText(memo.eventId), attachmentCount = Array.isArray(memo.attachments) ? memo.attachments.length : 0, created = new Intl.DateTimeFormat('zh-CN', { month: 'numeric', day: 'numeric' }).format(new Date(memo.updatedAt || memo.createdAt)), content = memoPlainText(memo.content); return `<button type="button" class="memo-card" data-memo-id="${escapeHtml(memo.id)}"><div class="memo-card-top"><span class="memo-card-mark">✦</span><h2>${escapeHtml(memo.title)}</h2><span class="memo-card-date">${escapeHtml(created)}</span></div>${eventText ? `<span class="memo-event-link">▦ ${escapeHtml(eventText)}</span>` : ''}${content ? `<p class="memo-card-content">${escapeHtml(content)}</p>` : ''}${attachmentCount ? `<div class="memo-card-media">${attachmentCount} 个图片或语音附件</div>` : ''}</button>`; }).join(''); list.querySelectorAll('[data-memo-id]').forEach((button) => { button.onclick = () => openMemoEditor(state.memos.find((memo) => memo.id === button.dataset.memoId)); }); }
 function updateSidebarAvailability(screenId) { const visible = ['calendar-screen', 'day-screen'].includes(screenId); $('app-shell').classList.toggle('is-sidebar-available', visible); if (!visible) setGroupDrawer(false); }
 function updateFloatingAction(screenId) { const addButton = $('add-button'), label = screenId === 'memo-screen' ? '新建备忘录' : screenId === 'anniversary-screen' ? '新建纪念日' : '添加日程'; addButton.classList.toggle('is-hidden', ['memo-editor-screen', 'settings-screen'].includes(screenId)); addButton.setAttribute('aria-label', label); }

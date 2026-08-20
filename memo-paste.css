@@ -22,3 +22,11 @@
   text-decoration: none !important;
   white-space: pre-wrap;
 }
+
+.memo-editor-content > :is(div, p):not(.memo-inline-media) {
+  color: var(--theme-text, #284d69);
+  font-family: var(--memo-body-font);
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.8;
+}
