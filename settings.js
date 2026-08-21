@@ -173,7 +173,7 @@ function renderSettings() {
     .filter(Boolean)
     .map(
       (item) =>
-        `<div class="settings-order-row" data-interface-order="${item.id}" draggable="false" role="listitem"><span class="settings-drag-handle" aria-hidden="true">⠿</span><span class="settings-order-icon" aria-hidden="true">${item.icon}</span><span>${item.label}</span><small>${item.id === "settings" ? "始终显示" : interfaceSettings.enabled[item.id] ? "显示中" : "已隐藏"}</small></div>`,
+        `<div class="settings-order-row" data-interface-order="${item.id}" draggable="false" role="listitem"><span class="settings-drag-handle" data-interface-drag-handle aria-hidden="true">⠿</span><span class="settings-order-icon" aria-hidden="true">${item.icon}</span><span>${item.label}</span><small>${item.id === "settings" ? "始终显示" : interfaceSettings.enabled[item.id] ? "显示中" : "已隐藏"}</small></div>`,
     )
     .join("");
   document.getElementById("settings-account-button").onclick = () =>
@@ -327,9 +327,10 @@ function setupSettingsOrderDrag(orderList) {
     } else updateFeedback("按住任一项目即可调整顺序");
   };
   orderList.querySelectorAll("[data-interface-order]").forEach((row) => {
+    const handle = row.querySelector("[data-interface-drag-handle]");
     row.draggable = false;
-    row.addEventListener("pointerdown", (event) => start(row, event));
-    row.addEventListener("mousedown", (event) => {
+    handle?.addEventListener("pointerdown", (event) => start(row, event));
+    handle?.addEventListener("mousedown", (event) => {
       if (!window.PointerEvent && event.button === 0) start(row, event);
     });
   });

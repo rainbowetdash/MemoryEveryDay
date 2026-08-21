@@ -325,7 +325,7 @@ function setupDraggableFloatingAction() { const button = $('add-button'), shell 
 
 function setupInteractionFeedback() {
   const pressed = new Map();
-  const interactiveSelector = 'button:not(:disabled), [role="button"], .settings-order-row, .memo-card, .agenda-item, .anniversary-card, .calendar-focus-day, .event-card';
+  const interactiveSelector = 'button:not(:disabled), [role="button"], .memo-card, .agenda-item, .anniversary-card, .calendar-focus-day, .event-card';
   const clearPress = (event) => {
     const target = pressed.get(event.pointerId);
     if (!target) return;

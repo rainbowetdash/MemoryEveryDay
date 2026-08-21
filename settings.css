@@ -199,7 +199,7 @@
 }
 .settings-order-row {
   display: grid;
-  grid-template-columns: 20px 29px minmax(0, 1fr) auto;
+  grid-template-columns: 24px 29px minmax(0, 1fr) auto;
   align-items: center;
   gap: 9px;
   min-height: 51px;
@@ -210,8 +210,8 @@
   padding: 9px 11px;
   font-size: 13px;
   font-weight: 800;
-  cursor: grab;
-  touch-action: none;
+  cursor: default;
+  touch-action: pan-y;
   position: relative;
   transition: transform .2s cubic-bezier(.2,.85,.28,1), box-shadow .2s ease, border-color .2s ease, background .2s ease, opacity .2s ease;
 }
@@ -233,11 +233,19 @@
 .tabbar.is-order-updated .tab:nth-child(2) { animation-delay: .035s; }.tabbar.is-order-updated .tab:nth-child(3) { animation-delay: .07s; }.tabbar.is-order-updated .tab:nth-child(4) { animation-delay: .105s; }.tabbar.is-order-updated .tab:nth-child(5) { animation-delay: .14s; }
 @keyframes tab-order-settle { 0% { opacity: .35; transform: translateY(8px) scale(.94); } 100% { opacity: 1; transform: none; } }
 .settings-drag-handle {
+  display: grid;
+  place-items: center;
+  align-self: stretch;
+  width: 24px;
+  min-height: 32px;
   color: #9bb3c3;
-  font-size: 18px;
-  letter-spacing: -3px;
-  transform: rotate(90deg);
+  font-size: 20px;
+  line-height: 1;
+  letter-spacing: 0;
+  cursor: grab;
+  touch-action: none;
 }
+.settings-drag-handle:active { cursor: grabbing; }
 .settings-order-icon {
   width: 26px;
   height: 26px;
@@ -386,7 +394,7 @@ body.is-reordering-navigation, body.is-reordering-navigation * { user-select: no
   overscroll-behavior: none;
   touch-action: pan-y;
 }
-.settings-order-list { touch-action: none; }
+.settings-order-list { touch-action: pan-y; }
 
 /* 恢复日历右上角的缩放控制，并让它使用当前主题。 */
 .calendar-zoom-controls { display: flex !important; }
