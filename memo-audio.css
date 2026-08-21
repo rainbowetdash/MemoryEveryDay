@@ -114,6 +114,39 @@
 
 .memo-inline-media[data-kind="audio"] audio {
   width: min(100%, 320px);
+  min-width: 0;
+}
+
+.memo-audio-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.memo-audio-controls audio {
+  flex: 1 1 auto;
+}
+
+.memo-audio-actions-button {
+  flex: 0 0 auto;
+  min-height: 34px;
+  border: 1px solid #94c9e5;
+  border-radius: 9px;
+  background: #e9f6fd;
+  color: #176b9e;
+  padding: 6px 9px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.memo-audio-actions-button:hover,
+.memo-audio-actions-button:focus-visible {
+  border-color: #4d9dcc;
+  background: #d9f0fc;
+  outline: 0;
 }
 
 .memo-audio-transcript {
@@ -143,9 +176,14 @@ body[data-app-theme="night"] .memo-audio-dialog-card h2 { color: #e3f0f9; }
 body[data-app-theme="night"] .memo-audio-copy,
 body[data-app-theme="night"] .memo-audio-transcript { color: #b8cfdf; }
 body[data-app-theme="night"] .memo-audio-transcript strong { color: #8fd3fa; }
+body[data-app-theme="night"] .memo-audio-actions-button { border-color: #4e7c9c; background: #1d3c54; color: #a4ddfa; }
+body[data-app-theme="night"] .memo-audio-actions-button:hover, body[data-app-theme="night"] .memo-audio-actions-button:focus-visible { border-color: #78bce4; background: #244a65; }
 
 @media (max-width: 440px) {
   .memo-audio-dialog-card { padding: 21px 17px 17px; }
   .memo-record-timer { font-size: 34px; }
   .memo-audio-dialog-actions button { min-width: 88px; }
+  .memo-audio-controls { align-items: stretch; flex-direction: column; gap: 7px; }
+  .memo-audio-controls audio { width: 100%; }
+  .memo-audio-actions-button { width: 100%; }
 }

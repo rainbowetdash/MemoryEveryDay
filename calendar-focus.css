@@ -1,0 +1,26 @@
+/* 放大日历改为只展示有安排的日期，避免在窄屏上把内容压成难以阅读的细列。 */
+.calendar-focus-list { display: grid; gap: 9px; flex: 0 0 auto; min-height: 0; max-height: min(38dvh, 318px); overflow-y: auto; overscroll-behavior: contain; padding: 2px 2px 4px; scrollbar-color: #aac7dc transparent; scrollbar-width: thin; }
+.calendar-focus-list::-webkit-scrollbar { width: 4px; }
+.calendar-focus-list::-webkit-scrollbar-thumb { border-radius: 4px; background: #aac7dc; }
+.calendar-focus-intro { display: flex; align-items: baseline; justify-content: space-between; padding: 1px 3px 3px; color: var(--theme-muted, #6686a2); font-size: 12px; font-weight: 700; }
+.calendar-focus-intro strong { color: var(--theme-text, #18324f); font-size: 14px; }
+.calendar-focus-day { width: 100%; border: 1px solid var(--theme-border, #d4e3ee); border-radius: 13px; background: var(--theme-card, #fff); color: var(--theme-text, #18324f); padding: 12px; text-align: left; cursor: pointer; box-shadow: 0 4px 13px rgba(28, 86, 121, .08); }
+.calendar-focus-day.is-selected { border-color: var(--app-accent, #1769aa); background: var(--theme-tint, #eef8ff); box-shadow: 0 5px 17px rgba(23, 105, 170, .18); }
+.calendar-focus-day-header { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.calendar-focus-day-header strong { font-size: 17px; letter-spacing: -.2px; }
+.calendar-focus-day-header small { color: var(--theme-muted, #6686a2); font-size: 12px; font-weight: 700; white-space: nowrap; }
+.calendar-focus-items { display: grid; gap: 6px; margin-top: 9px; }
+.calendar-focus-event, .calendar-focus-anniversary { display: grid; grid-template-columns: 72px minmax(0, 1fr); align-items: center; gap: 8px; min-height: 35px; border-left: 3px solid #328ccd; border-radius: 7px; background: var(--theme-surface, #f7fbff); padding: 6px 9px; }
+.calendar-focus-event.navy { border-left-color: #3266a7; }.calendar-focus-event.cyan { border-left-color: #2db3d6; }.calendar-focus-event.mint { border-left-color: #42aaa4; }.calendar-focus-event.purple { border-left-color: #8a64c7; }.calendar-focus-event.pink { border-left-color: #d96696; }.calendar-focus-event.coral { border-left-color: #dc795d; }.calendar-focus-event.yellow { border-left-color: #c79424; }.calendar-focus-event.green { border-left-color: #4d9b63; }
+.calendar-focus-event time { color: var(--app-accent, #1769aa); font-size: 12px; font-weight: 850; font-variant-numeric: tabular-nums; }
+.calendar-focus-event span, .calendar-focus-anniversary span { overflow: hidden; color: var(--theme-text, #18324f); font-size: 14px; font-weight: 750; text-overflow: ellipsis; white-space: nowrap; }
+.calendar-focus-anniversary { grid-template-columns: 72px minmax(0, 1fr); border-left-color: #d66a95; }
+.calendar-focus-anniversary b { color: #c65d88; font-size: 13px; }
+.calendar-focus-empty { margin: 5px 0; border: 1px dashed var(--theme-border, #cfe0ec); border-radius: 12px; color: var(--theme-muted, #6686a2); padding: 20px 14px; text-align: center; font-size: 14px; }
+#calendar-screen[data-calendar-zoom="1"] .calendar-scroll, #calendar-screen[data-calendar-zoom="2"] .calendar-scroll { display: none !important; }
+#calendar-screen[data-calendar-zoom="1"] .calendar-focus-list, #calendar-screen[data-calendar-zoom="2"] .calendar-focus-list { display: grid; }
+#calendar-screen[data-calendar-zoom="2"] .calendar-focus-day { padding: 14px; }
+#calendar-screen[data-calendar-zoom="2"] .calendar-focus-items { gap: 8px; margin-top: 11px; }
+#calendar-screen[data-calendar-zoom="2"] .calendar-focus-event, #calendar-screen[data-calendar-zoom="2"] .calendar-focus-anniversary { min-height: 43px; padding: 8px 10px; }
+body[data-app-theme="night"] .calendar-focus-day { background: var(--theme-card); }
+body[data-app-theme="night"] .calendar-focus-event, body[data-app-theme="night"] .calendar-focus-anniversary { background: var(--theme-surface); }
