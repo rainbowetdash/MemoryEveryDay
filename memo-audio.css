@@ -104,6 +104,7 @@
 }
 
 .memo-inline-media[data-kind="audio"] {
+  position: relative;
   min-width: min(100%, 300px);
   border: 1px solid #c7e0ed;
   border-radius: 15px;
@@ -149,6 +150,30 @@
   outline: 0;
 }
 
+.memo-audio-delete-button {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  display: grid;
+  width: 27px;
+  height: 27px;
+  place-items: center;
+  border: 1px solid #e19a9f;
+  border-radius: 50%;
+  background: #fff4f4;
+  color: #be4b53;
+  padding: 0 0 2px;
+  font: inherit;
+  font-size: 21px;
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 3px 9px rgba(150, 51, 58, .18);
+}
+
+.memo-audio-delete-button:hover,
+.memo-audio-delete-button:focus-visible { border-color: #c95d66; background: #ffe5e6; outline: 0; }
+
 .memo-audio-transcript {
   margin: 9px 2px 1px;
   border-left: 3px solid #74bde5;
@@ -178,6 +203,8 @@ body[data-app-theme="night"] .memo-audio-transcript { color: #b8cfdf; }
 body[data-app-theme="night"] .memo-audio-transcript strong { color: #8fd3fa; }
 body[data-app-theme="night"] .memo-audio-actions-button { border-color: #4e7c9c; background: #1d3c54; color: #a4ddfa; }
 body[data-app-theme="night"] .memo-audio-actions-button:hover, body[data-app-theme="night"] .memo-audio-actions-button:focus-visible { border-color: #78bce4; background: #244a65; }
+body[data-app-theme="night"] .memo-audio-delete-button { border-color: #9e5961; background: #48262c; color: #ffbbc0; }
+body[data-app-theme="night"] .memo-audio-delete-button:hover, body[data-app-theme="night"] .memo-audio-delete-button:focus-visible { border-color: #dd7d86; background: #603139; }
 
 @media (max-width: 440px) {
   .memo-audio-dialog-card { padding: 21px 17px 17px; }

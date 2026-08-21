@@ -17,10 +17,7 @@
 .calendar-focus-anniversary { grid-template-columns: 72px minmax(0, 1fr); border-left-color: #d66a95; }
 .calendar-focus-anniversary b { color: #c65d88; font-size: 13px; }
 .calendar-focus-empty { margin: 5px 0; border: 1px dashed var(--theme-border, #cfe0ec); border-radius: 12px; color: var(--theme-muted, #6686a2); padding: 20px 14px; text-align: center; font-size: 14px; }
-#calendar-screen[data-calendar-zoom="1"] .calendar-scroll, #calendar-screen[data-calendar-zoom="2"] .calendar-scroll { display: none !important; }
-#calendar-screen[data-calendar-zoom="1"] .calendar-focus-list, #calendar-screen[data-calendar-zoom="2"] .calendar-focus-list { display: grid; }
-#calendar-screen[data-calendar-zoom="2"] .calendar-focus-day { padding: 14px; }
-#calendar-screen[data-calendar-zoom="2"] .calendar-focus-items { gap: 8px; margin-top: 11px; }
-#calendar-screen[data-calendar-zoom="2"] .calendar-focus-event, #calendar-screen[data-calendar-zoom="2"] .calendar-focus-anniversary { min-height: 43px; padding: 8px 10px; }
+#calendar-screen[data-calendar-zoom="1"] .calendar-scroll { display: none !important; }
+#calendar-screen[data-calendar-zoom="1"] .calendar-focus-list { display: grid; }
 body[data-app-theme="night"] .calendar-focus-day { background: var(--theme-card); }
 body[data-app-theme="night"] .calendar-focus-event, body[data-app-theme="night"] .calendar-focus-anniversary { background: var(--theme-surface); }
