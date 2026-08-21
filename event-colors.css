@@ -1,0 +1,64 @@
+/* 日程颜色在月历下方、当天时间轴与放大列表中保持一致。 */
+.agenda-item,
+.event-card,
+.calendar-focus-event {
+  --event-color: #328ccd;
+  --event-time-background: #236fae;
+  --event-time-foreground: #ffffff;
+  --event-surface: color-mix(in srgb, var(--event-color) 18%, var(--theme-surface, #fafdff));
+}
+
+.agenda-item.navy, .event-card.navy, .calendar-focus-event.navy { --event-color: #3266a7; --event-time-background: #315d96; }
+.agenda-item.cyan, .event-card.cyan, .calendar-focus-event.cyan { --event-color: #2db3d6; --event-time-background: #167d9b; }
+.agenda-item.mint, .event-card.mint, .calendar-focus-event.mint { --event-color: #42aaa4; --event-time-background: #287d78; }
+.agenda-item.purple, .event-card.purple, .calendar-focus-event.purple { --event-color: #8a64c7; --event-time-background: #67469d; }
+.agenda-item.pink, .event-card.pink, .calendar-focus-event.pink { --event-color: #d96696; --event-time-background: #ab4873; }
+.agenda-item.coral, .event-card.coral, .calendar-focus-event.coral { --event-color: #dc795d; --event-time-background: #ae543d; }
+.agenda-item.yellow, .event-card.yellow, .calendar-focus-event.yellow { --event-color: #c79424; --event-time-background: #8e6513; }
+.agenda-item.green, .event-card.green, .calendar-focus-event.green { --event-color: #4d9b63; --event-time-background: #357545; }
+
+/* 日历下方：时间块与左侧标记都直接使用该日程的颜色。 */
+.calendar-agenda-section .agenda-item {
+  border-left-color: var(--event-color) !important;
+}
+
+.calendar-agenda-section .agenda-item .agenda-time {
+  background: var(--event-time-background) !important;
+  color: var(--event-time-foreground) !important;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 当天时间轴：整张卡片用克制的同色底，时间以同色强调，标题始终清晰。 */
+.event-card {
+  border-left-color: var(--event-color) !important;
+  background: var(--event-surface) !important;
+}
+
+.event-card > span:first-child {
+  color: var(--event-time-background) !important;
+  font-variant-numeric: tabular-nums;
+}
+
+.event-card strong {
+  color: var(--theme-text, #18324f) !important;
+}
+
+/* 放大日历里的“有安排的日子”也使用同一套颜色。 */
+.calendar-focus-event {
+  border-left-color: var(--event-color) !important;
+  background: var(--event-surface) !important;
+}
+
+.calendar-focus-event time {
+  color: var(--event-time-background) !important;
+}
+
+body[data-app-theme="night"] .event-card strong,
+body[data-app-theme="night"] .calendar-focus-event span {
+  color: #f3f8ff !important;
+}
+
+body[data-app-theme="night"] .event-card > span:first-child,
+body[data-app-theme="night"] .calendar-focus-event time {
+  color: color-mix(in srgb, var(--event-color) 72%, #ffffff) !important;
+}
