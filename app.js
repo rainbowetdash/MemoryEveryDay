@@ -5,7 +5,7 @@ const zoomStorageKey = 'memory-everyday-calendar-scale-v2';
 const pendingSyncKey = 'memory-everyday-pending-sync';
 const authReminderKey = 'memory-everyday-auth-reminder-shown';
 const floatingActionPositionKey = 'memory-everyday-floating-action-position-v1';
-const releaseInfoUrl = './release-info.json?v=35';
+const releaseInfoUrl = './release-info.json?v=36';
 const releaseAnnouncementStorageKeyBase = 'memory-everyday-release-announcement-seen';
 const launchParams = new URLSearchParams(window.location.search);
 const isNativeShell = launchParams.get('native-shell') === '1';
@@ -321,7 +321,32 @@ function updateFloatingAction(screenId) { const addButton = $('add-button'), lab
 function openFloatingAction() { const screenId = document.querySelector('.tab.is-active')?.dataset.screen; if (screenId === 'memo-screen') return openMemoDialog(); if (screenId === 'anniversary-screen') return openAnniversaryDialog(); openEventDialog(); }
 function readFloatingActionPosition() { try { const value = JSON.parse(localStorage.getItem(floatingActionPositionKey) || 'null'); return Number.isFinite(value?.x) && Number.isFinite(value?.y) ? value : null; } catch { return null; } }
 function placeFloatingAction(position, persist = false) { const button = $('add-button'), shell = $('app-shell'), tabbar = document.querySelector('.tabbar'), size = button.offsetWidth || 56, bounds = shell.getBoundingClientRect(), tabbarHeight = tabbar?.offsetHeight || 102, maxX = Math.max(8, bounds.width - size - 8), maxY = Math.max(8, bounds.height - size - tabbarHeight - 8), x = Math.min(maxX, Math.max(8, position.x)), y = Math.min(maxY, Math.max(8, position.y)); button.style.left = `${x}px`; button.style.top = `${y}px`; button.style.right = 'auto'; button.style.bottom = 'auto'; if (persist) localStorage.setItem(floatingActionPositionKey, JSON.stringify({ x, y })); }
-function setupDraggableFloatingAction() { const button = $('add-button'), shell = $('app-shell'); let drag = null; const saved = readFloatingActionPosition(); if (saved) placeFloatingAction(saved); button.addEventListener('pointerdown', (event) => { if (event.button !== undefined && event.button !== 0) return; const shellBounds = shell.getBoundingClientRect(), buttonBounds = button.getBoundingClientRect(); drag = { pointerId: event.pointerId, startX: event.clientX, startY: event.clientY, left: buttonBounds.left - shellBounds.left, top: buttonBounds.top - shellBounds.top, moved: false }; button.setPointerCapture?.(event.pointerId); }); button.addEventListener('pointermove', (event) => { if (!drag || event.pointerId !== drag.pointerId) return; const distance = Math.hypot(event.clientX - drag.startX, event.clientY - drag.startY); if (distance > 6) drag.moved = true; if (!drag.moved) return; event.preventDefault(); button.classList.add('is-dragging'); placeFloatingAction({ x: drag.left + event.clientX - drag.startX, y: drag.top + event.clientY - drag.startY }); }); const finishDrag = (event) => { if (!drag || event.pointerId !== drag.pointerId) return; if (drag.moved) { const shellBounds = shell.getBoundingClientRect(), buttonBounds = button.getBoundingClientRect(); placeFloatingAction({ x: buttonBounds.left - shellBounds.left, y: buttonBounds.top - shellBounds.top }, true); suppressFloatingActionClick = true; } button.classList.remove('is-dragging'); drag = null; }; button.addEventListener('pointerup', finishDrag); button.addEventListener('pointercancel', finishDrag); button.onclick = () => { if (suppressFloatingActionClick) { suppressFloatingActionClick = false; return; } openFloatingAction(); }; window.addEventListener('resize', () => { const position = readFloatingActionPosition(); if (position) placeFloatingAction(position, true); }); }
+function setupDraggableFloatingAction() { const button = $('add-button'), shell = $('app-shell'); let drag = null; const saved = readFloatingActionPosition(); if (saved) placeFloatingAction(saved); button.addEventListener('pointerdown', (event) => { if (event.button !== undefined && event.button !== 0) return; const shellBounds = shell.getBoundingClientRect(), buttonBounds = button.getBoundingClientRect(); drag = { pointerId: event.pointerId, startX: event.clientX, startY: event.clientY, left: buttonBounds.left - shellBounds.left, top: buttonBounds.top - shellBounds.top, moved: false, ready: false, timer: null }; drag.timer = setTimeout(() => { if (!drag || drag.pointerId !== event.pointerId) return; drag.ready = true; button.classList.add('is-ready-to-drag'); }, 260); button.setPointerCapture?.(event.pointerId); }); button.addEventListener('pointermove', (event) => { if (!drag || event.pointerId !== drag.pointerId || !drag.ready) return; const distance = Math.hypot(event.clientX - drag.startX, event.clientY - drag.startY); if (distance > 4) drag.moved = true; if (!drag.moved) return; event.preventDefault(); button.classList.add('is-dragging'); placeFloatingAction({ x: drag.left + event.clientX - drag.startX, y: drag.top + event.clientY - drag.startY }); }); const finishDrag = (event) => { if (!drag || event.pointerId !== drag.pointerId) return; clearTimeout(drag.timer); if (drag.moved) { const shellBounds = shell.getBoundingClientRect(), buttonBounds = button.getBoundingClientRect(); placeFloatingAction({ x: buttonBounds.left - shellBounds.left, y: buttonBounds.top - shellBounds.top }, true); suppressFloatingActionClick = true; } button.classList.remove('is-dragging', 'is-ready-to-drag'); drag = null; }; button.addEventListener('pointerup', finishDrag); button.addEventListener('pointercancel', finishDrag); button.onclick = () => { if (suppressFloatingActionClick) { suppressFloatingActionClick = false; return; } openFloatingAction(); }; window.addEventListener('resize', () => { const position = readFloatingActionPosition(); if (position) placeFloatingAction(position, true); }); }
+
+function setupInteractionFeedback() {
+  const pressed = new Map();
+  const interactiveSelector = 'button:not(:disabled), [role="button"], .settings-order-row, .memo-card, .agenda-item, .anniversary-card, .calendar-focus-day, .event-card';
+  const clearPress = (event) => {
+    const target = pressed.get(event.pointerId);
+    if (!target) return;
+    target.classList.remove('is-pressing');
+    pressed.delete(event.pointerId);
+  };
+  document.addEventListener('pointerdown', (event) => {
+    if (event.button !== undefined && event.button !== 0) return;
+    const origin = event.target instanceof Element ? event.target : null;
+    const target = origin?.closest(interactiveSelector);
+    if (!target || target.matches(':disabled')) return;
+    target.classList.add('is-pressing');
+    pressed.set(event.pointerId, target);
+  }, true);
+  document.addEventListener('pointerup', clearPress, true);
+  document.addEventListener('pointercancel', clearPress, true);
+  window.addEventListener('blur', () => {
+    pressed.forEach((target) => target.classList.remove('is-pressing'));
+    pressed.clear();
+  });
+}
 function render() { renderGroups(); renderCalendar(); renderAgenda(); renderDay(); renderMemos(); renderAnniversaries(); refreshPastEventStyles(); }
 document.querySelectorAll('.tab').forEach((tab) => { tab.onclick = () => { document.querySelectorAll('.tab').forEach((t) => t.classList.remove('is-active')); tab.classList.add('is-active'); document.querySelectorAll('.screen').forEach((screen) => screen.classList.toggle('is-hidden', screen.id !== tab.dataset.screen)); updateFloatingAction(tab.dataset.screen); updateSidebarAvailability(tab.dataset.screen); }; });
 $('previous-month').onclick = () => { state.showing.setMonth(state.showing.getMonth() - 1); renderCalendar(); }; $('next-month').onclick = () => { state.showing.setMonth(state.showing.getMonth() + 1); renderCalendar(); }; $('today-button').onclick = $('jump-today').onclick = () => { state.selected = new Date(); state.showing = new Date(); render(); };
@@ -502,6 +527,7 @@ $('push-help-dialog').addEventListener('close', () => { if (releaseDownloadFlow)
 if (supabaseClient) { supabaseClient.auth.onAuthStateChange((_event, session) => { void handleSession(session?.user || null); }); supabaseClient.auth.getSession().then(({ data }) => handleSession(data.session?.user || null)); } else { state.authReady = true; updateAccountUI(); showAuthReminder(); }
 updateCalendarZoom(); updateAccountUI(); updateWebDownloadEntry(); render(); void registerPushWorker(); setInterval(refreshPastEventStyles, 30000); setInterval(() => { if (state.user && !state.syncBusy) void flushPendingOps(); }, 60000);
 setupDraggableFloatingAction();
+setupInteractionFeedback();
 void checkReleaseNotices();
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') void stopRemindersOnOpen(); else void flushMemoAutosave(); });
 window.addEventListener('focus', () => { void stopRemindersOnOpen(); });

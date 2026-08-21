@@ -1,0 +1,60 @@
+/* Keep every tap and drag legible without changing the app's visual language. */
+button,
+[role="button"],
+.settings-order-row,
+.memo-card,
+.agenda-item,
+.anniversary-card,
+.calendar-focus-day,
+.event-card {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:not(:disabled),
+[role="button"],
+.settings-order-row {
+  touch-action: manipulation;
+  transition: transform 140ms ease, filter 140ms ease, box-shadow 140ms ease, border-color 140ms ease, background-color 140ms ease;
+}
+
+button:not(:disabled).is-pressing,
+button:not(:disabled):active,
+[role="button"].is-pressing,
+[role="button"]:active,
+.settings-order-row.is-pressing {
+  transform: scale(.975);
+  filter: brightness(.94);
+}
+
+.memo-card.is-pressing,
+.agenda-item.is-pressing,
+.anniversary-card.is-pressing,
+.calendar-focus-day.is-pressing,
+.event-card.is-pressing {
+  transform: translateY(1px) scale(.99);
+  filter: brightness(.96);
+}
+
+button:focus-visible,
+[role="button"]:focus-visible,
+.settings-order-row:focus-visible {
+  outline: 3px solid #6abfff;
+  outline-offset: 3px;
+}
+
+.add-button.is-ready-to-drag {
+  transform: scale(1.06);
+  box-shadow: 0 12px 28px #42b9f099;
+}
+
+.add-button.is-dragging {
+  transform: scale(1.04);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  button,
+  [role="button"],
+  .settings-order-row {
+    transition: none;
+  }
+}
