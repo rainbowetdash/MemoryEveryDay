@@ -16,6 +16,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
+import android.webkit.PermissionRequest;
+import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
@@ -29,10 +31,12 @@ import java.util.Set;
 
 public class MainActivity extends Activity {
     private static final int NOTIFICATION_PERMISSION_REQUEST = 4102;
+    private static final int MICROPHONE_PERMISSION_REQUEST = 4103;
     private static final String PREFERENCES = "memory_everyday_native";
     private static final String PROMPTED_FOR_NOTIFICATIONS = "prompted_for_notifications";
     private WebView webView;
     private View splash;
+    private PermissionRequest pendingMicrophonePermissionRequest;
 
     @SuppressLint({"SetJavaScriptEnabled", "ClickableViewAccessibility"})
     @Override
@@ -62,6 +66,17 @@ public class MainActivity extends Activity {
                 super.onPageFinished(view, url);
                 revealPage();
                 sendNotificationStatus();
+            }
+        });
+        webView.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public void onPermissionRequest(PermissionRequest request) {
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) { request.grant(new String[]{PermissionRequest.RESOURCE_AUDIO_CAPTURE}); return; }
+                boolean requestsMicrophone = false;
+                for (String resource : request.getResources()) if (PermissionRequest.RESOURCE_AUDIO_CAPTURE.equals(resource)) requestsMicrophone = true;
+                if (!requestsMicrophone) { request.deny(); return; }
+                if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) request.grant(new String[]{PermissionRequest.RESOURCE_AUDIO_CAPTURE});
+                else { pendingMicrophonePermissionRequest = request; requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, MICROPHONE_PERMISSION_REQUEST); }
             }
         });
 
@@ -125,6 +140,13 @@ public class MainActivity extends Activity {
         if (requestCode == NOTIFICATION_PERMISSION_REQUEST) {
             preferences().edit().putBoolean(PROMPTED_FOR_NOTIFICATIONS, true).apply();
             sendNotificationStatus();
+        }
+        if (requestCode == MICROPHONE_PERMISSION_REQUEST) {
+            PermissionRequest request = pendingMicrophonePermissionRequest;
+            pendingMicrophonePermissionRequest = null;
+            if (request == null) return;
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) request.grant(new String[]{PermissionRequest.RESOURCE_AUDIO_CAPTURE});
+            else request.deny();
         }
     }
 

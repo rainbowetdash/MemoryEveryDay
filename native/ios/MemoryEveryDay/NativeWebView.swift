@@ -1,6 +1,7 @@
 import SwiftUI
 import UserNotifications
 import WebKit
+import Speech
 
 struct NativeWebView: UIViewRepresentable {
     @Binding var isLoading: Bool
@@ -12,6 +13,7 @@ struct NativeWebView: UIViewRepresentable {
         configuration.defaultWebpagePreferences.allowsContentJavaScript = true
         configuration.ignoresViewportScaleLimits = false
         configuration.userContentController.add(context.coordinator, name: "notifications")
+        configuration.userContentController.add(context.coordinator, name: "audio")
         configuration.userContentController.addUserScript(WKUserScript(
             source: """
             (function () {
@@ -34,6 +36,7 @@ struct NativeWebView: UIViewRepresentable {
         ))
         let webView = WKWebView(frame: .zero, configuration: configuration)
         webView.navigationDelegate = context.coordinator
+        webView.uiDelegate = context.coordinator
         webView.scrollView.pinchGestureRecognizer?.isEnabled = false
         webView.scrollView.minimumZoomScale = 1
         webView.scrollView.maximumZoomScale = 1
@@ -46,7 +49,7 @@ struct NativeWebView: UIViewRepresentable {
 
     func updateUIView(_ webView: WKWebView, context: Context) { }
 
-    final class Coordinator: NSObject, WKNavigationDelegate, WKScriptMessageHandler {
+    final class Coordinator: NSObject, WKNavigationDelegate, WKUIDelegate, WKScriptMessageHandler {
         private var isLoading: Binding<Bool>
         private weak var webView: WKWebView?
         private var notificationTestObserver: NSObjectProtocol?
@@ -114,8 +117,70 @@ struct NativeWebView: UIViewRepresentable {
         }
 
         func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-            guard message.name == "notifications", let body = message.body as? [String: Any] else { return }
-            handleNotificationMessage(body)
+            guard let body = message.body as? [String: Any] else { return }
+            if message.name == "notifications" { handleNotificationMessage(body) }
+            if message.name == "audio" { handleAudioMessage(body) }
+        }
+
+        @available(iOS 15.0, *)
+        func webView(_ webView: WKWebView, requestMediaCapturePermissionFor origin: WKSecurityOrigin, initiatedByFrame frame: WKFrameInfo, type: WKMediaCaptureType, decisionHandler: @escaping (WKPermissionDecision) -> Void) {
+            decisionHandler(.grant)
+        }
+
+        private func handleAudioMessage(_ body: [String: Any]) {
+            guard body["action"] as? String == "transcribe",
+                  let requestId = body["requestId"] as? String,
+                  let rawURL = body["url"] as? String,
+                  let remoteURL = URL(string: rawURL) else { return }
+            let locale = body["locale"] as? String ?? "zh-CN"
+            let fileExtension = (body["fileExtension"] as? String ?? "m4a").replacingOccurrences(of: "/", with: "")
+            SFSpeechRecognizer.requestAuthorization { [weak self] status in
+                guard let self else { return }
+                guard status == .authorized else {
+                    self.sendAudioTranscriptionResult(requestId: requestId, status: "failed", message: "请在 iPhone 设置中允许“每日备忘”使用语音识别。")
+                    return
+                }
+                guard let recognizer = SFSpeechRecognizer(locale: Locale(identifier: locale)), recognizer.isAvailable else {
+                    self.sendAudioTranscriptionResult(requestId: requestId, status: "failed", message: "当前 iPhone 的语音识别暂不可用，请稍后再试。")
+                    return
+                }
+                URLSession.shared.downloadTask(with: remoteURL) { [weak self] temporaryURL, _, error in
+                    guard let self else { return }
+                    guard let temporaryURL, error == nil else {
+                        self.sendAudioTranscriptionResult(requestId: requestId, status: "failed", message: "语音下载失败，请检查网络后重试。")
+                        return
+                    }
+                    let suffix = fileExtension.isEmpty ? "m4a" : fileExtension
+                    let localURL = FileManager.default.temporaryDirectory.appendingPathComponent("memoryeveryday-\(UUID().uuidString).\(suffix)")
+                    do {
+                        try FileManager.default.moveItem(at: temporaryURL, to: localURL)
+                    } catch {
+                        self.sendAudioTranscriptionResult(requestId: requestId, status: "failed", message: "暂时无法读取这段语音，请重试。")
+                        return
+                    }
+                    let request = SFSpeechURLRecognitionRequest(url: localURL)
+                    request.shouldReportPartialResults = false
+                    recognizer.recognitionTask(with: request) { [weak self] result, recognitionError in
+                        guard let self else { return }
+                        if let result, result.isFinal {
+                            let text = result.bestTranscription.formattedString.trimmingCharacters(in: .whitespacesAndNewlines)
+                            self.sendAudioTranscriptionResult(requestId: requestId, status: text.isEmpty ? "failed" : "success", text: text, message: text.isEmpty ? "没有识别到可转写的内容，请重试。" : "")
+                            try? FileManager.default.removeItem(at: localURL)
+                        } else if recognitionError != nil {
+                            self.sendAudioTranscriptionResult(requestId: requestId, status: "failed", message: "这段语音暂时无法识别，请确认音频清晰后重试。")
+                            try? FileManager.default.removeItem(at: localURL)
+                        }
+                    }
+                }.resume()
+            }
+        }
+
+        private func sendAudioTranscriptionResult(requestId: String, status: String, text: String = "", message: String) {
+            let payload: [String: String] = ["requestId": requestId, "status": status, "text": text, "message": message]
+            guard let data = try? JSONSerialization.data(withJSONObject: payload), let detail = String(data: data, encoding: .utf8) else { return }
+            DispatchQueue.main.async { [weak self] in
+                self?.webView?.evaluateJavaScript("window.dispatchEvent(new CustomEvent('memoryeveryday-native-audio-transcription',{detail:\(detail)}));")
+            }
         }
 
         private func handleNotificationMessage(_ body: [String: Any]) {

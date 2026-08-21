@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		679057FCCFE10F5F17C72A53 /* MemoryEveryDayApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A190ECCF176AEB43BF2040B /* MemoryEveryDayApp.swift */; };
+		6F9F0C957E7C61F493477B00 /* Speech.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A3E627BBF15D6EBBB016B7F /* Speech.framework */; };
 		742CC35C04EA5A6DB5B64555 /* NativeWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 707193388A2EF760226F0F53 /* NativeWebView.swift */; };
 		86DC3C3B59053FA5629C2342 /* wecom-daily-memo-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 39EC438F09E292F6A19AF4CF /* wecom-daily-memo-icon.png */; };
 		90C48BCD5D991A30555B38D5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 050668D8E90482CF513E4135 /* Assets.xcassets */; };
@@ -17,14 +18,34 @@
 /* Begin PBXFileReference section */
 		050668D8E90482CF513E4135 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		39EC438F09E292F6A19AF4CF /* wecom-daily-memo-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wecom-daily-memo-icon.png"; sourceTree = "<group>"; };
+		4A3E627BBF15D6EBBB016B7F /* Speech.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Speech.framework; path = System/Library/Frameworks/Speech.framework; sourceTree = SDKROOT; };
 		707193388A2EF760226F0F53 /* NativeWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeWebView.swift; sourceTree = "<group>"; };
 		9062D620E4FFA5143828F61E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		9A190ECCF176AEB43BF2040B /* MemoryEveryDayApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryEveryDayApp.swift; sourceTree = "<group>"; };
 		D2A41037F997210B0F1D58B5 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
-		F1A8094CAA3344A70B07E0DC /* MemoryEveryDay.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MemoryEveryDay.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F1A8094CAA3344A70B07E0DC /* MemoryEveryDay.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = MemoryEveryDay.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFrameworksBuildPhase section */
+		D8BBAB105EED2AEE83AF0E64 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6F9F0C957E7C61F493477B00 /* Speech.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
 /* Begin PBXGroup section */
+		23DE0E5C9421901696FACF0F /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				4A3E627BBF15D6EBBB016B7F /* Speech.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		33A2ECC12D2CAA69B0A2E9BD /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -38,6 +59,7 @@
 			children = (
 				5B57F307D3EEAF92E7D6A002 /* MemoryEveryDay */,
 				8122A2AD7CB0F2F3260E7C2F /* MemoryEveryDay */,
+				23DE0E5C9421901696FACF0F /* Frameworks */,
 				33A2ECC12D2CAA69B0A2E9BD /* Products */,
 			);
 			sourceTree = "<group>";
@@ -72,6 +94,7 @@
 			buildPhases = (
 				88F896B765C4C33E38A51A16 /* Sources */,
 				EDA895B9DCACF798BA5FE5C1 /* Resources */,
+				D8BBAB105EED2AEE83AF0E64 /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -94,6 +117,7 @@
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
 					C83516F3D23D01A915A149A5 = {
+						DevelopmentTeam = 6X7732M9V3;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -178,7 +202,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 6X7732M9V3;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -206,7 +230,6 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 6X7732M9V3;
 				INFOPLIST_FILE = MemoryEveryDay/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -253,7 +276,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 6X7732M9V3;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -288,7 +311,6 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 6X7732M9V3;
 				INFOPLIST_FILE = MemoryEveryDay/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

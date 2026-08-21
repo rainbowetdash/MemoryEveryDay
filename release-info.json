@@ -2,29 +2,29 @@
   "schemaVersion": 1,
   "apps": {
     "ios": {
-      "latestVersion": "1.0.8",
-      "downloadUrl": "./downloads/ipa-1-0-8",
-      "downloadName": "MemoryEveryDay-1.0.8.ipa",
+      "latestVersion": "1.0.9",
+      "downloadUrl": "./downloads/ipa-1-0-9",
+      "downloadName": "MemoryEveryDay-1.0.9.ipa",
       "label": "iPhone IPA",
       "hint": "用于 SideStore、AltStore、Sideloadly 等侧载工具"
     },
     "android": {
-      "latestVersion": "1.0.3",
-      "downloadUrl": "./downloads/apk-1-0-3",
-      "downloadName": "MemoryEveryDay-1.0.3.apk",
+      "latestVersion": "1.0.4",
+      "downloadUrl": "./downloads/apk-1-0-4",
+      "downloadName": "MemoryEveryDay-1.0.4.apk",
       "label": "Android APK",
       "hint": "下载后可直接安装更新"
     }
   },
   "announcement": {
-    "id": "2026-08-20-ios-1-0-8",
-    "eyebrow": "iPhone App 更新",
-    "title": "iPhone 版 1.0.8 已发布",
-    "summary": "切回每日备忘时会保留当前页面和编辑内容，不再重新加载。",
+    "id": "2026-08-21-voice-notes",
+    "eyebrow": "语音备忘更新",
+    "title": "录音和语音转文字来了",
+    "summary": "可以在备忘录中直接录音；iPhone 长按音频即可转成文字。",
     "items": [
-      "从后台回到 App 时，保留正在查看或编辑的页面。",
-      "备忘录现已自动保存，短暂停顿后会直接写入账号。",
-      "继续支持 SideStore、AltStore、Sideloadly 等侧载安装。"
+      "录完后，音频会直接插入正文当前位置。",
+      "iPhone 长按音频可转文字，原音频会继续保留。",
+      "Android 也支持直接录音和插入正文。"
     ]
   }
 }
