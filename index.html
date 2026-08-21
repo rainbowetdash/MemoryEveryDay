@@ -37,7 +37,7 @@
     <link rel="stylesheet" href="./mobile-input-fix.css?v=2" />
     <link rel="stylesheet" href="./floating-action.css?v=1" />
     <link rel="stylesheet" href="./bottom-navigation.css?v=1" />
-    <link rel="stylesheet" href="./settings.css?v=24" />
+    <link rel="stylesheet" href="./settings.css?v=25" />
     <link rel="stylesheet" href="./calendar-focus.css?v=3" />
     <link rel="stylesheet" href="./interaction-feedback.css?v=1" />
     <link rel="stylesheet" href="./event-colors.css?v=1" />
@@ -238,14 +238,10 @@
           <p class="settings-section-label" id="settings-theme-title">整体外观</p>
           <div class="settings-theme-list" id="settings-theme-list" role="listbox" aria-label="选择整体外观颜色"></div>
         </section>
-        <section class="settings-section" aria-labelledby="settings-feature-title">
-          <div class="settings-section-heading"><p class="settings-section-label" id="settings-feature-title">底栏功能</p><small>关闭后会从底栏隐藏</small></div>
-          <div class="settings-feature-list" id="settings-feature-list"></div>
-        </section>
         <section class="settings-section" aria-labelledby="settings-order-title">
-          <div class="settings-section-heading"><p class="settings-section-label" id="settings-order-title">底栏顺序</p><small>按住后拖动调整</small></div>
+          <div class="settings-section-heading"><p class="settings-section-label" id="settings-order-title">底栏功能</p><small>左侧拖动，右侧开关显示</small></div>
           <div class="settings-order-list" id="settings-order-list" aria-label="调整底栏功能顺序"></div>
-          <p class="settings-order-feedback" id="settings-order-feedback" aria-live="polite">按住任一项目即可调整顺序</p>
+          <p class="settings-order-feedback" id="settings-order-feedback" aria-live="polite">按住左侧六个点即可调整顺序</p>
         </section>
       </section>
 
@@ -550,6 +546,6 @@
     </dialog>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     <script src="./app.js?v=150"></script>
-    <script src="./settings.js?v=8"></script>
+    <script src="./settings.js?v=9"></script>
   </body>
 </html>

@@ -150,7 +150,6 @@ function renderSettings() {
   document.body.dataset.appTheme = interfaceSettings.theme;
   const account = accountSettingsCopy(),
     themeList = document.getElementById("settings-theme-list"),
-    featureList = document.getElementById("settings-feature-list"),
     orderList = document.getElementById("settings-order-list");
   document.getElementById("settings-account-name").textContent = account.name;
   document.getElementById("settings-account-status").textContent =
@@ -161,19 +160,12 @@ function renderSettings() {
         `<button type="button" class="settings-theme-choice ${interfaceSettings.theme === theme.id ? "is-selected" : ""}" data-interface-theme="${theme.id}" role="option" aria-selected="${interfaceSettings.theme === theme.id}"><i style="--theme-color:${theme.color}"></i><span>${theme.label}</span></button>`,
     )
     .join("");
-  featureList.innerHTML = interfaceTabs
-    .filter((item) => item.id !== "settings")
-    .map(
-      (item) =>
-        `<button type="button" class="settings-feature-row ${interfaceSettings.enabled[item.id] ? "is-on" : ""}" data-interface-feature="${item.id}" role="switch" aria-checked="${interfaceSettings.enabled[item.id]}"><span class="settings-feature-icon" aria-hidden="true">${item.icon}</span><span>${item.label}</span><i aria-hidden="true"></i></button>`,
-    )
-    .join("");
   orderList.innerHTML = interfaceSettings.order
     .map(tabById)
     .filter(Boolean)
     .map(
       (item) =>
-        `<div class="settings-order-row" data-interface-order="${item.id}" draggable="false" role="listitem"><span class="settings-drag-handle" data-interface-drag-handle aria-hidden="true">⠿</span><span class="settings-order-icon" aria-hidden="true">${item.icon}</span><span>${item.label}</span><small>${item.id === "settings" ? "始终显示" : interfaceSettings.enabled[item.id] ? "显示中" : "已隐藏"}</small></div>`,
+        `<div class="settings-order-row" data-interface-order="${item.id}" draggable="false" role="listitem"><span class="settings-drag-handle" data-interface-drag-handle aria-hidden="true">⠿</span><span class="settings-order-icon" aria-hidden="true">${item.icon}</span><span>${item.label}</span>${item.id === "settings" ? '<small class="settings-order-fixed">始终显示</small>' : `<button type="button" class="settings-order-toggle ${interfaceSettings.enabled[item.id] ? "is-on" : ""}" data-interface-feature="${item.id}" role="switch" aria-checked="${interfaceSettings.enabled[item.id]}" aria-label="${item.label}${interfaceSettings.enabled[item.id] ? "已显示" : "已隐藏"}"></button>`}</div>`,
     )
     .join("");
   document.getElementById("settings-account-button").onclick = () =>
@@ -185,7 +177,7 @@ function renderSettings() {
       renderSettings();
     };
   });
-  featureList.querySelectorAll("[data-interface-feature]").forEach((button) => {
+  orderList.querySelectorAll("[data-interface-feature]").forEach((button) => {
     button.onclick = () => {
       const id = button.dataset.interfaceFeature;
       interfaceSettings.enabled[id] = !interfaceSettings.enabled[id];
@@ -324,7 +316,7 @@ function setupSettingsOrderDrag(orderList) {
       const tabbar = document.querySelector(".tabbar");
       tabbar?.classList.remove("is-order-updated");
       requestAnimationFrame(() => tabbar?.classList.add("is-order-updated"));
-    } else updateFeedback("按住任一项目即可调整顺序");
+    } else updateFeedback("按住左侧六个点即可调整顺序");
   };
   orderList.querySelectorAll("[data-interface-order]").forEach((row) => {
     const handle = row.querySelector("[data-interface-drag-handle]");

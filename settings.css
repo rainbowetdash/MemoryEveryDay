@@ -199,7 +199,7 @@
 }
 .settings-order-row {
   display: grid;
-  grid-template-columns: 24px 29px minmax(0, 1fr) auto;
+  grid-template-columns: 24px 29px minmax(0, 1fr) 42px;
   align-items: center;
   gap: 9px;
   min-height: 51px;
@@ -251,10 +251,36 @@
   height: 26px;
 }
 .settings-order-row small {
+  justify-self: end;
   color: #829bad;
   font-size: 10px;
   font-weight: 700;
 }
+.settings-order-toggle {
+  position: relative;
+  width: 40px;
+  height: 23px;
+  border: 0;
+  border-radius: 99px;
+  background: #b8cad7;
+  cursor: pointer;
+  transition: background .18s ease, transform .16s ease;
+}
+.settings-order-toggle::after {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px #36546a55;
+  content: "";
+  transition: transform .18s ease;
+}
+.settings-order-toggle.is-on { background: var(--app-accent, #1769aa); }
+.settings-order-toggle.is-on::after { transform: translateX(17px); }
+.settings-order-toggle:active { transform: scale(.96); }
 .tabbar[data-tab-count="5"] .tab {
   font-size: 11px;
 }

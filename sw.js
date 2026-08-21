@@ -1,4 +1,4 @@
-const cache = "memory-everyday-v171";
+const cache = "memory-everyday-v172";
 const files = [
   "/",
   "/index.html",
@@ -29,12 +29,12 @@ const files = [
   "/mobile-input-fix.css?v=2",
   "/floating-action.css?v=1",
   "/bottom-navigation.css?v=1",
-  "/settings.css?v=24",
+  "/settings.css?v=25",
   "/calendar-focus.css?v=3",
   "/interaction-feedback.css?v=1",
   "/event-colors.css?v=1",
   "/app.js?v=150",
-  "/settings.js?v=8",
+  "/settings.js?v=9",
   "/release-info.json?v=38",
   "/manifest.webmanifest",
   "/icon.svg",
