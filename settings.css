@@ -377,6 +377,17 @@ body.is-reordering-navigation, body.is-reordering-navigation * { user-select: no
 .settings-screen { scrollbar-width: none; }
 .settings-screen::-webkit-scrollbar { display: none; width: 0; height: 0; }
 
+/* 设置页只允许在内容范围内纵向滚动，避免手机边缘回弹带出横向空白。 */
+.settings-screen {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  overflow-x: clip;
+  overscroll-behavior: none;
+  touch-action: pan-y;
+}
+.settings-order-list { touch-action: none; }
+
 /* 恢复日历右上角的缩放控制，并让它使用当前主题。 */
 .calendar-zoom-controls { display: flex !important; }
 body[data-app-theme] .zoom-button { background: var(--theme-card); border-color: var(--theme-border); color: var(--app-accent); }

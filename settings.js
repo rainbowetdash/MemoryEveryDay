@@ -215,7 +215,8 @@ function setupSettingsOrderDrag(orderList) {
     pointerId = null,
     startY = 0,
     moved = false,
-    lastPosition = -1;
+    lastPosition = -1,
+    tracking = false;
   const feedback = document.getElementById("settings-order-feedback");
   const updateFeedback = (message) => {
     if (feedback) feedback.textContent = message;
@@ -239,34 +240,39 @@ function setupSettingsOrderDrag(orderList) {
       });
     });
   };
-  const moveBeforeTarget = (clientX, clientY) => {
+  const applyOrderPreview = () => {
+    interfaceSettings.order = [
+      ...orderList.querySelectorAll("[data-interface-order]"),
+    ].map((row) => row.dataset.interfaceOrder);
+    renderTabbar();
+  };
+  const moveByPosition = (clientY) => {
     if (!dragging) return;
-    const target = document
-      .elementFromPoint(clientX, clientY)
-      ?.closest("[data-interface-order]");
-    if (!target || target === dragging || !orderList.contains(target)) return;
-    const rect = target.getBoundingClientRect(),
-      before = new Map(
-        [...orderList.querySelectorAll("[data-interface-order]")].map((row) => [
-          row,
-          row.getBoundingClientRect(),
-        ]),
-      ),
-      insertAfter = clientY > rect.top + rect.height / 2;
-    orderList.insertBefore(
-      dragging,
-      insertAfter ? target.nextSibling : target,
-    );
+    const rows = [...orderList.querySelectorAll("[data-interface-order]")],
+      before = new Map(rows.map((row) => [row, row.getBoundingClientRect()])),
+      target = rows.find((row) => row !== dragging && clientY < row.getBoundingClientRect().top + row.getBoundingClientRect().height / 2);
+    const previousPosition = rows.indexOf(dragging);
+    orderList.insertBefore(dragging, target || null);
+    const position = [...orderList.querySelectorAll("[data-interface-order]")].indexOf(dragging);
+    if (position === previousPosition) return;
     animateReflow(before);
     clearDropMarkers();
     const next = dragging.nextElementSibling;
     if (next) next.classList.add("is-drop-target");
     else dragging.classList.add("is-drop-last");
-    const position = [...orderList.querySelectorAll("[data-interface-order]")].indexOf(dragging) + 1;
-    if (position !== lastPosition) {
-      lastPosition = position;
-      updateFeedback(`正在将「${tabById(dragging.dataset.interfaceOrder)?.label || "功能"}」移动到第 ${position} 位`);
+    const displayPosition = position + 1;
+    applyOrderPreview();
+    if (displayPosition !== lastPosition) {
+      lastPosition = displayPosition;
+      updateFeedback(`正在将「${tabById(dragging.dataset.interfaceOrder)?.label || "功能"}」移动到第 ${displayPosition} 位`);
     }
+  };
+  const stopTracking = () => {
+    if (!tracking) return;
+    tracking = false;
+    window.removeEventListener("pointermove", move, true);
+    window.removeEventListener("pointerup", finish, true);
+    window.removeEventListener("pointercancel", finish, true);
   };
   const start = (row, event) => {
     if (dragging) return;
@@ -280,6 +286,10 @@ function setupSettingsOrderDrag(orderList) {
     updateFeedback(`已选中「${tabById(row.dataset.interfaceOrder)?.label || "功能"}」，向上或向下拖动即可调整`);
     document.body.classList.add("is-reordering-navigation");
     row.setPointerCapture?.(event.pointerId);
+    tracking = true;
+    window.addEventListener("pointermove", move, true);
+    window.addEventListener("pointerup", finish, true);
+    window.addEventListener("pointercancel", finish, true);
   };
   const move = (event) => {
     if (
@@ -291,7 +301,7 @@ function setupSettingsOrderDrag(orderList) {
     moved = true;
     event.preventDefault?.();
     dragging.classList.add("is-dragging");
-    moveBeforeTarget(event.clientX, event.clientY);
+    moveByPosition(event.clientY);
   };
   const finish = (event = {}) => {
     if (
@@ -302,6 +312,7 @@ function setupSettingsOrderDrag(orderList) {
     const row = dragging;
     row.classList.remove("is-dragging");
     clearDropMarkers();
+    stopTracking();
     document.body.classList.remove("is-reordering-navigation");
     dragging = null;
     pointerId = null;
@@ -318,9 +329,6 @@ function setupSettingsOrderDrag(orderList) {
   orderList.querySelectorAll("[data-interface-order]").forEach((row) => {
     row.draggable = false;
     row.addEventListener("pointerdown", (event) => start(row, event));
-    row.addEventListener("pointermove", move);
-    row.addEventListener("pointerup", finish);
-    row.addEventListener("pointercancel", finish);
     row.addEventListener("mousedown", (event) => {
       if (!window.PointerEvent && event.button === 0) start(row, event);
     });
