@@ -1,5 +1,6 @@
 /* 放大日历改为只展示有安排的日期，避免在窄屏上把内容压成难以阅读的细列。 */
 .calendar-focus-list { display: grid; gap: 9px; flex: 0 0 auto; min-height: 0; max-height: min(38dvh, 318px); overflow-y: auto; overscroll-behavior: contain; padding: 2px 2px 4px; scrollbar-color: #aac7dc transparent; scrollbar-width: thin; }
+.calendar-focus-list.is-hidden { display: none; }
 .calendar-focus-list::-webkit-scrollbar { width: 4px; }
 .calendar-focus-list::-webkit-scrollbar-thumb { border-radius: 4px; background: #aac7dc; }
 .calendar-focus-intro { display: flex; align-items: baseline; justify-content: space-between; padding: 1px 3px 3px; color: var(--theme-muted, #6686a2); font-size: 12px; font-weight: 700; }
@@ -18,6 +19,7 @@
 .calendar-focus-anniversary b { color: #c65d88; font-size: 13px; }
 .calendar-focus-empty { margin: 5px 0; border: 1px dashed var(--theme-border, #cfe0ec); border-radius: 12px; color: var(--theme-muted, #6686a2); padding: 20px 14px; text-align: center; font-size: 14px; }
 #calendar-screen[data-calendar-zoom="1"] .calendar-scroll { display: none !important; }
-#calendar-screen[data-calendar-zoom="1"] .calendar-focus-list { display: grid; }
+#calendar-screen[data-calendar-zoom="1"] .calendar-focus-list { display: grid; flex: 1 1 auto; max-height: none; padding-bottom: 12px; }
+#calendar-screen[data-calendar-zoom="1"] .calendar-agenda-section { display: none; }
 body[data-app-theme="night"] .calendar-focus-day { background: var(--theme-card); }
 body[data-app-theme="night"] .calendar-focus-event, body[data-app-theme="night"] .calendar-focus-anniversary { background: var(--theme-surface); }
