@@ -511,6 +511,15 @@ body[data-app-theme] .calendar-toolbar .today-button { border-color: var(--theme
 body[data-app-theme] .calendar-toolbar .today-button:hover { background: var(--theme-tint); }
 @media (max-width: 540px) { .calendar-date-header { padding: max(18px, env(safe-area-inset-top)) 8px 13px; } .calendar-toolbar { margin-top: 2px; margin-bottom: 10px; } }
 
+/* 月历放大只改变内容密度，顶部日期始终保持同一节奏，避免页面跳动。 */
+#calendar-screen .calendar-selected-date { display: flex; align-items: baseline; gap: 8px; padding: 3px 0 10px; }
+#calendar-screen .calendar-selected-date h1 { margin: 0; font-size: 27px; line-height: 1.12; letter-spacing: -.5px; }
+@media (max-width: 540px) { #calendar-screen .calendar-selected-date h1 { font-size: 25px; } }
+
+/* 纪念日卡片向两侧舒展，保持标题区留白但减少列表的压迫感。 */
+.anniversary-list { margin-inline: -12px; }
+@media (max-width: 540px) { .anniversary-list { margin-inline: -10px; } }
+
 /* 侧栏打开时保留背景日历；临时取消固定周标题，避免移动端出现叠层残影。 */
 .group-sidebar { isolation: isolate; overflow: hidden; }
 #app-shell.is-group-drawer-open #calendar-screen { visibility: visible; }
