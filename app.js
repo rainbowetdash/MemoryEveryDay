@@ -83,6 +83,7 @@ function cancelNativeNotification(id) { if (nativeNotificationsAvailable() && id
 function syncNativeNotifications() { if (!notificationsEnabled()) return; state.events.forEach(scheduleNativeNotification); state.anniversaries.forEach(scheduleNativeAnniversary); }
 function isIosDevice() { return /iphone|ipad|ipod/i.test(navigator.userAgent); }
 function nativePlatform() { if (!isNativeShell) return ''; const supplied = launchParams.get('native-platform'); if (supplied === 'ios' || supplied === 'android') return supplied; if (/android/i.test(navigator.userAgent)) return 'android'; return isIosDevice() ? 'ios' : ''; }
+function signalNativeAppReady() { if (!isNativeShell) return; const message = { action: 'app-ready' }, iosBridge = window.webkit?.messageHandlers?.appReady; if (iosBridge?.postMessage) iosBridge.postMessage(message); else if (window.MemoryEveryDayNativeNotifications?.postMessage) window.MemoryEveryDayNativeNotifications.postMessage(JSON.stringify(message)); }
 function compareVersions(left, right) { const a = String(left || '0').split('.').map(Number), b = String(right || '0').split('.').map(Number); for (let index = 0; index < Math.max(a.length, b.length); index += 1) { const difference = (a[index] || 0) - (b[index] || 0); if (difference) return difference; } return 0; }
 function isTouchDevice() { return 'ontouchstart' in window || navigator.maxTouchPoints > 0; }
 function isStandaloneApp() { return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true; }
@@ -527,6 +528,7 @@ if (supabaseClient) { supabaseClient.auth.onAuthStateChange((_event, session) =>
 updateCalendarZoom(); updateAccountUI(); updateWebDownloadEntry(); render(); void registerPushWorker(); setInterval(refreshPastEventStyles, 30000); setInterval(() => { if (state.user && !state.syncBusy) void flushPendingOps(); }, 60000);
 setupDraggableFloatingAction();
 setupInteractionFeedback();
+signalNativeAppReady();
 void checkReleaseNotices();
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') void stopRemindersOnOpen(); else void flushMemoAutosave(); });
 window.addEventListener('focus', () => { void stopRemindersOnOpen(); });

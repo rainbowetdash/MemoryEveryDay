@@ -37,6 +37,7 @@ public class MainActivity extends Activity {
     private WebView webView;
     private View splash;
     private PermissionRequest pendingMicrophonePermissionRequest;
+    private boolean pageRevealed;
 
     @SuppressLint({"SetJavaScriptEnabled", "ClickableViewAccessibility"})
     @Override
@@ -64,8 +65,8 @@ public class MainActivity extends Activity {
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-                revealPage();
                 sendNotificationStatus();
+                view.postDelayed(() -> revealPage(), 5000);
             }
         });
         webView.setWebChromeClient(new WebChromeClient() {
@@ -106,6 +107,8 @@ public class MainActivity extends Activity {
     }
 
     private void revealPage() {
+        if (pageRevealed) return;
+        pageRevealed = true;
         webView.animate().alpha(1f).setDuration(160).start();
         if (splash == null || splash.getAlpha() == 0f) return;
         splash.animate().alpha(0f).setDuration(180).withEndAction(() -> splash.setVisibility(View.GONE)).start();
@@ -250,6 +253,7 @@ public class MainActivity extends Activity {
                         case "cancel": cancelNotifications(message.optString("id")); break;
                         case "schedule": scheduleNotification(message.optString("id"), message.optString("title"), message.optLong("at"), message.optJSONArray("earlyReminders") == null ? new JSONArray() : message.optJSONArray("earlyReminders")); break;
                         case "schedule-recurring": scheduleRecurringNotifications(message.optString("id"), message.optString("title"), message.optJSONArray("occurrences") == null ? new JSONArray() : message.optJSONArray("occurrences"), message.optJSONArray("earlyReminders") == null ? new JSONArray() : message.optJSONArray("earlyReminders")); break;
+                        case "app-ready": revealPage(); break;
                         default: break;
                     }
                 });
