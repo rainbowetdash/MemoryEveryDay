@@ -54,7 +54,6 @@ struct NativeWebView: UIViewRepresentable {
         private var isLoading: Binding<Bool>
         private weak var webView: WKWebView?
         private var notificationTestObserver: NSObjectProtocol?
-        private var readyFallback: DispatchWorkItem?
         private let siteURL = URL(string: "https://memoryeveryday.pages.dev/")!
 
         init(isLoading: Binding<Bool>) { self.isLoading = isLoading }
@@ -78,7 +77,6 @@ struct NativeWebView: UIViewRepresentable {
 
         func loadLatest() {
             guard let webView else { return }
-            readyFallback?.cancel()
             isLoading.wrappedValue = true
             let dataTypes: Set<String> = [
                 WKWebsiteDataTypeDiskCache,
@@ -104,10 +102,6 @@ struct NativeWebView: UIViewRepresentable {
 
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
             sendNotificationStatus()
-            readyFallback?.cancel()
-            let fallback = DispatchWorkItem { [weak self] in self?.markAppReady() }
-            readyFallback = fallback
-            DispatchQueue.main.asyncAfter(deadline: .now() + 5, execute: fallback)
         }
 
         func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
@@ -130,8 +124,6 @@ struct NativeWebView: UIViewRepresentable {
         }
 
         private func markAppReady() {
-            readyFallback?.cancel()
-            readyFallback = nil
             guard isLoading.wrappedValue else { return }
             isLoading.wrappedValue = false
         }

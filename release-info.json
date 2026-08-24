@@ -2,16 +2,16 @@
   "schemaVersion": 1,
   "apps": {
     "ios": {
-      "latestVersion": "1.0.12",
-      "downloadUrl": "./downloads/ipa-1-0-12",
-      "downloadName": "MemoryEveryDay-1.0.12.ipa",
+      "latestVersion": "1.0.13",
+      "downloadUrl": "./downloads/ipa-1-0-13",
+      "downloadName": "MemoryEveryDay-1.0.13.ipa",
       "label": "iPhone IPA",
       "hint": "用于 SideStore、AltStore、Sideloadly 等侧载工具"
     },
     "android": {
-      "latestVersion": "1.0.5",
-      "downloadUrl": "./downloads/apk-1-0-5",
-      "downloadName": "MemoryEveryDay-1.0.5.apk",
+      "latestVersion": "1.0.6",
+      "downloadUrl": "./downloads/apk-1-0-6",
+      "downloadName": "MemoryEveryDay-1.0.6.apk",
       "label": "Android APK",
       "hint": "下载后可直接安装更新"
     }

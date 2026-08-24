@@ -5,15 +5,15 @@ const zoomStorageKey = 'memory-everyday-calendar-scale-v2';
 const pendingSyncKey = 'memory-everyday-pending-sync';
 const authReminderKey = 'memory-everyday-auth-reminder-shown';
 const floatingActionPositionKey = 'memory-everyday-floating-action-position-v1';
-const releaseInfoUrl = './release-info.json?v=39';
+const releaseInfoUrl = './release-info.json?v=40';
 const releaseAnnouncementStorageKeyBase = 'memory-everyday-release-announcement-seen';
 const launchParams = new URLSearchParams(window.location.search);
 const isNativeShell = launchParams.get('native-shell') === '1';
 const legacyNativeVersions = { ios: '1.0.4', android: '1.0.0' };
 const fallbackReleaseInfo = {
   apps: {
-    ios: { latestVersion: '1.0.11', downloadUrl: './downloads/ipa-1-0-11', downloadName: 'MemoryEveryDay-1.0.11.ipa', label: 'iPhone IPA', hint: '用于 SideStore、AltStore、Sideloadly 等侧载工具' },
-    android: { latestVersion: '1.0.4', downloadUrl: './downloads/apk-1-0-4', downloadName: 'MemoryEveryDay-1.0.4.apk', label: 'Android APK', hint: '下载后可直接安装更新' }
+    ios: { latestVersion: '1.0.13', downloadUrl: './downloads/ipa-1-0-13', downloadName: 'MemoryEveryDay-1.0.13.ipa', label: 'iPhone IPA', hint: '用于 SideStore、AltStore、Sideloadly 等侧载工具' },
+    android: { latestVersion: '1.0.6', downloadUrl: './downloads/apk-1-0-6', downloadName: 'MemoryEveryDay-1.0.6.apk', label: 'Android APK', hint: '下载后可直接安装更新' }
   },
   announcement: null
 };
@@ -37,6 +37,7 @@ let activeReleaseAnnouncement = null;
 let releaseDownloadFlow = false;
 let launchNoticesFinished = false;
 let authReminderPending = false;
+let nativeAppReadySignaled = false;
 let memoAutosaveTimer = null;
 let memoSavePromise = null;
 let memoSaveQueued = false;
@@ -83,7 +84,7 @@ function cancelNativeNotification(id) { if (nativeNotificationsAvailable() && id
 function syncNativeNotifications() { if (!notificationsEnabled()) return; state.events.forEach(scheduleNativeNotification); state.anniversaries.forEach(scheduleNativeAnniversary); }
 function isIosDevice() { return /iphone|ipad|ipod/i.test(navigator.userAgent); }
 function nativePlatform() { if (!isNativeShell) return ''; const supplied = launchParams.get('native-platform'); if (supplied === 'ios' || supplied === 'android') return supplied; if (/android/i.test(navigator.userAgent)) return 'android'; return isIosDevice() ? 'ios' : ''; }
-function signalNativeAppReady() { if (!isNativeShell) return; const message = { action: 'app-ready' }, iosBridge = window.webkit?.messageHandlers?.appReady; if (iosBridge?.postMessage) iosBridge.postMessage(message); else if (window.MemoryEveryDayNativeNotifications?.postMessage) window.MemoryEveryDayNativeNotifications.postMessage(JSON.stringify(message)); }
+function signalNativeAppReady() { if (!isNativeShell || nativeAppReadySignaled) return; nativeAppReadySignaled = true; requestAnimationFrame(() => requestAnimationFrame(() => { const message = { action: 'app-ready' }, iosBridge = window.webkit?.messageHandlers?.appReady; if (iosBridge?.postMessage) iosBridge.postMessage(message); else if (window.MemoryEveryDayNativeNotifications?.postMessage) window.MemoryEveryDayNativeNotifications.postMessage(JSON.stringify(message)); })); }
 function compareVersions(left, right) { const a = String(left || '0').split('.').map(Number), b = String(right || '0').split('.').map(Number); for (let index = 0; index < Math.max(a.length, b.length); index += 1) { const difference = (a[index] || 0) - (b[index] || 0); if (difference) return difference; } return 0; }
 function isTouchDevice() { return 'ontouchstart' in window || navigator.maxTouchPoints > 0; }
 function isStandaloneApp() { return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true; }
@@ -474,7 +475,7 @@ function syncErrorCopy(error) { const message = String(error?.message || error?.
 function openForceSyncConfirm() { if (!state.user || !supabaseClient) { $('signed-in-message').textContent = '登录服务暂时不可用，请稍后再试'; return; } $('confirm-force-sync-button').disabled = false; $('confirm-force-sync-button').textContent = '确认强制同步'; $('cancel-force-sync-button').disabled = false; $('force-sync-confirm-dialog').showModal(); }
 async function forceSyncCurrentUser() { if (!state.user || !supabaseClient) return; const deletions = readPending().filter((operation) => operation.type === 'delete'); writePending(deletions); state.groupsInitialized = true; save(); saveGroups(); saveAnniversaries(); queueGroupSnapshot(); queueSettingsSync(); state.events.forEach((event) => queueOperation({ entity: 'event', type: 'upsert', id: event.id, event })); state.anniversaries.forEach((anniversary) => queueOperation({ entity: 'anniversary', type: 'upsert', id: anniversary.id, anniversary })); const failed = await flushPendingOps(); if (failed.length) { const detail = syncErrorCopy(failed[0].error); setSyncStatus(`强制同步失败：${detail}`, 'offline'); return { failed, detail }; } await fetchCloudEvents(); await syncAnniversaries(); await fetchMemos(); return { failed: [], detail: '' }; }
 function showAuthReminder() { if (!launchNoticesFinished) { authReminderPending = true; return; } if (state.user || sessionStorage.getItem(authReminderKey)) return; sessionStorage.setItem(authReminderKey, '1'); }
-async function handleSession(user) { const previousId = state.user?.id; state.user = user; state.authReady = true; if (!user) { state.groups = readStoredGroups(groupStorageKey()); state.activeGroupId = 'all'; state.events = readStoredEvents(storageKey); state.anniversaries = readStoredAnniversaries(anniversaryStorageKey()); state.memos = []; normalizeEventGroups(); updateAccountUI(); render(); openLaunchTarget(); showAuthReminder(); return; } if (previousId === user.id && state.events.length) { await refreshPushSubscription(); await acknowledgeAllPushReminders(); await syncAnniversaries(); await fetchMemos(); openLaunchTarget(); return; } state.groups = readStoredGroups(groupStorageKey(user)); state.activeGroupId = 'all'; state.events = readStoredEvents(userStorageKey(user)); state.anniversaries = readStoredAnniversaries(anniversaryStorageKey(user)); state.memos = []; normalizeEventGroups(); updateAccountUI(); render(); await syncCurrentUser(); await refreshPushSubscription(); await acknowledgeAllPushReminders(); openLaunchTarget(); }
+async function handleSession(user) { const previousId = state.user?.id; state.user = user; state.authReady = true; if (!user) { state.groups = readStoredGroups(groupStorageKey()); state.activeGroupId = 'all'; state.events = readStoredEvents(storageKey); state.anniversaries = readStoredAnniversaries(anniversaryStorageKey()); state.memos = []; normalizeEventGroups(); updateAccountUI(); render(); openLaunchTarget(); showAuthReminder(); signalNativeAppReady(); return; } if (previousId === user.id && state.events.length) { await refreshPushSubscription(); await acknowledgeAllPushReminders(); await syncAnniversaries(); await fetchMemos(); openLaunchTarget(); signalNativeAppReady(); return; } state.groups = readStoredGroups(groupStorageKey(user)); state.activeGroupId = 'all'; state.events = readStoredEvents(userStorageKey(user)); state.anniversaries = readStoredAnniversaries(anniversaryStorageKey(user)); state.memos = []; normalizeEventGroups(); updateAccountUI(); render(); await syncCurrentUser(); await refreshPushSubscription(); await acknowledgeAllPushReminders(); openLaunchTarget(); signalNativeAppReady(); }
 function accountDisplayName(user = state.user) { const username = String(user?.user_metadata?.username || '').trim(); return username || (user?.email || '已登录').split('@')[0]; }
 function updateAccountUI() { const signedIn = Boolean(state.user), displayName = signedIn ? accountDisplayName() : '登录同步', accountButton = $('settings-account-button'), accountName = $('settings-account-name'), accountStatus = $('settings-account-status'); if (accountButton) { accountButton.title = displayName; accountButton.setAttribute('aria-label', signedIn ? `打开 ${displayName} 的账号与同步设置` : '登录并同步日程'); } if (accountName) accountName.textContent = signedIn ? displayName : '登录并同步'; if (accountStatus) accountStatus.textContent = signedIn ? (state.user.email || '') : '登录后可在手机和电脑之间同步日程与备忘录'; $('signed-out-panel').classList.toggle('is-hidden', signedIn); $('signed-in-panel').classList.toggle('is-hidden', !signedIn); if (signedIn) { $('account-email').textContent = state.user.email || ''; setSyncStatus(supabaseClient ? '正在准备同步…' : '仅本机保存'); } updatePushUI(); }
 function setAuthMode(mode) { state.authMode = mode; const registering = mode === 'register'; $('auth-mode-copy').textContent = registering ? '填写用户名、邮箱并设置密码即可注册。之后在任意设备登录同一账号，日程会自动同步。' : '使用已注册的邮箱和密码登录，同一账号在手机和电脑上会显示相同的日程。'; $('auth-username-field').classList.toggle('is-hidden', !registering); $('auth-username').required = registering; if (!registering) $('auth-username').value = ''; $('auth-password-confirm-field').classList.toggle('is-hidden', !registering); $('auth-password').setAttribute('autocomplete', registering ? 'new-password' : 'current-password'); $('auth-primary-button').textContent = registering ? '注册并开始同步' : '登录'; $('auth-mode-switch').textContent = registering ? '已有账号？去登录' : '第一次使用？注册账号'; $('auth-note').textContent = registering ? '用户名必填，最多 10 个字；密码至少需要 6 位。' : '密码至少需要 6 位。日程仅属于登录的这个邮箱。'; }
@@ -524,11 +525,10 @@ window.addEventListener('memoryeveryday-native-notification-status', (event) => 
 window.addEventListener('memoryeveryday-native-notification-test', (event) => { const status = event.detail?.status || 'failed', message = event.detail?.message || '系统未能发送测试通知'; if (status === 'presented' || status === 'failed') { if (nativeNotificationTestTimer) clearTimeout(nativeNotificationTestTimer); nativeNotificationTestTimer = null; } setPushMessage(message, status === 'presented' ? 'ok' : status === 'failed' ? 'error' : ''); });
 $('release-notice-dialog').addEventListener('close', () => { markReleaseAnnouncementSeen(); if (!releaseDownloadFlow) finishLaunchNotices(); });
 $('push-help-dialog').addEventListener('close', () => { if (releaseDownloadFlow) { releaseDownloadFlow = false; finishLaunchNotices(); } });
-if (supabaseClient) { supabaseClient.auth.onAuthStateChange((_event, session) => { void handleSession(session?.user || null); }); supabaseClient.auth.getSession().then(({ data }) => handleSession(data.session?.user || null)); } else { state.authReady = true; updateAccountUI(); showAuthReminder(); }
+if (supabaseClient) { supabaseClient.auth.onAuthStateChange((_event, session) => { void handleSession(session?.user || null).catch(() => signalNativeAppReady()); }); supabaseClient.auth.getSession().then(({ data }) => handleSession(data.session?.user || null)).catch(() => signalNativeAppReady()); } else { state.authReady = true; updateAccountUI(); showAuthReminder(); signalNativeAppReady(); }
 updateCalendarZoom(); updateAccountUI(); updateWebDownloadEntry(); render(); void registerPushWorker(); setInterval(refreshPastEventStyles, 30000); setInterval(() => { if (state.user && !state.syncBusy) void flushPendingOps(); }, 60000);
 setupDraggableFloatingAction();
 setupInteractionFeedback();
-signalNativeAppReady();
 void checkReleaseNotices();
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') void stopRemindersOnOpen(); else void flushMemoAutosave(); });
 window.addEventListener('focus', () => { void stopRemindersOnOpen(); });

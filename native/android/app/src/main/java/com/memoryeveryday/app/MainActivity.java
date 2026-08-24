@@ -66,7 +66,6 @@ public class MainActivity extends Activity {
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
                 sendNotificationStatus();
-                view.postDelayed(() -> revealPage(), 5000);
             }
         });
         webView.setWebChromeClient(new WebChromeClient() {
