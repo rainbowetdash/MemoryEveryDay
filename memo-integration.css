@@ -9,13 +9,14 @@
 .memo-editor-event-actions {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: flex-start;
+  flex-wrap: wrap;
   gap: 8px;
 }
 
 .memo-editor-event {
+  flex: 1 1 220px;
   min-height: 31px;
-  margin-right: auto;
 }
 
 .memo-editor-event:hover {
@@ -24,6 +25,7 @@
 }
 
 .memo-open-calendar-button,
+.memo-manage-link-button,
 .event-linked-memo-button {
   border: 1px solid #a8cde6;
   border-radius: 8px;
@@ -36,6 +38,7 @@
 }
 
 .memo-open-calendar-button:hover,
+.memo-manage-link-button:hover,
 .event-linked-memo-button:hover {
   border-color: #72afd4;
   background: #e2f3ff;
@@ -44,6 +47,169 @@
 .event-linked-memo-button {
   width: 100%;
   min-height: 46px;
+}
+
+.memo-manage-link-button {
+  min-height: 34px;
+}
+
+.memo-link-manager-dialog {
+  width: min(430px, calc(100vw - 28px));
+  max-height: min(680px, calc(100dvh - 28px));
+  overflow: hidden;
+  border: 0;
+  border-radius: 18px;
+  padding: 0;
+  color: var(--theme-text, #214b6c);
+}
+
+.memo-link-manager-form {
+  display: flex;
+  flex-direction: column;
+  max-height: min(680px, calc(100dvh - 28px));
+  padding: 23px;
+}
+
+.memo-link-manager-copy {
+  margin: -8px 0 14px;
+  color: var(--theme-muted, #6687a2);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.memo-link-manager-list {
+  display: grid;
+  gap: 8px;
+  min-height: 72px;
+  max-height: min(330px, 46dvh);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 2px;
+  scrollbar-width: thin;
+}
+
+.memo-link-manager-option {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  column-gap: 10px;
+  width: 100%;
+  min-height: 60px;
+  border: 1px solid var(--theme-border, #c9dfed);
+  border-radius: 11px;
+  background: var(--theme-card, #f8fcff);
+  color: var(--theme-text, #244a67);
+  padding: 10px 11px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.memo-link-manager-option::before {
+  content: "";
+  grid-row: 1 / 3;
+  align-self: center;
+  width: 17px;
+  height: 17px;
+  border: 2px solid #8db8d4;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 4px var(--theme-card, #f8fcff);
+}
+
+.memo-link-manager-option strong,
+.memo-link-manager-option small {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.memo-link-manager-option strong {
+  font-size: 14px;
+}
+
+.memo-link-manager-option small {
+  margin-top: 4px;
+  color: var(--theme-muted, #708ca5);
+  font-size: 11px;
+}
+
+.memo-link-manager-option.is-selected {
+  border-color: var(--app-accent, #2383c3);
+  background: var(--theme-tint, #e9f6ff);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--app-accent, #2383c3) 20%, transparent);
+}
+
+.memo-link-manager-option.is-selected::before {
+  border-color: var(--app-accent, #2383c3);
+  background: var(--app-accent, #2383c3);
+  box-shadow: inset 0 0 0 4px var(--theme-tint, #e9f6ff);
+}
+
+.memo-link-manager-option:disabled {
+  opacity: .48;
+  cursor: not-allowed;
+}
+
+.memo-link-manager-empty {
+  display: grid;
+  place-items: center;
+  min-height: 86px;
+  border: 1px dashed var(--theme-border, #bfd7e7);
+  border-radius: 11px;
+  color: var(--theme-muted, #708ca5);
+  padding: 16px;
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.memo-link-manager-status {
+  min-height: 19px;
+  margin: 10px 0 2px;
+}
+
+.memo-link-manager-status[data-tone="success"] {
+  color: #2f7f5e;
+}
+
+.memo-link-manager-actions {
+  display: grid;
+  gap: 9px;
+}
+
+.memo-link-manager-actions .save-button {
+  min-height: 48px;
+  margin: 0;
+}
+
+.memo-link-unlink-button {
+  min-height: 44px;
+  border: 1px solid #dfb8b8;
+  border-radius: 8px;
+  background: #fff6f6;
+  color: #ad5555;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.memo-link-open-current {
+  min-height: 44px;
+  border: 1px solid #a8cde6;
+  border-radius: 8px;
+  background: #f2f9fe;
+  color: #246e9f;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.memo-link-open-current:hover {
+  border-color: #72afd4;
+  background: #e2f3ff;
+}
+
+.memo-link-unlink-button:hover {
+  border-color: #d68e8e;
+  background: #ffeded;
 }
 
 .memo-calendar-unavailable-dialog {
@@ -212,9 +378,15 @@
   }
 
   .memo-editor-event-actions {
-    align-items: flex-start;
-    flex-direction: column;
+    align-items: stretch;
   }
+
+  .memo-editor-event { flex-basis: 100%; }
+
+  .memo-manage-link-button,
+  .memo-open-calendar-button { flex: 1 1 calc(50% - 4px); }
+
+  .memo-link-manager-form { padding: 21px 18px; }
 
   .memo-date-picker-panel {
     right: 0;
