@@ -58,7 +58,14 @@ body[data-app-theme="night"] .calendar-focus-event span {
   color: #f3f8ff !important;
 }
 
+/* 夜间主题不能用通用边框色覆盖日程自身的颜色；时间统一保持纯白。 */
+body[data-app-theme="night"] .calendar-agenda-section .agenda-item,
+body[data-app-theme="night"] .event-card,
+body[data-app-theme="night"] .calendar-focus-event {
+  border-left-color: var(--event-color) !important;
+}
+
 body[data-app-theme="night"] .event-card > span:first-child,
 body[data-app-theme="night"] .calendar-focus-event time {
-  color: color-mix(in srgb, var(--event-color) 72%, #ffffff) !important;
+  color: #ffffff !important;
 }
