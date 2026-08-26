@@ -1,4 +1,4 @@
-const cache = "memory-everyday-v179";
+const cache = "memory-everyday-v180";
 const files = [
   "/",
   "/index.html",
