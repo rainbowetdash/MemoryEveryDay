@@ -1,0 +1,427 @@
+.memo-header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.memo-folder-new-button {
+  min-height: 38px;
+  border: 1px solid var(--theme-border, #b9d9ec);
+  border-radius: 9px;
+  background: var(--theme-card, #f8fcff);
+  color: var(--app-accent, #1769aa);
+  padding: 8px 10px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.memo-folder-new-button:hover,
+.memo-folder-new-button:focus-visible {
+  border-color: var(--app-accent, #1769aa);
+  background: var(--theme-tint, #e5f4ff);
+  outline: 0;
+}
+
+.memo-folder-bar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 7px;
+  margin: -4px 0 15px;
+}
+
+.memo-folder-bar.is-hidden,
+.memo-folder-edit-button.is-hidden {
+  display: none;
+}
+
+.memo-folder-tabs {
+  display: flex;
+  gap: 7px;
+  min-width: 0;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  padding: 3px 2px 5px;
+  scrollbar-width: none;
+}
+
+.memo-folder-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.memo-folder-tab {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  gap: 6px;
+  min-height: 36px;
+  border: 1px solid var(--theme-border, #c7ddea);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--theme-card, #f8fcff) 90%, transparent);
+  color: var(--theme-muted, #5f7f98);
+  padding: 7px 11px;
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.memo-folder-tab span:first-child {
+  font-size: 13px;
+  line-height: 1;
+}
+
+.memo-folder-tab b {
+  display: grid;
+  place-items: center;
+  min-width: 19px;
+  height: 19px;
+  border-radius: 99px;
+  background: color-mix(in srgb, var(--theme-border, #c7ddea) 55%, transparent);
+  color: inherit;
+  padding: 0 5px;
+  font-size: 10px;
+}
+
+.memo-folder-tab:hover,
+.memo-folder-tab:focus-visible {
+  border-color: var(--app-accent, #1769aa);
+  outline: 0;
+}
+
+.memo-folder-tab.is-active {
+  border-color: var(--app-accent, #1769aa);
+  background: color-mix(in srgb, var(--app-accent, #1769aa) 14%, var(--theme-card, #f8fcff));
+  color: var(--app-accent, #1769aa);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--app-accent, #1769aa) 15%, transparent);
+}
+
+.memo-folder-tab.is-active b {
+  background: color-mix(in srgb, var(--app-accent, #1769aa) 18%, transparent);
+}
+
+.memo-folder-edit-button {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--theme-border, #c7ddea);
+  border-radius: 50%;
+  background: var(--theme-card, #f8fcff);
+  color: var(--theme-muted, #65839a);
+  padding: 0 0 5px;
+  font-size: 16px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  cursor: pointer;
+}
+
+.memo-folder-edit-button:hover,
+.memo-folder-edit-button:focus-visible {
+  border-color: var(--app-accent, #1769aa);
+  color: var(--app-accent, #1769aa);
+  outline: 0;
+}
+
+.memo-card-badges {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 9px;
+}
+
+.memo-card-badges .memo-event-link,
+.memo-card-badges .memo-folder-badge {
+  margin: 0;
+}
+
+.memo-folder-badge {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--app-accent, #1769aa) 9%, var(--theme-card, #f8fcff));
+  color: var(--theme-muted, #567893);
+  padding: 4px 7px;
+  font-size: 11px;
+  font-weight: 750;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.memo-editor-folder-button {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) 16px;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid var(--theme-border, #c9dfed);
+  border-radius: 11px;
+  background: color-mix(in srgb, var(--theme-card, #f8fcff) 88%, var(--theme-surface, #edf7fd));
+  color: var(--theme-text, #244a67);
+  padding: 7px 10px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.memo-editor-folder-button:hover,
+.memo-editor-folder-button:focus-visible {
+  border-color: var(--app-accent, #1769aa);
+  background: var(--theme-tint, #e9f6ff);
+  outline: 0;
+}
+
+.memo-editor-folder-icon {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--app-accent, #1769aa) 13%, transparent);
+  color: var(--app-accent, #1769aa);
+}
+
+.memo-editor-folder-icon svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.memo-editor-folder-button small,
+.memo-editor-folder-button strong {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.memo-editor-folder-button small {
+  color: var(--theme-muted, #7893a8);
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.memo-editor-folder-button strong {
+  margin-top: 2px;
+  color: var(--theme-text, #244a67);
+  font-size: 13px;
+}
+
+.memo-editor-folder-button b {
+  color: var(--app-accent, #1769aa);
+  font-size: 22px;
+  font-weight: 400;
+}
+
+.memo-folder-dialog,
+.memo-folder-picker-dialog {
+  width: min(420px, calc(100vw - 28px));
+  max-height: min(680px, calc(100dvh - 28px));
+  overflow: hidden;
+  border: 0;
+  border-radius: 18px;
+  background: var(--theme-card, #fff);
+  color: var(--theme-text, #214b6c);
+  padding: 0;
+  box-shadow: 0 22px 70px #163b5d38;
+}
+
+.memo-folder-dialog::backdrop,
+.memo-folder-picker-dialog::backdrop {
+  background: #0c345966;
+  backdrop-filter: blur(2px);
+}
+
+.memo-folder-form,
+.memo-folder-picker-form {
+  display: flex;
+  flex-direction: column;
+  max-height: min(680px, calc(100dvh - 28px));
+  padding: 23px;
+}
+
+.memo-folder-form label {
+  display: grid;
+  gap: 6px;
+  color: var(--theme-muted, #54718a);
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.memo-folder-form input {
+  width: 100%;
+  min-height: 45px;
+  border: 1px solid var(--theme-border, #bdd7e8);
+  border-radius: 9px;
+  background: var(--theme-card, #fff);
+  color: var(--theme-text, #244a67);
+  padding: 9px 11px;
+  font: inherit;
+  font-size: 15px;
+  outline: 0;
+}
+
+.memo-folder-form input:focus {
+  border-color: var(--app-accent, #1769aa);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--app-accent, #1769aa) 15%, transparent);
+}
+
+.memo-folder-form .form-error {
+  min-height: 20px;
+  margin: 8px 0 2px;
+}
+
+.memo-folder-form-actions,
+.memo-folder-picker-actions {
+  display: grid;
+  gap: 9px;
+}
+
+.memo-folder-form-actions .save-button,
+.memo-folder-picker-actions .save-button {
+  min-height: 48px;
+  margin: 0;
+}
+
+.memo-folder-delete-button,
+.memo-folder-create-inline {
+  min-height: 44px;
+  border: 1px solid var(--theme-border, #b9d9ec);
+  border-radius: 9px;
+  background: var(--theme-card, #f8fcff);
+  color: var(--app-accent, #1769aa);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.memo-folder-delete-button {
+  border-color: #dfb8b8;
+  background: #fff6f6;
+  color: #ad5555;
+}
+
+body[data-app-theme="night"] .memo-folder-delete-button {
+  border-color: #70464b;
+  background: #321f25;
+  color: #ffadb4;
+}
+
+.memo-folder-picker-copy {
+  margin: -8px 0 14px;
+  color: var(--theme-muted, #6687a2);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.memo-folder-picker-list {
+  display: grid;
+  gap: 8px;
+  min-height: 70px;
+  max-height: min(330px, 45dvh);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 2px;
+}
+
+.memo-folder-picker-option {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 55px;
+  border: 1px solid var(--theme-border, #c9dfed);
+  border-radius: 11px;
+  background: var(--theme-card, #f8fcff);
+  color: var(--theme-text, #244a67);
+  padding: 9px 11px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.memo-folder-picker-option::before {
+  width: 17px;
+  height: 17px;
+  border: 2px solid #8db8d4;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 4px var(--theme-card, #f8fcff);
+  content: "";
+}
+
+.memo-folder-picker-option strong,
+.memo-folder-picker-option small {
+  display: block;
+  min-width: 0;
+}
+
+.memo-folder-picker-option strong {
+  overflow: hidden;
+  font-size: 14px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.memo-folder-picker-option small {
+  color: var(--theme-muted, #708ca5);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.memo-folder-picker-option.is-selected {
+  border-color: var(--app-accent, #1769aa);
+  background: var(--theme-tint, #e9f6ff);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--app-accent, #1769aa) 18%, transparent);
+}
+
+.memo-folder-picker-option.is-selected::before {
+  border-color: var(--app-accent, #1769aa);
+  background: var(--app-accent, #1769aa);
+  box-shadow: inset 0 0 0 4px var(--theme-tint, #e9f6ff);
+}
+
+.memo-folder-picker-status {
+  min-height: 19px;
+  margin: 9px 0 2px;
+}
+
+@media (max-width: 430px) {
+  .memo-header {
+    align-items: center;
+  }
+
+  .memo-header > div:first-child {
+    min-width: 0;
+    padding-left: 14px;
+  }
+
+  .memo-header-actions {
+    gap: 6px;
+  }
+
+  .memo-new-button,
+  .memo-folder-new-button {
+    min-height: 36px;
+    padding: 7px 9px;
+    font-size: 12px;
+  }
+
+  .memo-editor-folder-button {
+    min-height: 45px;
+  }
+}
+
+@media (max-width: 360px) {
+  .memo-header-actions .memo-new-button {
+    display: none;
+  }
+}
