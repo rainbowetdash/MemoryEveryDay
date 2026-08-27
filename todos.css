@@ -1,0 +1,368 @@
+/* 日程与待办共用时间位置；方框和完成状态负责区分，不另外割裂页面。 */
+.event-type-heading {
+  position: relative;
+  min-width: 0;
+}
+
+.event-type-picker {
+  position: relative;
+  width: max-content;
+  max-width: 100%;
+}
+
+.event-type-trigger {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 31px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--theme-text, #18324f);
+  padding: 1px 4px 1px 0;
+  font-size: 20px;
+  font-weight: 850;
+  letter-spacing: -.3px;
+  cursor: pointer;
+}
+
+.event-type-trigger:hover,
+.event-type-trigger:focus-visible,
+.event-type-trigger[aria-expanded="true"] {
+  color: var(--app-accent, #1769aa);
+  outline: 0;
+}
+
+.event-type-trigger i {
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg) translateY(-2px);
+  transition: transform 180ms ease;
+}
+
+.event-type-trigger[aria-expanded="true"] i {
+  transform: rotate(225deg) translate(-1px, -1px);
+}
+
+.event-type-list {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 7px);
+  left: 0;
+  display: grid;
+  gap: 4px;
+  width: min(286px, calc(100vw - 72px));
+  border: 1px solid var(--theme-border, #bfd8e8);
+  border-radius: 12px;
+  background: var(--theme-card, #fff);
+  box-shadow: 0 16px 34px #173f5e29;
+  padding: 6px;
+}
+
+.event-type-list.is-hidden,
+#weekly-repeat-label.is-hidden,
+#weekly-repeat-trigger.is-hidden {
+  display: none;
+}
+
+.event-type-option {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) 18px;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--theme-text, #244a67);
+  padding: 9px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.event-type-option:hover,
+.event-type-option:focus-visible {
+  background: var(--theme-tint, #eef8ff);
+  outline: 0;
+}
+
+.event-type-option.is-selected {
+  border-color: color-mix(in srgb, var(--app-accent, #1769aa) 42%, transparent);
+  background: var(--theme-accent-soft, #e2f3ff);
+}
+
+.event-type-option strong,
+.event-type-option small {
+  display: block;
+}
+
+.event-type-option strong {
+  font-size: 13px;
+}
+
+.event-type-option small {
+  margin-top: 2px;
+  color: var(--theme-muted, #718ca3);
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+.event-type-option b {
+  visibility: hidden;
+  color: var(--app-accent, #1769aa);
+}
+
+.event-type-option.is-selected b {
+  visibility: visible;
+}
+
+.event-type-symbol {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  background: var(--theme-accent-soft, #e2f3ff);
+  color: var(--app-accent, #1769aa);
+  font-size: 17px;
+  font-weight: 850;
+}
+
+.todo-symbol {
+  background: color-mix(in srgb, var(--app-accent, #1769aa) 11%, var(--theme-card, #fff));
+}
+
+.todo-completion-row {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 9px;
+  margin: -2px 0 15px;
+  border: 1px solid var(--theme-border, #c8dfed);
+  border-radius: 10px;
+  background: var(--theme-tint, #f2f9fd);
+  padding: 9px 10px;
+}
+
+.todo-completion-row.is-hidden {
+  display: none;
+}
+
+.todo-completion-icon {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  background: var(--theme-card, #fff);
+  color: var(--app-accent, #1769aa);
+  font-size: 19px;
+  font-weight: 850;
+}
+
+.todo-completion-row strong,
+.todo-completion-row small {
+  display: block;
+}
+
+.todo-completion-row strong {
+  color: var(--theme-text, #244a67);
+  font-size: 12px;
+}
+
+.todo-completion-row small {
+  margin-top: 2px;
+  color: var(--theme-muted, #718ca3);
+  font-size: 10px;
+}
+
+#todo-completion-toggle {
+  min-height: 31px;
+  border: 1px solid var(--app-accent, #1769aa);
+  border-radius: 8px;
+  background: var(--theme-card, #fff);
+  color: var(--app-accent, #1769aa);
+  padding: 6px 9px;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.todo-check {
+  display: grid;
+  place-items: center;
+  flex: 0 0 24px;
+  width: 24px;
+  height: 24px;
+  border: 2px solid color-mix(in srgb, var(--event-color, var(--app-accent, #1769aa)) 80%, #fff);
+  border-radius: 7px;
+  background: var(--theme-card, #fff);
+  color: #fff;
+  padding: 0;
+  cursor: pointer;
+  transition: transform 140ms ease, background 160ms ease, border-color 160ms ease;
+}
+
+.todo-check::after {
+  content: "";
+  width: 9px;
+  height: 5px;
+  border-left: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  opacity: 0;
+  transform: rotate(-45deg) translate(1px, -1px) scale(.7);
+  transition: opacity 140ms ease, transform 160ms ease;
+}
+
+.todo-check:hover,
+.todo-check:focus-visible {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--event-color, var(--app-accent, #1769aa)) 18%, transparent);
+  outline: 0;
+}
+
+.todo-check.is-checked,
+.is-completed > .todo-check,
+.todo-check.is-completed {
+  border-color: var(--event-color, var(--app-accent, #1769aa));
+  background: var(--event-color, var(--app-accent, #1769aa));
+}
+
+.todo-check.is-checked::after,
+.is-completed > .todo-check::after,
+.todo-check.is-completed::after {
+  opacity: 1;
+  transform: rotate(-45deg) translate(1px, -1px) scale(1);
+}
+
+.agenda-item.is-todo {
+  align-items: center;
+}
+
+.event-card.is-todo {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr);
+  align-items: start;
+  column-gap: 9px;
+}
+
+.event-card.is-todo > .todo-check {
+  grid-row: 1 / span 2;
+  margin-top: 1px;
+}
+
+.event-card.is-todo > .event-time-label,
+.event-card.is-todo > div {
+  grid-column: 2;
+}
+
+.calendar-event.is-todo {
+  display: grid;
+  grid-template-columns: 11px minmax(0, 1fr);
+  column-gap: 3px;
+}
+
+.calendar-event.is-todo > .todo-check {
+  grid-row: 1 / span 2;
+  width: 10px;
+  height: 10px;
+  min-height: 0;
+  margin-top: 1px;
+  border-width: 1px;
+  border-radius: 3px;
+}
+
+.calendar-event.is-todo > .todo-check::after {
+  width: 5px;
+  height: 3px;
+  border-width: 0 0 1px 1px;
+}
+
+.calendar-event.is-todo > .calendar-event-time,
+.calendar-event.is-todo > .calendar-event-title {
+  grid-column: 2;
+}
+
+.calendar-event-dot.is-todo {
+  border-radius: 2px;
+}
+
+.calendar-focus-event.is-todo {
+  grid-template-columns: 24px 72px minmax(0, 1fr);
+}
+
+.calendar-focus-event.is-todo > .todo-check {
+  width: 21px;
+  height: 21px;
+  border-radius: 6px;
+}
+
+.calendar-focus-event.is-completed,
+.calendar-event.is-completed,
+.agenda-item.is-completed,
+.event-card.is-completed {
+  opacity: .62;
+}
+
+.calendar-focus-event.is-completed > span,
+.calendar-event.is-completed .calendar-event-title,
+.agenda-item.is-completed .agenda-title,
+.event-card.is-completed strong {
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+  text-decoration-color: var(--theme-muted, #617b91);
+}
+
+.memo-new-event-kind {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+  margin-bottom: 11px;
+  border-radius: 9px;
+  background: var(--theme-tint, #edf7fd);
+  padding: 4px;
+}
+
+.memo-new-event-kind button {
+  min-height: 35px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--theme-muted, #6686a2);
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.memo-new-event-kind button.is-selected {
+  border-color: var(--theme-border, #c4ddeb);
+  background: var(--theme-card, #fff);
+  color: var(--app-accent, #1769aa);
+  box-shadow: 0 3px 9px #184f7412;
+}
+
+body[data-app-theme="night"] .event-type-list,
+body[data-app-theme="night"] .todo-check,
+body[data-app-theme="night"] #todo-completion-toggle {
+  background: var(--theme-card, #172334);
+}
+
+@media (max-width: 380px) {
+  .todo-completion-row {
+    grid-template-columns: 32px minmax(0, 1fr);
+  }
+
+  #todo-completion-toggle {
+    grid-column: 2;
+    justify-self: start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .event-type-trigger i,
+  .todo-check,
+  .todo-check::after {
+    transition: none;
+  }
+}
