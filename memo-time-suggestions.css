@@ -1,0 +1,151 @@
+.memo-time-suggestions {
+  flex: 0 1 190px;
+  min-height: 108px;
+  max-height: min(190px, 27dvh);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border: 1px solid var(--theme-border, #c8dfed);
+  border-radius: 13px;
+  background: linear-gradient(135deg, var(--theme-card, #f8fcff), var(--theme-tint, #edf8ff));
+  box-shadow: 0 8px 22px #1a608416;
+  padding: 10px;
+  scrollbar-width: thin;
+}
+
+.memo-editor-screen:has(.memo-time-suggestions:not(.is-hidden)) .memo-editor-content {
+  min-height: 140px;
+}
+
+.memo-time-suggestions.is-hidden {
+  display: none;
+}
+
+.memo-time-suggestions-header {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 1px 2px 9px;
+}
+
+.memo-time-suggestions-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 28px;
+  width: 28px;
+  height: 28px;
+  border-radius: 9px;
+  background: var(--theme-accent-soft, #dff1ff);
+  color: var(--app-accent, #1873b4);
+  font-size: 17px;
+  font-weight: 850;
+}
+
+.memo-time-suggestions-header strong,
+.memo-time-suggestions-header small {
+  display: block;
+}
+
+.memo-time-suggestions-header strong {
+  color: var(--theme-text, #244a67);
+  font-size: 12px;
+}
+
+.memo-time-suggestions-header small {
+  margin-top: 2px;
+  color: var(--theme-muted, #718fa6);
+  font-size: 10px;
+}
+
+.memo-time-suggestion-list {
+  display: grid;
+  gap: 7px;
+}
+
+.memo-time-suggestion {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px 10px;
+  align-items: center;
+  border: 1px solid var(--theme-border, #d3e5f0);
+  border-radius: 10px;
+  background: var(--theme-card, #fff);
+  padding: 9px 10px;
+}
+
+.memo-time-suggestion-copy {
+  min-width: 0;
+}
+
+.memo-time-suggestion-copy strong,
+.memo-time-suggestion-copy small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.memo-time-suggestion-copy strong {
+  color: var(--theme-text, #244a67);
+  font-size: 12px;
+}
+
+.memo-time-suggestion-copy small {
+  margin-top: 3px;
+  color: var(--app-accent, #2d7cac);
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.memo-time-suggestion-actions {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.memo-time-create-button,
+.memo-time-dismiss-button {
+  min-height: 30px;
+  border-radius: 8px;
+  padding: 6px 9px;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.memo-time-create-button {
+  border: 0;
+  background: var(--app-accent, #1873b4);
+  color: #fff;
+  box-shadow: 0 4px 10px #176c9f24;
+}
+
+.memo-time-create-button:hover,
+.memo-time-create-button:focus-visible {
+  filter: brightness(1.06);
+}
+
+.memo-time-dismiss-button {
+  border: 1px solid var(--theme-border, #c5ddea);
+  background: transparent;
+  color: var(--theme-muted, #6d8ca4);
+}
+
+.memo-time-dismiss-button:hover,
+.memo-time-dismiss-button:focus-visible {
+  border-color: var(--app-accent, #1873b4);
+  color: var(--app-accent, #1873b4);
+}
+
+@media (max-width: 390px) {
+  .memo-time-suggestion {
+    grid-template-columns: 1fr;
+  }
+
+  .memo-time-suggestion-actions {
+    justify-content: flex-end;
+  }
+}
+
+body[data-app-theme="night"] .memo-time-create-button {
+  color: #0f1b2a;
+}
