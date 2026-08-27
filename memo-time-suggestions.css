@@ -1,4 +1,5 @@
 .memo-time-suggestions {
+  box-sizing: border-box;
   flex: 0 1 190px;
   min-height: 108px;
   max-height: min(190px, 27dvh);
@@ -10,6 +11,14 @@
   box-shadow: 0 8px 22px #1a608416;
   padding: 10px;
   scrollbar-width: thin;
+  transform-origin: 50% 0;
+  transition:
+    opacity 220ms ease,
+    transform 240ms cubic-bezier(.22, .8, .24, 1),
+    min-height 240ms cubic-bezier(.22, .8, .24, 1),
+    max-height 240ms cubic-bezier(.22, .8, .24, 1),
+    padding 220ms ease,
+    border-width 220ms ease;
 }
 
 .memo-editor-screen:has(.memo-time-suggestions:not(.is-hidden)) .memo-editor-content {
@@ -18,6 +27,21 @@
 
 .memo-time-suggestions.is-hidden {
   display: none;
+}
+
+.memo-time-suggestions.is-entering {
+  animation: memo-time-panel-in 300ms cubic-bezier(.22, .8, .24, 1) both;
+}
+
+.memo-time-suggestions.is-closing {
+  min-height: 0;
+  max-height: 0;
+  overflow: hidden;
+  border-width: 0;
+  padding-block: 0;
+  opacity: 0;
+  transform: translateY(-5px) scale(.985);
+  pointer-events: none;
 }
 
 .memo-time-suggestions-header {
@@ -62,6 +86,7 @@
 }
 
 .memo-time-suggestion {
+  box-sizing: border-box;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 8px 10px;
@@ -70,6 +95,31 @@
   border-radius: 10px;
   background: var(--theme-card, #fff);
   padding: 9px 10px;
+  max-height: 96px;
+  overflow: hidden;
+  transform-origin: 50% 0;
+  transition:
+    opacity 190ms ease,
+    transform 220ms cubic-bezier(.22, .8, .24, 1),
+    max-height 220ms cubic-bezier(.22, .8, .24, 1),
+    padding 190ms ease,
+    border-width 190ms ease;
+}
+
+.memo-time-suggestions.is-entering .memo-time-suggestion {
+  animation: memo-time-card-in 280ms cubic-bezier(.22, .8, .24, 1) both;
+  animation-delay: calc(var(--memo-time-index, 0) * 45ms + 35ms);
+}
+
+.memo-time-suggestion.is-leaving,
+.memo-time-suggestions.is-entering .memo-time-suggestion.is-leaving {
+  animation: none;
+  max-height: 0;
+  border-width: 0;
+  padding-block: 0;
+  opacity: 0;
+  transform: translateY(-5px) scale(.98);
+  pointer-events: none;
 }
 
 .memo-time-suggestion-copy {
@@ -110,6 +160,12 @@
   font-size: 11px;
   font-weight: 800;
   cursor: pointer;
+  transition: transform 130ms ease, filter 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+
+.memo-time-create-button:active,
+.memo-time-dismiss-button:active {
+  transform: scale(.96);
 }
 
 .memo-time-create-button {
@@ -148,4 +204,36 @@
 
 body[data-app-theme="night"] .memo-time-create-button {
   color: #0f1b2a;
+}
+
+@keyframes memo-time-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(7px) scale(.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes memo-time-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .memo-time-suggestions,
+  .memo-time-suggestion,
+  .memo-time-create-button,
+  .memo-time-dismiss-button {
+    animation: none !important;
+    transition: none !important;
+  }
 }
