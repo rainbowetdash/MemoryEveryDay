@@ -70,3 +70,79 @@ body[data-app-theme="night"] .event-card > .event-time-label,
 body[data-app-theme="night"] .calendar-focus-event time {
   color: #ffffff !important;
 }
+
+/* 长标题日程保持时间完整、标题最多两行，避免时间和文字互相挤压。 */
+.calendar-agenda-section .agenda-item[data-event-id] {
+  display: grid;
+  grid-template-columns: 100px minmax(0, 1fr);
+  align-items: start;
+  gap: 11px;
+  min-height: 62px;
+}
+
+.calendar-agenda-section .agenda-item[data-event-id].is-todo {
+  grid-template-columns: 24px 100px minmax(0, 1fr);
+  gap: 9px;
+}
+
+.calendar-agenda-section .agenda-item[data-event-id] > .todo-check {
+  grid-column: 1;
+  align-self: start;
+  margin-top: 5px;
+}
+
+.calendar-agenda-section .agenda-item[data-event-id] > .agenda-time {
+  grid-column: 1;
+  align-self: start;
+  width: 100%;
+  min-width: 0;
+  min-height: 34px;
+  padding: 0 7px;
+  font-size: 12px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.calendar-agenda-section .agenda-item[data-event-id].is-todo > .agenda-time {
+  grid-column: 2;
+}
+
+.calendar-agenda-section .agenda-item[data-event-id] > div {
+  grid-column: 2;
+  min-width: 0;
+}
+
+.calendar-agenda-section .agenda-item[data-event-id].is-todo > div {
+  grid-column: 3;
+}
+
+.calendar-agenda-section .agenda-item[data-event-id] .agenda-title {
+  display: -webkit-box;
+  overflow: hidden;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.calendar-agenda-section .agenda-item[data-event-id] .event-note-preview {
+  margin-top: 3px;
+  -webkit-line-clamp: 1;
+}
+
+@media (max-width: 380px) {
+  .calendar-agenda-section .agenda-item[data-event-id] {
+    grid-template-columns: 91px minmax(0, 1fr);
+    gap: 9px;
+  }
+
+  .calendar-agenda-section .agenda-item[data-event-id].is-todo {
+    grid-template-columns: 22px 86px minmax(0, 1fr);
+    gap: 7px;
+  }
+
+  .calendar-agenda-section .agenda-item[data-event-id] > .agenda-time {
+    padding-inline: 5px;
+    font-size: 11px;
+  }
+}

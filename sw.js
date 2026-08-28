@@ -1,4 +1,4 @@
-const cache = "memory-everyday-v184";
+const cache = "memory-everyday-v185";
 const files = [
   "/",
   "/index.html",
@@ -18,6 +18,7 @@ const files = [
   "/memo-delete-confirm.css?v=1",
   "/memo-integration.css?v=4",
   "/memo-folders.css?v=1",
+  "/memo-sorting.css?v=1",
   "/memo-time-suggestions.css?v=2",
   "/force-sync-confirm.css?v=1",
   "/memo-inline-media.css?v=1",
@@ -34,10 +35,10 @@ const files = [
   "/settings.css?v=25",
   "/calendar-focus.css?v=3",
   "/interaction-feedback.css?v=1",
-  "/event-colors.css?v=3",
-  "/todos.css?v=1",
+  "/event-colors.css?v=4",
+  "/todos.css?v=2",
   "/memo-time-suggestions.js?v=1",
-  "/app.js?v=160",
+  "/app.js?v=161",
   "/settings.js?v=9",
   "/release-info.json?v=40",
   "/manifest.webmanifest",

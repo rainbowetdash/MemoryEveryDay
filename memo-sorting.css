@@ -1,0 +1,139 @@
+/* 文件夹内的备忘录用独立拖拽手柄排序，正文卡片仍保持完整点击区域。 */
+.memo-sort-feedback {
+  min-height: 18px;
+  margin: -9px 2px 8px;
+  color: var(--theme-muted, #6f8ba4);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.memo-sort-feedback.is-hidden {
+  display: none;
+}
+
+.memo-sort-feedback[data-tone="saving"] {
+  color: var(--app-accent, #1769aa);
+}
+
+.memo-sort-feedback[data-tone="success"] {
+  color: #2f8164;
+}
+
+.memo-sort-feedback[data-tone="error"] {
+  color: #b94e55;
+}
+
+.memo-sort-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  align-items: stretch;
+  gap: 8px;
+  min-width: 0;
+  transition: transform 190ms cubic-bezier(.2, .8, .25, 1);
+}
+
+.memo-sort-row:not(.is-sortable) {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.memo-sort-handle {
+  position: relative;
+  display: grid;
+  place-items: center;
+  align-self: stretch;
+  min-width: 28px;
+  min-height: 58px;
+  border: 1px solid var(--theme-border, #c8dce9);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--theme-card, #f8fcff) 86%, var(--theme-tint, #e7f4fc));
+  color: var(--theme-muted, #6f8ca3);
+  padding: 0;
+  cursor: grab;
+  touch-action: none;
+}
+
+.memo-sort-handle::before {
+  content: "";
+  width: 12px;
+  height: 18px;
+  background-image: radial-gradient(circle, currentColor 1.65px, transparent 1.8px);
+  background-position: 0 0;
+  background-size: 6px 7px;
+  opacity: .82;
+}
+
+.memo-sort-handle:hover,
+.memo-sort-handle:focus-visible {
+  border-color: var(--app-accent, #1769aa);
+  color: var(--app-accent, #1769aa);
+  outline: 0;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--app-accent, #1769aa) 14%, transparent);
+}
+
+.memo-sort-row.is-dragging {
+  position: relative;
+  z-index: 8;
+  transform: scale(1.015);
+}
+
+.memo-sort-row.is-dragging .memo-card {
+  border-color: var(--app-accent, #1769aa) !important;
+  box-shadow: 0 14px 32px color-mix(in srgb, var(--app-accent, #1769aa) 22%, transparent);
+}
+
+.memo-sort-row.is-dragging .memo-sort-handle {
+  border-color: var(--app-accent, #1769aa);
+  background: var(--theme-tint, #e7f4fc);
+  color: var(--app-accent, #1769aa);
+  cursor: grabbing;
+}
+
+.memo-sort-row.is-drop-target {
+  padding-top: 6px;
+}
+
+.memo-sort-row.is-drop-target::before {
+  content: "";
+  position: absolute;
+  z-index: 9;
+  top: 0;
+  left: 36px;
+  right: 4px;
+  height: 3px;
+  border-radius: 99px;
+  background: var(--app-accent, #1769aa);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--app-accent, #1769aa) 13%, transparent);
+}
+
+body.is-reordering-memos {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+body[data-app-theme="night"] .memo-sort-handle {
+  border-color: #40546b;
+  background: #172536;
+  color: #a9bdd2;
+}
+
+body[data-app-theme="night"] .memo-sort-feedback[data-tone="success"] {
+  color: #89d7b7;
+}
+
+@media (max-width: 380px) {
+  .memo-sort-row {
+    grid-template-columns: 26px minmax(0, 1fr);
+    gap: 7px;
+  }
+
+  .memo-sort-handle {
+    min-width: 26px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .memo-sort-row {
+    transition: none;
+  }
+}

@@ -348,6 +348,56 @@ body[data-app-theme="night"] #todo-completion-toggle {
   background: var(--theme-card, #172334);
 }
 
+/* 夜间模式下选择项保持深色底和高对比文字，避免白底白字。 */
+body[data-app-theme="night"] .event-type-option {
+  color: #edf4fc;
+}
+
+body[data-app-theme="night"] .event-type-option small {
+  color: #aebfd0 !important;
+}
+
+body[data-app-theme="night"] .event-type-option.is-selected {
+  border-color: #6da4d8 !important;
+  background: #203a55 !important;
+  color: #ffffff !important;
+  box-shadow: inset 0 0 0 1px #8bb9ff24;
+}
+
+body[data-app-theme="night"] .event-type-option.is-selected small {
+  color: #d7e6f5 !important;
+}
+
+body[data-app-theme="night"] .event-type-symbol {
+  background: #172a3f;
+  color: #9dc8ff;
+}
+
+body[data-app-theme="night"] .event-type-option.is-selected .event-type-symbol {
+  background: #294d70;
+  color: #ffffff;
+}
+
+body[data-app-theme="night"] .event-type-option b {
+  color: #a9d0ff;
+}
+
+/* 关闭按钮始终高于类型菜单，并保留稳定的触控区域。 */
+.event-modal-header {
+  position: relative;
+  isolation: isolate;
+}
+
+#close-event-dialog {
+  position: relative;
+  z-index: 40;
+  flex: 0 0 38px;
+  width: 38px;
+  height: 38px;
+  touch-action: manipulation;
+  pointer-events: auto;
+}
+
 @media (max-width: 380px) {
   .todo-completion-row {
     grid-template-columns: 32px minmax(0, 1fr);

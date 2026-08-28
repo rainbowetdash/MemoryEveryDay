@@ -26,6 +26,7 @@
     <link rel="stylesheet" href="./memo-delete-confirm.css?v=1" />
     <link rel="stylesheet" href="./memo-integration.css?v=4" />
     <link rel="stylesheet" href="./memo-folders.css?v=1" />
+    <link rel="stylesheet" href="./memo-sorting.css?v=1" />
     <link rel="stylesheet" href="./memo-time-suggestions.css?v=2" />
     <link rel="stylesheet" href="./force-sync-confirm.css?v=1" />
     <link rel="stylesheet" href="./memo-inline-media.css?v=1" />
@@ -42,8 +43,8 @@
     <link rel="stylesheet" href="./settings.css?v=25" />
     <link rel="stylesheet" href="./calendar-focus.css?v=3" />
     <link rel="stylesheet" href="./interaction-feedback.css?v=1" />
-    <link rel="stylesheet" href="./event-colors.css?v=3" />
-    <link rel="stylesheet" href="./todos.css?v=1" />
+    <link rel="stylesheet" href="./event-colors.css?v=4" />
+    <link rel="stylesheet" href="./todos.css?v=2" />
     <style>
       html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
       body { min-height: 100dvh; }
@@ -202,6 +203,7 @@
         </header>
         <p id="memo-sync-copy" class="memo-sync-copy">登录后可在所有设备查看你的备忘录</p>
         <section id="memo-folder-bar" class="memo-folder-bar is-hidden" aria-label="备忘录文件夹"><div id="memo-folder-tabs" class="memo-folder-tabs" role="tablist" aria-label="按文件夹筛选"></div><button type="button" id="edit-active-memo-folder" class="memo-folder-edit-button is-hidden" aria-label="编辑当前文件夹">•••</button></section>
+        <p id="memo-sort-feedback" class="memo-sort-feedback is-hidden" role="status" aria-live="polite"></p>
         <div id="memo-list" class="memo-list"></div>
       </section>
 
@@ -587,7 +589,7 @@
     </dialog>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     <script src="./memo-time-suggestions.js?v=1"></script>
-    <script src="./app.js?v=160"></script>
+    <script src="./app.js?v=161"></script>
     <script src="./settings.js?v=9"></script>
   </body>
 </html>
