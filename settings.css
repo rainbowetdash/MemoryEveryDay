@@ -487,6 +487,8 @@ body[data-app-theme] .settings-download-button small { color: var(--theme-muted)
 
 /* 三档月历：完整月视图看分布，两周和一周视图查看具体安排。 */
 #calendar-screen[data-calendar-zoom="0"] .calendar-scroll { height: clamp(236px, 30dvh, 292px) !important; overflow: hidden; padding-right: 0; }
+#calendar-screen .calendar-scroll { flex: 0 0 auto !important; }
+#calendar-screen .calendar-agenda-section { flex: 1 1 0; min-height: 0; }
 #calendar-screen[data-calendar-zoom="0"] .calendar-canvas { display: flex; flex-direction: column; height: 100%; }
 #calendar-screen[data-calendar-zoom="0"] .calendar-scroll .weekdays { flex: 0 0 auto; margin-bottom: 4px; padding: 2px 0 4px; }
 #calendar-screen[data-calendar-zoom="0"] .calendar-grid { flex: 1 1 auto; min-height: 0; grid-template-rows: repeat(6, minmax(0, 1fr)); grid-auto-rows: unset; gap: 3px; margin: 0 !important; }
