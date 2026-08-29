@@ -27,7 +27,11 @@
   position: relative;
   display: block;
   min-width: 0;
-  transition: transform 190ms cubic-bezier(.2, .8, .25, 1);
+  transition: transform 300ms cubic-bezier(.22, .7, .25, 1);
+}
+
+.memo-list {
+  position: relative;
 }
 
 .memo-card.has-sort-handle {
@@ -90,7 +94,7 @@
 .memo-sort-row.is-dragging {
   position: relative;
   z-index: 8;
-  transform: scale(1.015);
+  transform: scale(1.008);
 }
 
 .memo-sort-row.is-dragging .memo-card {
@@ -105,15 +109,11 @@
   box-shadow: inset 3px 0 0 var(--app-accent, #1769aa);
 }
 
-.memo-sort-row.is-drop-target {
-  padding-top: 6px;
-}
-
 .memo-sort-row.is-drop-target::before {
   content: "";
   position: absolute;
   z-index: 9;
-  top: 0;
+  top: -5px;
   left: 4px;
   right: 4px;
   height: 3px;
@@ -124,13 +124,17 @@
 
 .memo-list.is-sorting {
   touch-action: none;
+  overflow-y: hidden;
+  overflow-anchor: none;
   overscroll-behavior: none;
+  scroll-behavior: auto;
   cursor: grabbing;
 }
 
 body.is-reordering-memos {
   user-select: none;
   -webkit-user-select: none;
+  overscroll-behavior: none;
 }
 
 body[data-app-theme="night"] .memo-sort-handle {

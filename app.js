@@ -371,18 +371,72 @@ async function persistMemoOrder(list, previousOrder) {
   }
 }
 function setupMemoSortDrag(list) {
-  let dragging = null, activeHandle = null, pointerId = null, startY = 0, moved = false, previousOrder = new Map(), tracking = false, lastPointerY = 0, edgeScrollFrame = null, edgeScrollSpeed = 0;
+  let dragging = null, activeHandle = null, pointerId = null, startY = 0, moved = false, previousOrder = new Map(), tracking = false, lastPointerY = 0, dragFrame = null, lastFrameAt = 0, lastReorderAt = 0, edgeScrollVelocity = 0, managedScrollTop = 0;
+  const reorderInterval = 260;
   const rows = () => [...list.querySelectorAll('[data-memo-sort-row]')];
   const clearMarkers = () => rows().forEach((row) => row.classList.remove('is-drop-target'));
-  const animateReflow = (before) => { rows().forEach((row) => { const old = before.get(row); if (!old) return; const offset = old.top - row.getBoundingClientRect().top; if (!offset) return; row.style.transition = 'none'; row.style.transform = `translateY(${offset}px)`; requestAnimationFrame(() => { row.style.transition = ''; row.style.transform = ''; }); }); };
-  const moveToPointer = (clientY) => { if (!dragging) return; const current = rows(), before = new Map(current.map((row) => [row, row.getBoundingClientRect()])), target = current.find((row) => row !== dragging && clientY < row.getBoundingClientRect().top + row.getBoundingClientRect().height / 2), oldPosition = current.indexOf(dragging); list.insertBefore(dragging, target || null); const nextRows = rows(), newPosition = nextRows.indexOf(dragging); if (newPosition === oldPosition) return; animateReflow(before); clearMarkers(); const next = dragging.nextElementSibling; if (next) next.classList.add('is-drop-target'); updateMemoSortHandleLabels(list); setMemoSortFeedback(`正在移动到第 ${newPosition + 1} 位`, 'saving'); };
-  const stopEdgeScroll = () => { edgeScrollSpeed = 0; if (edgeScrollFrame !== null) cancelAnimationFrame(edgeScrollFrame); edgeScrollFrame = null; };
-  const runEdgeScroll = () => { if (!dragging || !edgeScrollSpeed) { edgeScrollFrame = null; return; } const before = list.scrollTop; list.scrollBy({ top: edgeScrollSpeed, behavior: 'auto' }); if (list.scrollTop !== before) moveToPointer(lastPointerY); edgeScrollFrame = requestAnimationFrame(runEdgeScroll); };
-  const updateEdgeScroll = (clientY) => { const bounds = list.getBoundingClientRect(), zone = Math.min(52, Math.max(34, bounds.height * .12)); let speed = 0; if (clientY < bounds.top + zone) speed = -Math.max(5, Math.round(((bounds.top + zone - clientY) / zone) * 18)); else if (clientY > bounds.bottom - zone) speed = Math.max(5, Math.round(((clientY - (bounds.bottom - zone)) / zone) * 18)); edgeScrollSpeed = speed; if (edgeScrollSpeed && edgeScrollFrame === null) edgeScrollFrame = requestAnimationFrame(runEdgeScroll); if (!edgeScrollSpeed) stopEdgeScroll(); };
-  const stopTracking = () => { stopEdgeScroll(); if (!tracking) return; tracking = false; window.removeEventListener('pointermove', move, true); window.removeEventListener('pointerup', finish, true); window.removeEventListener('pointercancel', finish, true); };
-  const move = (event) => { if (!dragging || (event.pointerId !== undefined && event.pointerId !== pointerId)) return; lastPointerY = event.clientY; if (!moved && Math.abs(event.clientY - startY) < 5) return; moved = true; event.preventDefault(); moveToPointer(event.clientY); updateEdgeScroll(event.clientY); };
-  const finish = (event = {}) => { if (!dragging || (event.pointerId !== undefined && event.pointerId !== pointerId)) return; const row = dragging, handle = activeHandle; try { if (handle?.hasPointerCapture?.(pointerId)) handle.releasePointerCapture(pointerId); } catch {} row.classList.remove('is-dragging'); list.classList.remove('is-sorting'); clearMarkers(); stopTracking(); document.body.classList.remove('is-reordering-memos'); dragging = null; activeHandle = null; pointerId = null; if (moved) void persistMemoOrder(list, previousOrder); else setMemoSortFeedback('按住卡片左侧六个点后，上下拖动排序；拖到边缘会自动翻动'); };
-  const start = (row, handle, event) => { if (dragging || (event.button !== undefined && event.button !== 0)) return; event.preventDefault(); event.stopPropagation(); dragging = row; activeHandle = handle; pointerId = event.pointerId ?? 'mouse'; startY = event.clientY; lastPointerY = event.clientY; moved = false; previousOrder = memoOrderSnapshot(rows().map((item) => item.dataset.memoId)); document.body.classList.add('is-reordering-memos'); list.classList.add('is-sorting'); row.classList.add('is-dragging'); setMemoSortFeedback(`已选中“${state.memos.find((memo) => memo.id === row.dataset.memoId)?.title || '备忘录'}”，上下拖动调整顺序`, 'saving'); handle.setPointerCapture?.(event.pointerId); tracking = true; window.addEventListener('pointermove', move, { capture: true, passive: false }); window.addEventListener('pointerup', finish, true); window.addEventListener('pointercancel', finish, true); };
+  const stableTop = (row) => list.getBoundingClientRect().top + list.clientTop + row.offsetTop - list.scrollTop;
+  const animateReflow = (before) => { rows().forEach((row) => { if (row === dragging) return; const old = before.get(row); if (!old) return; const offset = old - row.offsetTop; if (!offset) return; row.style.transition = 'none'; row.style.transform = `translateY(${offset}px)`; requestAnimationFrame(() => { row.style.transition = ''; row.style.transform = ''; }); }); };
+  const moveOneStep = (clientY) => {
+    if (!dragging) return false;
+    const current = rows(), position = current.indexOf(dragging), before = new Map(current.map((row) => [row, row.offsetTop])), draggingCenter = stableTop(dragging) + dragging.offsetHeight / 2;
+    let targetPosition = position;
+    if (clientY < draggingCenter - 8 && position > 0) {
+      const previous = current[position - 1], threshold = stableTop(previous) + previous.offsetHeight * .44;
+      if (clientY < threshold) { list.insertBefore(dragging, previous); targetPosition = position - 1; }
+    } else if (clientY > draggingCenter + 8 && position < current.length - 1) {
+      const next = current[position + 1], threshold = stableTop(next) + next.offsetHeight * .56;
+      if (clientY > threshold) { list.insertBefore(dragging, next.nextElementSibling); targetPosition = position + 1; }
+    }
+    if (targetPosition === position) return false;
+    animateReflow(before);
+    clearMarkers();
+    const next = dragging.nextElementSibling;
+    if (next) next.classList.add('is-drop-target');
+    updateMemoSortHandleLabels(list);
+    setMemoSortFeedback(`正在移动到第 ${targetPosition + 1} 位`, 'saving');
+    return true;
+  };
+  const settleToPointer = (clientY) => {
+    if (!dragging) return false;
+    const current = rows(), oldPosition = current.indexOf(dragging), candidates = current.filter((row) => row !== dragging), before = new Map(current.map((row) => [row, row.offsetTop])), target = candidates.find((row) => clientY < stableTop(row) + row.offsetHeight / 2) || null;
+    list.insertBefore(dragging, target);
+    const newPosition = rows().indexOf(dragging);
+    if (newPosition === oldPosition) return false;
+    animateReflow(before);
+    clearMarkers();
+    const next = dragging.nextElementSibling;
+    if (next) next.classList.add('is-drop-target');
+    updateMemoSortHandleLabels(list);
+    setMemoSortFeedback(`已放到第 ${newPosition + 1} 位`, 'saving');
+    return true;
+  };
+  const updateEdgeScroll = (clientY) => {
+    const bounds = list.getBoundingClientRect(), zone = 28;
+    let depth = 0, direction = 0;
+    if (clientY < bounds.top + zone) { depth = Math.min(1, Math.max(0, (bounds.top + zone - clientY) / zone)); direction = -1; }
+    else if (clientY > bounds.bottom - zone) { depth = Math.min(1, Math.max(0, (clientY - (bounds.bottom - zone)) / zone)); direction = 1; }
+    edgeScrollVelocity = direction * 96 * depth * depth;
+    if ((direction < 0 && managedScrollTop <= 0) || (direction > 0 && managedScrollTop >= list.scrollHeight - list.clientHeight - 1)) edgeScrollVelocity = 0;
+  };
+  const runDragFrame = (timestamp) => {
+    if (!dragging) { dragFrame = null; return; }
+    const elapsed = lastFrameAt ? Math.min(32, timestamp - lastFrameAt) : 16;
+    lastFrameAt = timestamp;
+    if (edgeScrollVelocity) {
+      const maximum = Math.max(0, list.scrollHeight - list.clientHeight), next = Math.min(maximum, Math.max(0, managedScrollTop + edgeScrollVelocity * elapsed / 1000));
+      if (Math.abs(next - managedScrollTop) >= .25) { managedScrollTop = next; list.scrollTop = managedScrollTop; }
+      else edgeScrollVelocity = 0;
+    }
+    if (moved && timestamp - lastReorderAt >= reorderInterval && moveOneStep(lastPointerY)) lastReorderAt = timestamp;
+    dragFrame = requestAnimationFrame(runDragFrame);
+  };
+  const preventNativeScroll = (event) => { if (dragging) event.preventDefault(); };
+  const holdManagedScroll = () => { if (dragging && Math.abs(list.scrollTop - managedScrollTop) > .5) list.scrollTop = managedScrollTop; };
+  const stopTracking = () => { edgeScrollVelocity = 0; if (dragFrame !== null) cancelAnimationFrame(dragFrame); dragFrame = null; if (!tracking) return; tracking = false; window.removeEventListener('pointermove', move, true); window.removeEventListener('pointerup', finish, true); window.removeEventListener('pointercancel', finish, true); window.removeEventListener('touchmove', preventNativeScroll, true); list.removeEventListener('wheel', preventNativeScroll, true); list.removeEventListener('scroll', holdManagedScroll); };
+  const move = (event) => { if (!dragging || (event.pointerId !== undefined && event.pointerId !== pointerId)) return; event.preventDefault(); lastPointerY = event.clientY; if (!moved && Math.abs(event.clientY - startY) < 7) return; moved = true; updateEdgeScroll(event.clientY); const now = performance.now(); if (now - lastReorderAt >= reorderInterval && moveOneStep(lastPointerY)) lastReorderAt = now; };
+  const finish = (event = {}) => { if (!dragging || (event.pointerId !== undefined && event.pointerId !== pointerId)) return; const row = dragging, handle = activeHandle; if (moved) settleToPointer(lastPointerY); try { if (handle?.hasPointerCapture?.(pointerId)) handle.releasePointerCapture(pointerId); } catch {} row.classList.remove('is-dragging'); list.classList.remove('is-sorting'); clearMarkers(); stopTracking(); document.body.classList.remove('is-reordering-memos'); dragging = null; activeHandle = null; pointerId = null; if (moved) void persistMemoOrder(list, previousOrder); else setMemoSortFeedback('按住卡片左侧六个点后，上下拖动排序；停在边缘会缓慢翻动'); };
+  const start = (row, handle, event) => { if (dragging || (event.button !== undefined && event.button !== 0)) return; event.preventDefault(); event.stopPropagation(); dragging = row; activeHandle = handle; pointerId = event.pointerId ?? 'mouse'; startY = event.clientY; lastPointerY = event.clientY; moved = false; previousOrder = memoOrderSnapshot(rows().map((item) => item.dataset.memoId)); managedScrollTop = list.scrollTop; lastFrameAt = 0; lastReorderAt = performance.now() - reorderInterval; edgeScrollVelocity = 0; document.body.classList.add('is-reordering-memos'); list.classList.add('is-sorting'); row.classList.add('is-dragging'); setMemoSortFeedback(`已选中“${state.memos.find((memo) => memo.id === row.dataset.memoId)?.title || '备忘录'}”，上下拖动调整顺序`, 'saving'); try { handle.setPointerCapture?.(event.pointerId); } catch {} tracking = true; window.addEventListener('pointermove', move, { capture: true, passive: false }); window.addEventListener('pointerup', finish, true); window.addEventListener('pointercancel', finish, true); window.addEventListener('touchmove', preventNativeScroll, { capture: true, passive: false }); list.addEventListener('wheel', preventNativeScroll, { capture: true, passive: false }); list.addEventListener('scroll', holdManagedScroll, { passive: true }); dragFrame = requestAnimationFrame(runDragFrame); };
   rows().forEach((row) => { const handle = row.querySelector('[data-memo-sort-handle]'); handle?.addEventListener('pointerdown', (event) => start(row, handle, event), { passive: false }); handle?.addEventListener('keydown', (event) => { if (!['ArrowUp', 'ArrowDown'].includes(event.key)) return; event.preventDefault(); const current = rows(), position = current.indexOf(row), targetPosition = event.key === 'ArrowUp' ? position - 1 : position + 1; if (targetPosition < 0 || targetPosition >= current.length) return; const snapshot = memoOrderSnapshot(current.map((item) => item.dataset.memoId)), target = current[targetPosition]; if (event.key === 'ArrowUp') list.insertBefore(row, target); else list.insertBefore(row, target.nextElementSibling); updateMemoSortHandleLabels(list); handle.focus(); void persistMemoOrder(list, snapshot); }); });
   updateMemoSortHandleLabels(list);
 }
@@ -392,7 +446,7 @@ function renderMemos() {
   renderMemoFolders();
   const memos = visibleMemos(), sortable = memoSortingEnabled(memos), showSortHandles = signedIn && memos.length > 0, activeFolder = memoFolder(state.activeMemoFolderId), scopeName = state.activeMemoFolderId === 'all' ? '全部' : activeFolder?.name || '未分类';
   $('memo-sync-copy').textContent = !signedIn ? '登录后可新建备忘录，并在所有设备查看' : `“${scopeName}”中可以按住卡片左侧六个点自定义顺序`;
-  setMemoSortFeedback(sortable ? '按住卡片左侧六个点后，上下拖动排序；拖到边缘会自动翻动' : '');
+  setMemoSortFeedback(sortable ? '按住卡片左侧六个点后，上下拖动排序；停在边缘会缓慢翻动' : '');
   if (!memos.length) { const emptyCopy = !signedIn ? '登录后即可建立会随账号同步的备忘录。' : state.activeMemoFolderId === 'uncategorized' ? '这里会显示尚未放进文件夹的备忘录。' : activeFolder ? `“${escapeHtml(activeFolder.name)}”里还没有备忘录。\n在这里新建，或从编辑页把已有备忘录移进来。` : '把课堂内容、作业和复习计划写在这里。\n还可以关联日程或待办并按文件夹整理。'; list.innerHTML = `<div class="memo-empty">${emptyCopy}</div>`; return; }
   list.innerHTML = memos.map((memo) => { const eventText = memoEventText(memo.eventId), folder = memoFolder(memo.folderId), attachmentCount = Array.isArray(memo.attachments) ? memo.attachments.length : 0, created = new Intl.DateTimeFormat('zh-CN', { month: 'numeric', day: 'numeric' }).format(new Date(memo.updatedAt || memo.createdAt)), content = memoPlainText(memo.content), badges = `${eventText ? `<span class="memo-event-link">▦ ${escapeHtml(eventText)}</span>` : ''}${folder && state.activeMemoFolderId === 'all' ? `<span class="memo-folder-badge">▱ ${escapeHtml(folder.name)}</span>` : ''}`, handle = showSortHandles ? `<button type="button" class="memo-sort-handle" data-memo-sort-handle ${sortable ? '' : 'disabled'}></button>` : ''; return `<div class="memo-sort-row ${sortable ? 'is-sortable' : ''}" data-memo-sort-row data-memo-id="${escapeHtml(memo.id)}"><article class="memo-card ${showSortHandles ? 'has-sort-handle' : ''}" data-memo-open="${escapeHtml(memo.id)}" role="button" tabindex="0">${handle}<div class="memo-card-main"><div class="memo-card-top"><span class="memo-card-mark">✦</span><h2>${escapeHtml(memo.title)}</h2><span class="memo-card-date">${escapeHtml(created)}</span></div>${badges ? `<div class="memo-card-badges">${badges}</div>` : ''}${content ? `<p class="memo-card-content">${escapeHtml(content)}</p>` : ''}${attachmentCount ? `<div class="memo-card-media">${attachmentCount} 个图片或语音附件</div>` : ''}</div></article></div>`; }).join('');
   list.querySelectorAll('[data-memo-open]').forEach((card) => { const open = () => openMemoEditor(state.memos.find((memo) => memo.id === card.dataset.memoOpen)); card.onclick = (event) => { if (!event.target.closest('[data-memo-sort-handle]')) open(); }; card.onkeydown = (event) => { if (event.target.closest('[data-memo-sort-handle]') || !['Enter', ' '].includes(event.key)) return; event.preventDefault(); open(); }; });
