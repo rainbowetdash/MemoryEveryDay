@@ -1,4 +1,4 @@
-/* 文件夹内的备忘录用独立拖拽手柄排序，正文卡片仍保持完整点击区域。 */
+/* “全部”和各文件夹都有自己的备忘录顺序；六点手柄与卡片融为一体。 */
 .memo-sort-feedback {
   min-height: 18px;
   margin: -9px 2px 8px;
@@ -25,32 +25,43 @@
 
 .memo-sort-row {
   position: relative;
-  display: grid;
-  grid-template-columns: 28px minmax(0, 1fr);
-  align-items: stretch;
-  gap: 8px;
+  display: block;
   min-width: 0;
   transition: transform 190ms cubic-bezier(.2, .8, .25, 1);
 }
 
-.memo-sort-row:not(.is-sortable) {
-  grid-template-columns: minmax(0, 1fr);
+.memo-card.has-sort-handle {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr);
+  padding: 0;
+  overflow: hidden;
+}
+
+.memo-card-main {
+  min-width: 0;
+}
+
+.memo-card.has-sort-handle .memo-card-main {
+  padding: 14px;
 }
 
 .memo-sort-handle {
   position: relative;
   display: grid;
+  grid-column: 1;
   place-items: center;
   align-self: stretch;
-  min-width: 28px;
+  min-width: 38px;
   min-height: 58px;
-  border: 1px solid var(--theme-border, #c8dce9);
-  border-radius: 10px;
-  background: color-mix(in srgb, var(--theme-card, #f8fcff) 86%, var(--theme-tint, #e7f4fc));
+  border: 0;
+  border-right: 1px solid var(--theme-border, #c8dce9);
+  border-radius: 11px 0 0 11px;
+  background: color-mix(in srgb, var(--theme-card, #f8fcff) 72%, var(--theme-tint, #e7f4fc));
   color: var(--theme-muted, #6f8ca3);
   padding: 0;
   cursor: grab;
   touch-action: none;
+  -webkit-touch-callout: none;
 }
 
 .memo-sort-handle::before {
@@ -65,10 +76,15 @@
 
 .memo-sort-handle:hover,
 .memo-sort-handle:focus-visible {
-  border-color: var(--app-accent, #1769aa);
+  background: color-mix(in srgb, var(--theme-card, #f8fcff) 55%, var(--theme-tint, #e7f4fc));
   color: var(--app-accent, #1769aa);
   outline: 0;
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--app-accent, #1769aa) 14%, transparent);
+  box-shadow: inset 3px 0 0 color-mix(in srgb, var(--app-accent, #1769aa) 58%, transparent);
+}
+
+.memo-sort-handle:disabled {
+  cursor: default;
+  opacity: .46;
 }
 
 .memo-sort-row.is-dragging {
@@ -83,10 +99,10 @@
 }
 
 .memo-sort-row.is-dragging .memo-sort-handle {
-  border-color: var(--app-accent, #1769aa);
   background: var(--theme-tint, #e7f4fc);
   color: var(--app-accent, #1769aa);
   cursor: grabbing;
+  box-shadow: inset 3px 0 0 var(--app-accent, #1769aa);
 }
 
 .memo-sort-row.is-drop-target {
@@ -98,12 +114,18 @@
   position: absolute;
   z-index: 9;
   top: 0;
-  left: 36px;
+  left: 4px;
   right: 4px;
   height: 3px;
   border-radius: 99px;
   background: var(--app-accent, #1769aa);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--app-accent, #1769aa) 13%, transparent);
+}
+
+.memo-list.is-sorting {
+  touch-action: none;
+  overscroll-behavior: none;
+  cursor: grabbing;
 }
 
 body.is-reordering-memos {
@@ -112,9 +134,15 @@ body.is-reordering-memos {
 }
 
 body[data-app-theme="night"] .memo-sort-handle {
-  border-color: #40546b;
+  border-right-color: #40546b;
   background: #172536;
   color: #a9bdd2;
+}
+
+body[data-app-theme="night"] .memo-sort-handle:hover,
+body[data-app-theme="night"] .memo-sort-handle:focus-visible,
+body[data-app-theme="night"] .memo-sort-row.is-dragging .memo-sort-handle {
+  background: #20354c;
 }
 
 body[data-app-theme="night"] .memo-sort-feedback[data-tone="success"] {
@@ -122,13 +150,16 @@ body[data-app-theme="night"] .memo-sort-feedback[data-tone="success"] {
 }
 
 @media (max-width: 380px) {
-  .memo-sort-row {
-    grid-template-columns: 26px minmax(0, 1fr);
-    gap: 7px;
+  .memo-card.has-sort-handle {
+    grid-template-columns: 34px minmax(0, 1fr);
+  }
+
+  .memo-card.has-sort-handle .memo-card-main {
+    padding: 13px 12px;
   }
 
   .memo-sort-handle {
-    min-width: 26px;
+    min-width: 34px;
   }
 }
 
