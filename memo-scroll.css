@@ -1,0 +1,48 @@
+/* 备忘录顶部保持稳定，只让分类下方的卡片列表纵向滚动。 */
+.memo-screen {
+  min-height: 0;
+  overflow: hidden;
+}
+
+#memo-screen:not(.is-hidden) {
+  display: flex;
+  flex-direction: column;
+}
+
+.memo-header,
+.memo-sync-copy,
+.memo-folder-bar,
+.memo-sort-feedback {
+  flex: 0 0 auto;
+}
+
+.memo-list {
+  flex: 1 1 0;
+  min-height: 0;
+  align-content: start;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-top: 1px solid var(--theme-border, #d7e6f2);
+  padding: 14px 6px 18px 0;
+  scrollbar-color: #7596b1 transparent;
+  scrollbar-width: thin;
+}
+
+.memo-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.memo-list::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: #7596b1;
+}
+
+body[data-app-theme="night"] .memo-list {
+  border-top-color: #324155;
+  scrollbar-color: #7289a2 transparent;
+}
+
+body[data-app-theme="night"] .memo-list::-webkit-scrollbar-thumb {
+  background: #7289a2;
+}
+
