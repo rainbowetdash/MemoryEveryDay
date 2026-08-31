@@ -19,6 +19,12 @@ const interfaceTabs = [
     icon: '<svg viewBox="0 0 24 24"><path d="M5 3h11l3 3v15H5zM16 3v4h3M8 11h8M8 15h8M8 19h5"></path></svg>',
   },
   {
+    id: "voice",
+    screen: "voice-assistant-screen",
+    label: "语音助手",
+    icon: '<svg viewBox="0 0 24 24"><rect x="8" y="3" width="8" height="12" rx="4"></rect><path d="M5 11a7 7 0 0 0 14 0M12 18v3M8.5 21h7"></path></svg>',
+  },
+  {
     id: "anniversary",
     screen: "anniversary-screen",
     label: "纪念日",
@@ -47,6 +53,7 @@ function defaultInterfaceSettings() {
       calendar: true,
       day: true,
       memo: true,
+      voice: true,
       anniversary: true,
       settings: true,
     },

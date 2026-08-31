@@ -2,6 +2,7 @@ import SwiftUI
 import UserNotifications
 import WebKit
 import Speech
+import AVFoundation
 
 struct NativeWebView: UIViewRepresentable {
     @Binding var isLoading: Bool
@@ -54,6 +55,13 @@ struct NativeWebView: UIViewRepresentable {
         private var isLoading: Binding<Bool>
         private weak var webView: WKWebView?
         private var notificationTestObserver: NSObjectProtocol?
+        private let liveAudioEngine = AVAudioEngine()
+        private var liveRecognitionRequest: SFSpeechAudioBufferRecognitionRequest?
+        private var liveRecognitionTask: SFSpeechRecognitionTask?
+        private var liveRequestId = ""
+        private var liveTranscript = ""
+        private var liveTapInstalled = false
+        private var liveResultDelivered = false
         private let siteURL = URL(string: "https://memoryeveryday.pages.dev/")!
 
         init(isLoading: Binding<Bool>) { self.isLoading = isLoading }
@@ -73,6 +81,7 @@ struct NativeWebView: UIViewRepresentable {
 
         deinit {
             if let notificationTestObserver { NotificationCenter.default.removeObserver(notificationTestObserver) }
+            stopLiveCapture()
         }
 
         func loadLatest() {
@@ -134,7 +143,16 @@ struct NativeWebView: UIViewRepresentable {
         }
 
         private func handleAudioMessage(_ body: [String: Any]) {
-            guard body["action"] as? String == "transcribe",
+            guard let action = body["action"] as? String else { return }
+            if action == "start-live", let requestId = body["requestId"] as? String {
+                startLiveSpeech(requestId: requestId, locale: body["locale"] as? String ?? "zh-CN")
+                return
+            }
+            if action == "stop-live", let requestId = body["requestId"] as? String {
+                stopLiveSpeech(requestId: requestId)
+                return
+            }
+            guard action == "transcribe",
                   let requestId = body["requestId"] as? String,
                   let rawURL = body["url"] as? String,
                   let remoteURL = URL(string: rawURL) else { return }
@@ -178,6 +196,117 @@ struct NativeWebView: UIViewRepresentable {
                         }
                     }
                 }.resume()
+            }
+        }
+
+        private func startLiveSpeech(requestId: String, locale: String) {
+            stopLiveCapture()
+            liveRequestId = requestId
+            liveTranscript = ""
+            liveResultDelivered = false
+            SFSpeechRecognizer.requestAuthorization { [weak self] status in
+                guard let self else { return }
+                guard status == .authorized else {
+                    self.sendLiveSpeechResult(requestId: requestId, status: "failed", message: "请在 iPhone 设置中允许“每日备忘”使用语音识别。")
+                    return
+                }
+                let handleRecordPermission: (Bool) -> Void = { [weak self] granted in
+                    DispatchQueue.main.async {
+                        guard let self, self.liveRequestId == requestId else { return }
+                        guard granted else {
+                            self.sendLiveSpeechResult(requestId: requestId, status: "failed", message: "请在 iPhone 设置中允许“每日备忘”使用麦克风。")
+                            return
+                        }
+                        self.beginLiveRecognition(requestId: requestId, locale: locale)
+                    }
+                }
+                if #available(iOS 17.0, *) {
+                    AVAudioApplication.requestRecordPermission(completionHandler: handleRecordPermission)
+                } else {
+                    AVAudioSession.sharedInstance().requestRecordPermission(handleRecordPermission)
+                }
+            }
+        }
+
+        private func beginLiveRecognition(requestId: String, locale: String) {
+            guard let recognizer = SFSpeechRecognizer(locale: Locale(identifier: locale)), recognizer.isAvailable else {
+                sendLiveSpeechResult(requestId: requestId, status: "failed", message: "当前 iPhone 的语音识别暂不可用，请稍后再试。")
+                return
+            }
+            let audioSession = AVAudioSession.sharedInstance()
+            do {
+                try audioSession.setCategory(.record, mode: .measurement, options: .duckOthers)
+                try audioSession.setActive(true, options: .notifyOthersOnDeactivation)
+                let request = SFSpeechAudioBufferRecognitionRequest()
+                request.shouldReportPartialResults = true
+                if #available(iOS 13.0, *) { request.requiresOnDeviceRecognition = recognizer.supportsOnDeviceRecognition }
+                liveRecognitionRequest = request
+                let inputNode = liveAudioEngine.inputNode
+                let format = inputNode.outputFormat(forBus: 0)
+                inputNode.installTap(onBus: 0, bufferSize: 1024, format: format) { [weak request] buffer, _ in request?.append(buffer) }
+                liveTapInstalled = true
+                liveAudioEngine.prepare()
+                try liveAudioEngine.start()
+                liveRecognitionTask = recognizer.recognitionTask(with: request) { [weak self] result, error in
+                    guard let self, self.liveRequestId == requestId, !self.liveResultDelivered else { return }
+                    if let result {
+                        let text = result.bestTranscription.formattedString.trimmingCharacters(in: .whitespacesAndNewlines)
+                        if !text.isEmpty {
+                            self.liveTranscript = text
+                            self.sendLiveSpeechResult(requestId: requestId, status: result.isFinal ? "ready" : "partial", text: text)
+                        }
+                        if result.isFinal { self.stopLiveCapture(keepTask: true) }
+                    } else if error != nil && self.liveTranscript.isEmpty {
+                        self.liveResultDelivered = true
+                        self.stopLiveCapture()
+                        self.sendLiveSpeechResult(requestId: requestId, status: "failed", message: "这次没有听清，请重新说一次。")
+                    }
+                }
+                sendLiveSpeechResult(requestId: requestId, status: "listening")
+            } catch {
+                stopLiveCapture()
+                sendLiveSpeechResult(requestId: requestId, status: "failed", message: "无法开始语音识别，请稍后再试。")
+            }
+        }
+
+        private func stopLiveSpeech(requestId: String) {
+            guard liveRequestId == requestId, !liveResultDelivered else { return }
+            liveRecognitionRequest?.endAudio()
+            if liveAudioEngine.isRunning { liveAudioEngine.stop() }
+            if liveTapInstalled {
+                liveAudioEngine.inputNode.removeTap(onBus: 0)
+                liveTapInstalled = false
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.55) { [weak self] in
+                guard let self, self.liveRequestId == requestId, !self.liveResultDelivered else { return }
+                self.liveResultDelivered = true
+                let text = self.liveTranscript.trimmingCharacters(in: .whitespacesAndNewlines)
+                self.liveRecognitionTask?.finish()
+                self.stopLiveCapture()
+                self.sendLiveSpeechResult(requestId: requestId, status: text.isEmpty ? "failed" : "success", text: text, message: text.isEmpty ? "没有听到清晰的安排，请重新说一次。" : "")
+            }
+        }
+
+        private func stopLiveCapture(keepTask: Bool = false) {
+            if liveAudioEngine.isRunning { liveAudioEngine.stop() }
+            if liveTapInstalled {
+                liveAudioEngine.inputNode.removeTap(onBus: 0)
+                liveTapInstalled = false
+            }
+            liveRecognitionRequest?.endAudio()
+            liveRecognitionRequest = nil
+            if !keepTask {
+                liveRecognitionTask?.cancel()
+                liveRecognitionTask = nil
+                try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+            }
+        }
+
+        private func sendLiveSpeechResult(requestId: String, status: String, text: String = "", message: String = "") {
+            let payload: [String: String] = ["requestId": requestId, "status": status, "text": text, "message": message]
+            guard let data = try? JSONSerialization.data(withJSONObject: payload), let detail = String(data: data, encoding: .utf8) else { return }
+            DispatchQueue.main.async { [weak self] in
+                self?.webView?.evaluateJavaScript("window.dispatchEvent(new CustomEvent('memoryeveryday-native-voice-assistant',{detail:\(detail)}));")
             }
         }
 

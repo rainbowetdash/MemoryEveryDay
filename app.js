@@ -5,15 +5,15 @@ const zoomStorageKey = 'memory-everyday-calendar-scale-v2';
 const pendingSyncKey = 'memory-everyday-pending-sync';
 const authReminderKey = 'memory-everyday-auth-reminder-shown';
 const floatingActionPositionKey = 'memory-everyday-floating-action-position-v1';
-const releaseInfoUrl = './release-info.json?v=40';
+const releaseInfoUrl = './release-info.json?v=41';
 const releaseAnnouncementStorageKeyBase = 'memory-everyday-release-announcement-seen';
 const launchParams = new URLSearchParams(window.location.search);
 const isNativeShell = launchParams.get('native-shell') === '1';
 const legacyNativeVersions = { ios: '1.0.4', android: '1.0.0' };
 const fallbackReleaseInfo = {
   apps: {
-    ios: { latestVersion: '1.0.13', downloadUrl: './downloads/ipa-1-0-13', downloadName: 'MemoryEveryDay-1.0.13.ipa', label: 'iPhone IPA', hint: '用于 SideStore、AltStore、Sideloadly 等侧载工具' },
-    android: { latestVersion: '1.0.6', downloadUrl: './downloads/apk-1-0-6', downloadName: 'MemoryEveryDay-1.0.6.apk', label: 'Android APK', hint: '下载后可直接安装更新' }
+    ios: { latestVersion: '1.0.14', downloadUrl: './downloads/ipa-1-0-14', downloadName: 'MemoryEveryDay-1.0.14.ipa', label: 'iPhone IPA', hint: '用于 SideStore、AltStore、Sideloadly 等侧载工具' },
+    android: { latestVersion: '1.0.7', downloadUrl: './downloads/apk-1-0-7', downloadName: 'MemoryEveryDay-1.0.7.apk', label: 'Android APK', hint: '下载后可直接安装更新' }
   },
   announcement: null
 };
@@ -453,7 +453,7 @@ function renderMemos() {
   if (sortable) setupMemoSortDrag(list); else updateMemoSortHandleLabels(list);
 }
 function updateSidebarAvailability(screenId) { const visible = ['calendar-screen', 'day-screen'].includes(screenId); $('app-shell').classList.toggle('is-sidebar-available', visible); if (!visible) setGroupDrawer(false); }
-function updateFloatingAction(screenId) { const addButton = $('add-button'), label = screenId === 'memo-screen' ? '新建备忘录' : screenId === 'anniversary-screen' ? '新建纪念日' : '添加安排'; addButton.classList.toggle('is-hidden', ['memo-editor-screen', 'settings-screen'].includes(screenId)); addButton.setAttribute('aria-label', label); }
+function updateFloatingAction(screenId) { const addButton = $('add-button'), label = screenId === 'memo-screen' ? '新建备忘录' : screenId === 'anniversary-screen' ? '新建纪念日' : '添加安排'; addButton.classList.toggle('is-hidden', ['memo-editor-screen', 'voice-assistant-screen', 'settings-screen'].includes(screenId)); addButton.setAttribute('aria-label', label); }
 function openFloatingAction() { const screenId = document.querySelector('.tab.is-active')?.dataset.screen; if (screenId === 'memo-screen') return openMemoDialog(); if (screenId === 'anniversary-screen') return openAnniversaryDialog(); openEventDialog(); }
 function readFloatingActionPosition() { try { const value = JSON.parse(localStorage.getItem(floatingActionPositionKey) || 'null'); return Number.isFinite(value?.x) && Number.isFinite(value?.y) ? value : null; } catch { return null; } }
 function placeFloatingAction(position, persist = false) { const button = $('add-button'), shell = $('app-shell'), tabbar = document.querySelector('.tabbar'), size = button.offsetWidth || 56, bounds = shell.getBoundingClientRect(), tabbarHeight = tabbar?.offsetHeight || 102, maxX = Math.max(8, bounds.width - size - 8), maxY = Math.max(8, bounds.height - size - tabbarHeight - 8), x = Math.min(maxX, Math.max(8, position.x)), y = Math.min(maxY, Math.max(8, position.y)); button.style.left = `${x}px`; button.style.top = `${y}px`; button.style.right = 'auto'; button.style.bottom = 'auto'; if (persist) localStorage.setItem(floatingActionPositionKey, JSON.stringify({ x, y })); }

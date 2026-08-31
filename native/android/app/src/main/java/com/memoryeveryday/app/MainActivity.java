@@ -9,9 +9,14 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.speech.RecognitionListener;
+import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
 import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.JavascriptInterface;
@@ -27,6 +32,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.Set;
 
 public class MainActivity extends Activity {
@@ -37,6 +43,14 @@ public class MainActivity extends Activity {
     private WebView webView;
     private View splash;
     private PermissionRequest pendingMicrophonePermissionRequest;
+    private SpeechRecognizer voiceRecognizer;
+    private String pendingVoiceRequestId = "";
+    private String pendingVoiceLocale = "zh-CN";
+    private String voiceRequestId = "";
+    private String voiceTranscript = "";
+    private boolean voiceRecognitionEnded;
+    private boolean voiceStopRequested;
+    private boolean voiceResultDelivered;
     private boolean pageRevealed;
 
     @SuppressLint({"SetJavaScriptEnabled", "ClickableViewAccessibility"})
@@ -60,6 +74,7 @@ public class MainActivity extends Activity {
         webView.setAlpha(0f);
         webView.setOverScrollMode(View.OVER_SCROLL_NEVER);
         webView.addJavascriptInterface(new NativeNotifications(), "MemoryEveryDayNativeNotifications");
+        webView.addJavascriptInterface(new NativeVoice(), "MemoryEveryDayVoice");
         webView.setOnTouchListener((view, event) -> event.getPointerCount() > 1);
         webView.setWebViewClient(new WebViewClient() {
             @Override
@@ -146,9 +161,18 @@ public class MainActivity extends Activity {
         if (requestCode == MICROPHONE_PERMISSION_REQUEST) {
             PermissionRequest request = pendingMicrophonePermissionRequest;
             pendingMicrophonePermissionRequest = null;
-            if (request == null) return;
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) request.grant(new String[]{PermissionRequest.RESOURCE_AUDIO_CAPTURE});
-            else request.deny();
+            boolean granted = grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED;
+            if (request != null) {
+                if (granted) request.grant(new String[]{PermissionRequest.RESOURCE_AUDIO_CAPTURE});
+                else request.deny();
+            }
+            if (!pendingVoiceRequestId.isEmpty()) {
+                String requestId = pendingVoiceRequestId;
+                String locale = pendingVoiceLocale;
+                pendingVoiceRequestId = "";
+                if (granted) beginVoiceRecognition(requestId, locale);
+                else sendVoiceResult(requestId, "failed", "", "请在手机设置中允许“每日备忘”使用麦克风。");
+            }
         }
     }
 
@@ -164,6 +188,101 @@ public class MainActivity extends Activity {
             String detail = new JSONObject().put("status", status).put("message", message).toString();
             webView.post(() -> webView.evaluateJavascript("window.dispatchEvent(new CustomEvent('memoryeveryday-native-notification-test',{detail:" + detail + "}));", null));
         } catch (Exception ignored) { }
+    }
+
+    private void sendVoiceResult(String requestId, String status, String text, String message) {
+        if (webView == null) return;
+        try {
+            String detail = new JSONObject().put("requestId", requestId).put("status", status).put("text", text).put("message", message).toString();
+            webView.post(() -> webView.evaluateJavascript("window.dispatchEvent(new CustomEvent('memoryeveryday-native-voice-assistant',{detail:" + detail + "}));", null));
+        } catch (Exception ignored) { }
+    }
+
+    private String recognitionText(Bundle results) {
+        if (results == null) return "";
+        ArrayList<String> matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+        return matches == null || matches.isEmpty() ? "" : matches.get(0).trim();
+    }
+
+    private void startVoiceRecognition(String requestId, String locale) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            pendingVoiceRequestId = requestId;
+            pendingVoiceLocale = locale;
+            requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, MICROPHONE_PERMISSION_REQUEST);
+            return;
+        }
+        beginVoiceRecognition(requestId, locale);
+    }
+
+    private void beginVoiceRecognition(String requestId, String locale) {
+        if (!SpeechRecognizer.isRecognitionAvailable(this)) {
+            sendVoiceResult(requestId, "failed", "", "当前手机的语音识别暂不可用，请使用下方文字输入。");
+            return;
+        }
+        if (voiceRecognizer != null) voiceRecognizer.destroy();
+        voiceRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
+        voiceRequestId = requestId;
+        voiceTranscript = "";
+        voiceRecognitionEnded = false;
+        voiceStopRequested = false;
+        voiceResultDelivered = false;
+        voiceRecognizer.setRecognitionListener(new RecognitionListener() {
+            @Override public void onReadyForSpeech(Bundle params) { sendVoiceResult(requestId, "listening", voiceTranscript, ""); }
+            @Override public void onBeginningOfSpeech() { }
+            @Override public void onRmsChanged(float rmsdB) { }
+            @Override public void onBufferReceived(byte[] buffer) { }
+            @Override public void onEndOfSpeech() { }
+            @Override public void onPartialResults(Bundle partialResults) {
+                String text = recognitionText(partialResults);
+                if (!text.isEmpty()) voiceTranscript = text;
+                sendVoiceResult(requestId, "partial", voiceTranscript, "");
+            }
+            @Override public void onResults(Bundle results) {
+                String text = recognitionText(results);
+                if (!text.isEmpty()) voiceTranscript = text;
+                voiceRecognitionEnded = true;
+                if (voiceStopRequested) completeVoiceRecognition(requestId);
+                else sendVoiceResult(requestId, "ready", voiceTranscript, "");
+            }
+            @Override public void onError(int error) {
+                voiceRecognitionEnded = true;
+                if (voiceStopRequested && !voiceTranscript.isEmpty()) completeVoiceRecognition(requestId);
+                else if (!voiceResultDelivered) {
+                    voiceResultDelivered = true;
+                    sendVoiceResult(requestId, "failed", voiceTranscript, error == SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS ? "请在手机设置中允许“每日备忘”使用麦克风。" : "这次没有听清，请重新说一次。");
+                }
+            }
+            @Override public void onEvent(int eventType, Bundle params) { }
+        });
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+            .putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+            .putExtra(RecognizerIntent.EXTRA_LANGUAGE, locale)
+            .putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
+            .putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1);
+        voiceRecognizer.startListening(intent);
+        sendVoiceResult(requestId, "listening", "", "");
+    }
+
+    private void stopVoiceRecognition(String requestId) {
+        if (!requestId.equals(voiceRequestId) || voiceResultDelivered) return;
+        voiceStopRequested = true;
+        if (voiceRecognitionEnded) { completeVoiceRecognition(requestId); return; }
+        if (voiceRecognizer != null) voiceRecognizer.stopListening();
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            if (!voiceResultDelivered && requestId.equals(voiceRequestId)) completeVoiceRecognition(requestId);
+        }, 900);
+    }
+
+    private void completeVoiceRecognition(String requestId) {
+        if (voiceResultDelivered || !requestId.equals(voiceRequestId)) return;
+        voiceResultDelivered = true;
+        String text = voiceTranscript.trim();
+        sendVoiceResult(requestId, text.isEmpty() ? "failed" : "success", text, text.isEmpty() ? "没有听到清晰的安排，请重新说一次。" : "");
+        if (voiceRecognizer != null) {
+            voiceRecognizer.cancel();
+            voiceRecognizer.destroy();
+            voiceRecognizer = null;
+        }
     }
 
     private void scheduleNotification(String id, String title, long at, JSONArray earlyReminders) {
@@ -258,6 +377,31 @@ public class MainActivity extends Activity {
                 });
             } catch (Exception ignored) { }
         }
+    }
+
+    private class NativeVoice {
+        @JavascriptInterface
+        public void postMessage(String rawMessage) {
+            try {
+                JSONObject message = new JSONObject(rawMessage);
+                String action = message.optString("action");
+                String requestId = message.optString("requestId");
+                runOnUiThread(() -> {
+                    if ("start-live".equals(action)) startVoiceRecognition(requestId, message.optString("locale", "zh-CN"));
+                    else if ("stop-live".equals(action)) stopVoiceRecognition(requestId);
+                });
+            } catch (Exception ignored) { }
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (voiceRecognizer != null) {
+            voiceRecognizer.cancel();
+            voiceRecognizer.destroy();
+            voiceRecognizer = null;
+        }
+        super.onDestroy();
     }
 
     @Override

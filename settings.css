@@ -284,6 +284,17 @@
 .tabbar[data-tab-count="5"] .tab {
   font-size: 11px;
 }
+.tabbar[data-tab-count="6"] {
+  padding-inline: 8px;
+}
+.tabbar[data-tab-count="6"] .tab {
+  font-size: 9.5px;
+}
+.tabbar[data-tab-count="6"] .tab-icon,
+.tabbar[data-tab-count="6"] .tab-icon svg {
+  width: 23px;
+  height: 23px;
+}
 .tabbar[data-tab-count="1"] {
   justify-content: center;
 }
