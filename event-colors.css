@@ -72,12 +72,19 @@ body[data-app-theme="night"] .calendar-focus-event time {
 }
 
 /* 日程和待办共用同一套三列布局，让单时间与时间段严格对齐。 */
+.calendar-agenda-section .agenda-list {
+  grid-auto-rows: max-content;
+  align-content: start;
+}
+
 .calendar-agenda-section .agenda-item[data-event-id] {
   display: grid;
   grid-template-columns: 24px 100px minmax(0, 1fr);
   align-items: start;
   column-gap: 9px;
+  height: auto;
   min-height: 62px;
+  overflow: visible;
 }
 
 .calendar-agenda-section .agenda-item[data-event-id] > .todo-check {
@@ -99,22 +106,28 @@ body[data-app-theme="night"] .calendar-focus-event time {
 }
 
 .calendar-agenda-section .agenda-item[data-event-id] > div {
+  display: grid;
   grid-column: 3;
+  align-content: start;
+  row-gap: 3px;
   min-width: 0;
 }
 
 .calendar-agenda-section .agenda-item[data-event-id] .agenda-title {
-  display: -webkit-box;
-  overflow: hidden;
+  display: block;
+  overflow: visible;
   line-height: 1.35;
   overflow-wrap: anywhere;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+  white-space: normal;
 }
 
 .calendar-agenda-section .agenda-item[data-event-id] .event-note-preview {
-  margin-top: 3px;
-  -webkit-line-clamp: 1;
+  display: block;
+  overflow: visible;
+  margin: 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
+  -webkit-line-clamp: unset;
 }
 
 @media (max-width: 380px) {
