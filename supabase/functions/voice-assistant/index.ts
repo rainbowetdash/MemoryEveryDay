@@ -1,4 +1,5 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
+import OpenCC from "npm:opencc-js@1.4.2/t2cn";
 
 type Provider = "deepseek" | "openai";
 
@@ -22,6 +23,7 @@ type ParsedPlan = {
 
 const DAILY_LIMIT = 10;
 const MAX_AUDIO_BYTES = 8 * 1024 * 1024;
+const toSimplifiedChinese = OpenCC.Converter({ from: "t", to: "cn" });
 const allowedOrigins = new Set([
   "https://memoryeveryday.pages.dev",
   "http://localhost:4173",
@@ -105,7 +107,7 @@ function normalizedPlan(value: unknown, groups: Array<{ id: string; color: strin
   const items = (Array.isArray(raw.items) ? raw.items : []).slice(0, 8).flatMap((entry) => {
     if (!entry || typeof entry !== "object") return [];
     const item = entry as Record<string, unknown>;
-    const title = String(item.title || "").trim().slice(0, 60);
+    const title = toSimplifiedChinese(String(item.title || "").trim()).slice(0, 60);
     const date = String(item.date || "").trim();
     const startTime = String(item.start_time || "").trim();
     const rawEndTime = item.end_time == null ? "" : String(item.end_time).trim();
@@ -118,9 +120,9 @@ function normalizedPlan(value: unknown, groups: Array<{ id: string; color: strin
     return [{
       kind: item.kind === "event" ? "event" as const : "todo" as const,
       title,
-      note: String(item.note || "").trim().slice(0, 140),
+      note: toSimplifiedChinese(String(item.note || "").trim()).slice(0, 140),
       create_memo: item.create_memo === true,
-      memo_content: String(item.memo_content || "").trim().slice(0, 3000),
+      memo_content: toSimplifiedChinese(String(item.memo_content || "").trim()).slice(0, 3000),
       date,
       start_time: startTime,
       end_time: endTime,
@@ -128,7 +130,7 @@ function normalizedPlan(value: unknown, groups: Array<{ id: string; color: strin
       color,
     }];
   });
-  return { items, message: String(raw.message || "").trim().slice(0, 120) };
+  return { items, message: toSimplifiedChinese(String(raw.message || "").trim()).slice(0, 120) };
 }
 
 const planSchema = {
@@ -239,6 +241,7 @@ async function requestTranscription(audio: File, locale: string) {
   form.append("file", audio, String(audio.name || "voice.webm").replace(/[^a-zA-Z0-9._-]/g, "-").slice(-100));
   form.append("model", model);
   form.append("language", language);
+  if (language === "zh") form.append("prompt", "请使用简体中文原样转写，不要使用繁体字。场景是创建日程、待办和备忘录，常用词包括：创建、待办、日程、备忘录、复习、作业、课程、语音。");
   form.append("response_format", "json");
   const response = await fetch("https://api.openai.com/v1/audio/transcriptions", {
     method: "POST",
@@ -250,7 +253,7 @@ async function requestTranscription(audio: File, locale: string) {
     console.error("Voice transcription provider error", { status: response.status, code: payload.error && typeof payload.error === "object" ? (payload.error as Record<string, unknown>).code : "unknown" });
     throw new Error(response.status === 401 ? "transcription_auth_failed" : "transcription_failed");
   }
-  return String(payload.text || "").trim().slice(0, 600);
+  return toSimplifiedChinese(String(payload.text || "").trim()).slice(0, 600);
 }
 
 function eventResult(row: Record<string, unknown>) {

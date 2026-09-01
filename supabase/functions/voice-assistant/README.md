@@ -15,4 +15,6 @@ Optional model overrides:
 
 Huawei and other Android phones without a system `RecognitionService` automatically fall back to a short browser audio recording. The recording is sent to this Edge Function, transcribed with the server-side OpenAI key, and then passed to the user's selected DeepSeek or ChatGPT planning provider. Audio is limited to 8 MB / about 90 seconds and is not saved to MemoryEveryDay storage.
 
+Chinese transcripts and the resulting schedule, todo, and memo text are normalized to Simplified Chinese before they are returned to the app.
+
 After setting secrets, redeploy `voice-assistant`. The website and installed apps read provider availability dynamically, so they do not need another release.

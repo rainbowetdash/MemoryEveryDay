@@ -29,6 +29,7 @@ function voiceNativeBridge() {
   if (window.MemoryEveryDayVoice?.postMessage) return { platform: 'android', post: (message) => window.MemoryEveryDayVoice.postMessage(JSON.stringify(message)) };
   return null;
 }
+function voiceLocale() { const locale = navigator.language || 'zh-CN'; return /^zh(?:-|$)/i.test(locale) ? 'zh-CN' : locale; }
 function voiceWebRecognitionClass() { return window.SpeechRecognition || window.webkitSpeechRecognition || null; }
 function voiceCanRecordAudio() { return Boolean(navigator.mediaDevices?.getUserMedia && window.MediaRecorder); }
 function voiceHasRecognition() { return Boolean(voiceNativeBridge() || voiceWebRecognitionClass() || voiceCanRecordAudio()); }
@@ -97,7 +98,7 @@ async function voiceAudioApi(audio, requestId) {
   const extension = /mp4|aac|m4a/i.test(type) ? 'm4a' : /ogg/i.test(type) ? 'ogg' : 'webm';
   const body = new FormData();
   body.append('audio', audio, `voice-${requestId}.${extension}`);
-  body.append('locale', navigator.language || 'zh-CN');
+  body.append('locale', voiceLocale());
   body.append('timezone', voiceTimezone());
   const response = await fetch(`${supabaseUrl}/functions/v1/voice-assistant/transcribe`, {
     method: 'POST',
@@ -236,7 +237,7 @@ function startWebVoiceRecognition() {
   if (!Recognition) throw new Error('unsupported');
   const prefix = voiceAssistant.committedTranscript.trim();
   const recognition = new Recognition();
-  recognition.lang = navigator.language || 'zh-CN';
+  recognition.lang = voiceLocale();
   recognition.interimResults = true;
   recognition.continuous = true;
   recognition.maxAlternatives = 1;
@@ -284,7 +285,7 @@ function startVoiceListening() {
   const bridge = voiceNativeBridge();
   if (bridge) {
     voiceAssistant.captureMode = 'native';
-    bridge.post({ action: 'start-live', requestId: voiceAssistant.requestId, locale: navigator.language || 'zh-CN' });
+    bridge.post({ action: 'start-live', requestId: voiceAssistant.requestId, locale: voiceLocale() });
     return;
   }
   if (!voiceWebRecognitionClass()) { void startVoiceAudioFallback(); return; }
@@ -394,7 +395,7 @@ async function submitVoiceTranscript(text, requestId = crypto.randomUUID()) {
   setVoiceMessage('');
   renderVoiceAssistant();
   try {
-    const result = await voiceApi('', { method: 'POST', body: JSON.stringify({ text: transcript, provider: voiceAssistant.provider, timezone: voiceTimezone(), locale: navigator.language || 'zh-CN', requestId }) });
+    const result = await voiceApi('', { method: 'POST', body: JSON.stringify({ text: transcript, provider: voiceAssistant.provider, timezone: voiceTimezone(), locale: voiceLocale(), requestId }) });
     await applyVoiceCreationResult(result);
   } catch (error) {
     try {
