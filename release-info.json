@@ -2,29 +2,29 @@
   "schemaVersion": 1,
   "apps": {
     "ios": {
-      "latestVersion": "1.0.14",
-      "downloadUrl": "./downloads/ipa-1-0-14",
-      "downloadName": "MemoryEveryDay-1.0.14.ipa",
+      "latestVersion": "1.0.15",
+      "downloadUrl": "./downloads/ipa-1-0-15",
+      "downloadName": "MemoryEveryDay-1.0.15.ipa",
       "label": "iPhone IPA",
       "hint": "用于 SideStore、AltStore、Sideloadly 等侧载工具"
     },
     "android": {
-      "latestVersion": "1.0.7",
-      "downloadUrl": "./downloads/apk-1-0-7",
-      "downloadName": "MemoryEveryDay-1.0.7.apk",
+      "latestVersion": "1.0.8",
+      "downloadUrl": "./downloads/apk-1-0-8",
+      "downloadName": "MemoryEveryDay-1.0.8.apk",
       "label": "Android APK",
       "hint": "下载后可直接安装更新"
     }
   },
   "announcement": {
-    "id": "2026-08-31-voice-assistant",
-    "eyebrow": "语音助手",
-    "title": "说出安排，自动创建",
-    "summary": "底栏新增语音助手，可以把一句话整理成待办或日程。",
+    "id": "2026-08-31-voice-assistant-reliability",
+    "eyebrow": "语音助手更新",
+    "title": "连续说，创建后清楚确认",
+    "summary": "语音内容不再逐句覆盖，并支持同时创建关联备忘录。",
     "items": [
-      "点一下开始说，说完再点一下，安排会在后台创建。",
-      "国内可选 DeepSeek，海外可选 ChatGPT，每个账号每天最多 10 次。",
-      "只处理日程、待办和每日安排，无关内容不会交给 AI。"
+      "停顿或换句话时会保留前文，说完再点一下即可。",
+      "可以明确说创建待办、日程、备忘录加日程或备忘录加待办。",
+      "未登录时点麦克风会直接打开登录，创建成功后会显示确认结果。"
     ]
   }
 }

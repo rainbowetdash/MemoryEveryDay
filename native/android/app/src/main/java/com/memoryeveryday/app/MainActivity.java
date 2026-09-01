@@ -48,9 +48,14 @@ public class MainActivity extends Activity {
     private String pendingVoiceLocale = "zh-CN";
     private String voiceRequestId = "";
     private String voiceTranscript = "";
+    private String voiceCommittedTranscript = "";
+    private String voiceCurrentSegment = "";
     private boolean voiceRecognitionEnded;
     private boolean voiceStopRequested;
     private boolean voiceResultDelivered;
+    private int voiceGeneration;
+    private final Handler voiceHandler = new Handler(Looper.getMainLooper());
+    private Runnable voiceRestartRunnable;
     private boolean pageRevealed;
 
     @SuppressLint({"SetJavaScriptEnabled", "ClickableViewAccessibility"})
@@ -216,41 +221,95 @@ public class MainActivity extends Activity {
 
     private void beginVoiceRecognition(String requestId, String locale) {
         if (!SpeechRecognizer.isRecognitionAvailable(this)) {
-            sendVoiceResult(requestId, "failed", "", "当前手机的语音识别暂不可用，请使用下方文字输入。");
+            sendVoiceResult(requestId, "failed", "", "当前手机的语音识别暂不可用，请稍后再试。");
             return;
         }
-        if (voiceRecognizer != null) voiceRecognizer.destroy();
-        voiceRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
         voiceRequestId = requestId;
         voiceTranscript = "";
+        voiceCommittedTranscript = "";
+        voiceCurrentSegment = "";
         voiceRecognitionEnded = false;
         voiceStopRequested = false;
         voiceResultDelivered = false;
+        voiceGeneration += 1;
+        cancelVoiceRestart();
+        beginVoiceRecognitionCycle(requestId, locale);
+    }
+
+    private String combinedVoiceTranscript() {
+        String committed = voiceCommittedTranscript.trim();
+        String current = voiceCurrentSegment.trim();
+        if (committed.isEmpty()) return current;
+        if (current.isEmpty()) return committed;
+        return committed + " " + current;
+    }
+
+    private void commitVoiceSegment() {
+        String segment = voiceCurrentSegment.trim();
+        if (segment.isEmpty()) return;
+        voiceCommittedTranscript = voiceCommittedTranscript.trim().isEmpty() ? segment : voiceCommittedTranscript.trim() + " " + segment;
+        voiceCurrentSegment = "";
+        voiceTranscript = voiceCommittedTranscript;
+    }
+
+    private void cancelVoiceRestart() {
+        if (voiceRestartRunnable != null) voiceHandler.removeCallbacks(voiceRestartRunnable);
+        voiceRestartRunnable = null;
+    }
+
+    private void scheduleVoiceRestart(String requestId, String locale) {
+        if (voiceStopRequested || voiceResultDelivered || !requestId.equals(voiceRequestId)) return;
+        cancelVoiceRestart();
+        voiceRestartRunnable = () -> {
+            voiceRestartRunnable = null;
+            if (!voiceStopRequested && !voiceResultDelivered && requestId.equals(voiceRequestId)) beginVoiceRecognitionCycle(requestId, locale);
+        };
+        voiceHandler.postDelayed(voiceRestartRunnable, 180);
+    }
+
+    private void beginVoiceRecognitionCycle(String requestId, String locale) {
+        if (voiceStopRequested || voiceResultDelivered || !requestId.equals(voiceRequestId)) return;
+        voiceGeneration += 1;
+        final int generation = voiceGeneration;
+        if (voiceRecognizer != null) {
+            voiceRecognizer.cancel();
+            voiceRecognizer.destroy();
+        }
+        voiceRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
+        voiceRecognitionEnded = false;
+        voiceCurrentSegment = "";
         voiceRecognizer.setRecognitionListener(new RecognitionListener() {
-            @Override public void onReadyForSpeech(Bundle params) { sendVoiceResult(requestId, "listening", voiceTranscript, ""); }
+            private boolean active() { return generation == voiceGeneration && requestId.equals(voiceRequestId) && !voiceResultDelivered; }
+            @Override public void onReadyForSpeech(Bundle params) { if (active()) sendVoiceResult(requestId, "listening", combinedVoiceTranscript(), ""); }
             @Override public void onBeginningOfSpeech() { }
             @Override public void onRmsChanged(float rmsdB) { }
             @Override public void onBufferReceived(byte[] buffer) { }
             @Override public void onEndOfSpeech() { }
             @Override public void onPartialResults(Bundle partialResults) {
+                if (!active()) return;
                 String text = recognitionText(partialResults);
-                if (!text.isEmpty()) voiceTranscript = text;
+                if (!text.isEmpty()) voiceCurrentSegment = text;
+                voiceTranscript = combinedVoiceTranscript();
                 sendVoiceResult(requestId, "partial", voiceTranscript, "");
             }
             @Override public void onResults(Bundle results) {
+                if (!active()) return;
                 String text = recognitionText(results);
-                if (!text.isEmpty()) voiceTranscript = text;
+                if (!text.isEmpty()) voiceCurrentSegment = text;
+                commitVoiceSegment();
                 voiceRecognitionEnded = true;
                 if (voiceStopRequested) completeVoiceRecognition(requestId);
-                else sendVoiceResult(requestId, "ready", voiceTranscript, "");
+                else scheduleVoiceRestart(requestId, locale);
             }
             @Override public void onError(int error) {
+                if (!active()) return;
                 voiceRecognitionEnded = true;
-                if (voiceStopRequested && !voiceTranscript.isEmpty()) completeVoiceRecognition(requestId);
-                else if (!voiceResultDelivered) {
+                voiceTranscript = combinedVoiceTranscript();
+                if (voiceStopRequested) completeVoiceRecognition(requestId);
+                else if (error == SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS) {
                     voiceResultDelivered = true;
-                    sendVoiceResult(requestId, "failed", voiceTranscript, error == SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS ? "请在手机设置中允许“每日备忘”使用麦克风。" : "这次没有听清，请重新说一次。");
-                }
+                    sendVoiceResult(requestId, "failed", voiceTranscript, "请在手机设置中允许“每日备忘”使用麦克风。");
+                } else scheduleVoiceRestart(requestId, locale);
             }
             @Override public void onEvent(int eventType, Bundle params) { }
         });
@@ -260,15 +319,16 @@ public class MainActivity extends Activity {
             .putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
             .putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1);
         voiceRecognizer.startListening(intent);
-        sendVoiceResult(requestId, "listening", "", "");
+        sendVoiceResult(requestId, "listening", combinedVoiceTranscript(), "");
     }
 
     private void stopVoiceRecognition(String requestId) {
         if (!requestId.equals(voiceRequestId) || voiceResultDelivered) return;
         voiceStopRequested = true;
+        cancelVoiceRestart();
         if (voiceRecognitionEnded) { completeVoiceRecognition(requestId); return; }
         if (voiceRecognizer != null) voiceRecognizer.stopListening();
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+        voiceHandler.postDelayed(() -> {
             if (!voiceResultDelivered && requestId.equals(voiceRequestId)) completeVoiceRecognition(requestId);
         }, 900);
     }
@@ -276,7 +336,10 @@ public class MainActivity extends Activity {
     private void completeVoiceRecognition(String requestId) {
         if (voiceResultDelivered || !requestId.equals(voiceRequestId)) return;
         voiceResultDelivered = true;
-        String text = voiceTranscript.trim();
+        cancelVoiceRestart();
+        commitVoiceSegment();
+        voiceGeneration += 1;
+        String text = combinedVoiceTranscript().trim();
         sendVoiceResult(requestId, text.isEmpty() ? "failed" : "success", text, text.isEmpty() ? "没有听到清晰的安排，请重新说一次。" : "");
         if (voiceRecognizer != null) {
             voiceRecognizer.cancel();

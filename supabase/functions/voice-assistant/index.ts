@@ -6,6 +6,8 @@ type ParsedItem = {
   kind: "event" | "todo";
   title: string;
   note: string;
+  create_memo: boolean;
+  memo_content: string;
   date: string;
   start_time: string;
   end_time: string | null;
@@ -28,8 +30,8 @@ const allowedOrigins = new Set([
 ]);
 const colors = new Set(["blue", "navy", "cyan", "mint", "purple", "pink", "coral", "yellow", "green"]);
 const dateSignal = /(今天|明天|后天|大后天|周[一二三四五六日天]|星期[一二三四五六日天]|\d{1,2}[月/]\d{1,2}([日号])?|\d{4}-\d{1,2}-\d{1,2}|\d{1,2}[:：点时]\d{0,2}|上午|中午|下午|傍晚|晚上|凌晨|today|tomorrow|tonight|monday|tuesday|wednesday|thursday|friday|saturday|sunday|\d{1,2}(:\d{2})?\s?(am|pm))/i;
-const actionSignal = /(待办|日程|安排|提醒|课程|上课|会议|作业|任务|复习|整理|完成|提交|截止|预约|考试|学习|写|做|去|买|读|看|交|打电话|schedule|todo|task|remind|class|meeting|homework|review|study|finish|submit|appointment|exam|go|buy|read|write|call)/i;
-const explicitSignal = /(创建|新增|添加|记下|帮我安排|加入日程|加入待办|create|add|put on my calendar)/i;
+const actionSignal = /(待办|日程|安排|提醒|备忘录|课程|上课|会议|作业|任务|复习|整理|完成|提交|截止|预约|考试|学习|写|做|去|买|读|看|交|打电话|schedule|todo|task|memo|note|remind|class|meeting|homework|review|study|finish|submit|appointment|exam|go|buy|read|write|call)/i;
+const explicitSignal = /(创建|新增|添加|记下|帮我安排|加入日程|加入待办|创建备忘录|create|add|put on my calendar)/i;
 
 function corsHeaders(request: Request) {
   const origin = request.headers.get("origin") || "";
@@ -116,6 +118,8 @@ function normalizedPlan(value: unknown, groups: Array<{ id: string; color: strin
       kind: item.kind === "event" ? "event" as const : "todo" as const,
       title,
       note: String(item.note || "").trim().slice(0, 140),
+      create_memo: item.create_memo === true,
+      memo_content: String(item.memo_content || "").trim().slice(0, 3000),
       date,
       start_time: startTime,
       end_time: endTime,
@@ -140,13 +144,15 @@ const planSchema = {
           kind: { type: "string", enum: ["event", "todo"] },
           title: { type: "string", minLength: 1, maxLength: 60 },
           note: { type: "string", maxLength: 140 },
+          create_memo: { type: "boolean" },
+          memo_content: { type: "string", maxLength: 3000 },
           date: { type: "string", pattern: "^\\d{4}-\\d{2}-\\d{2}$" },
           start_time: { type: "string", pattern: "^([01]\\d|2[0-3]):[0-5]\\d$" },
           end_time: { type: ["string", "null"] },
           group_id: { type: ["string", "null"] },
           color: { type: "string", enum: [...colors] },
         },
-        required: ["kind", "title", "note", "date", "start_time", "end_time", "group_id", "color"],
+        required: ["kind", "title", "note", "create_memo", "memo_content", "date", "start_time", "end_time", "group_id", "color"],
       },
     },
     message: { type: "string", maxLength: 120 },
@@ -159,8 +165,9 @@ function modelInput(text: string, timezone: string, locale: string, groups: Arra
     ? groups.map((group) => `${group.id}=${group.name}`).join("；")
     : "没有可用日程表，group_id 必须为 null";
   const instructions = [
-    "你是 MemoryEveryDay 的安排提取器，只把用户明确表达的未来或当天安排转换成 JSON，不聊天、不回答知识问题。",
-    "默认创建 todo；只有用户明确说日程、会议、上课、课程、预约、考试等时间占用型事项时才用 event。",
+    "你是 MemoryEveryDay 的创建助手，只把用户明确表达的未来或当天待办、日程，以及与它们关联的备忘录转换成 JSON，不聊天、不回答知识问题。",
+    "默认创建 todo；用户明确说日程、会议、上课、课程、预约、考试等时间占用型事项时用 event；用户明确说待办或任务时必须用 todo。",
+    "只有用户明确要求同时创建备忘录时，create_memo 才为 true，并把用户要记录的课堂内容、作业要求或其他细节写入 memo_content。备忘录必须与同一项待办或日程关联；没有要求备忘录时 create_memo 为 false 且 memo_content 为空字符串。",
     "每个独立事项生成一项。标题简洁，备注只保留必要上下文。不得补造用户未表达的事项。",
     "必须把相对日期换算为 YYYY-MM-DD，把时间换算为 24 小时 HH:mm。没有明确日期或开始时间的事项不要创建，并在 message 中用一句话请用户补充。",
     "有明确结束时间才填写 end_time，否则为 null。只有语义明确匹配已有日程表时填写 group_id，否则为 null。",
@@ -244,6 +251,31 @@ function eventResult(row: Record<string, unknown>) {
   };
 }
 
+function memoHtml(value: string) {
+  const escaped = String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+  return escaped.split(/\n+/).map((part) => part.trim()).filter(Boolean).map((part) => `<p>${part}</p>`).join("");
+}
+
+function memoResult(row: Record<string, unknown>) {
+  return {
+    id: row.id,
+    eventId: row.event_id || "",
+    folderId: row.folder_id || "",
+    sortOrder: Number(row.sort_order || 0),
+    allSortOrder: Number(row.all_sort_order || 0),
+    title: row.title,
+    content: row.content || "",
+    attachments: Array.isArray(row.attachments) ? row.attachments : [],
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
+
 Deno.serve(async (request) => {
   if (request.method === "OPTIONS") return new Response("ok", { headers: corsHeaders(request) });
   if (!['GET', 'POST'].includes(request.method)) return json(request, { code: "method_not_allowed", message: "Method not allowed" }, 405);
@@ -267,6 +299,14 @@ Deno.serve(async (request) => {
   const timezone = safeTimezone(request.method === "GET" ? url.searchParams.get("timezone") : undefined);
 
   if (request.method === "GET") {
+    const statusRequestId = String(url.searchParams.get("requestId") || "");
+    if (/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(statusRequestId)) {
+      const { data: requestRow } = await admin.from("voice_assistant_requests").select("status, result, error_code").eq("user_id", user.id).eq("request_id", statusRequestId).maybeSingle();
+      if (!requestRow) return json(request, { code: "request_not_found", message: "没有找到这次创建记录。" }, 404);
+      if (requestRow.status === "completed" && requestRow.result) return json(request, { ...(requestRow.result as Record<string, unknown>), status: "completed" });
+      if (requestRow.status === "failed" || requestRow.status === "rejected") return json(request, { status: requestRow.status, code: requestRow.error_code || "assistant_failed", message: "这次安排没有创建成功，请重新说一次。" }, 422);
+      return json(request, { status: "processing", message: "正在创建，请稍候。" }, 202);
+    }
     const usageDate = localDate(timezone);
     const { data } = await admin.from("voice_assistant_daily_usage").select("request_count").eq("user_id", user.id).eq("usage_date", usageDate).maybeSingle();
     const used = Number(data?.request_count || 0);
@@ -330,46 +370,80 @@ Deno.serve(async (request) => {
     const groups = (groupRows || []).map((group) => ({ id: String(group.id), name: String(group.name), color: String(group.color || "blue") }));
     const plan = await requestPlan(provider, text, requestTimezone, locale, groups);
     if (!plan.items.length) {
-      const result = { created: 0, events: [], message: plan.message || "我听到了安排，但缺少明确的日期或开始时间，请补充后再试。", remaining: Number(quota.remaining), used: Number(quota.used), limit: DAILY_LIMIT };
+      const result = { created: 0, events: [], memos: [], message: plan.message || "我听到了安排，但缺少明确的日期或开始时间，请补充后再试。", remaining: Number(quota.remaining), used: Number(quota.used), limit: DAILY_LIMIT };
       await admin.from("voice_assistant_requests").update({ status: "completed", item_count: 0, result, completed_at: new Date().toISOString() }).eq("user_id", user.id).eq("request_id", requestId);
       return json(request, result);
     }
 
-    const rows = plan.items.map((item) => ({
-      id: crypto.randomUUID(),
-      user_id: user.id,
-      title: item.title,
-      note: item.note,
-      item_type: item.kind,
-      completed_at: null,
-      event_date: item.date,
-      start_time: item.start_time,
-      end_time: item.end_time,
-      mode: item.end_time ? "range" : "reminder",
-      color: item.color,
-      group_id: item.group_id,
-      push_reminder: false,
-      wecom_reminder: false,
-      early_reminders: [],
-      repeat_weekdays: [],
-      repeat_start_date: item.date,
-      repeat_end_date: null,
-      reminder_at: null,
+    const plannedRows = plan.items.map((item) => ({
+      item,
+      row: {
+        id: crypto.randomUUID(),
+        user_id: user.id,
+        title: item.title,
+        note: item.note,
+        item_type: item.kind,
+        completed_at: null,
+        event_date: item.date,
+        start_time: item.start_time,
+        end_time: item.end_time,
+        mode: item.end_time ? "range" : "reminder",
+        color: item.color,
+        group_id: item.group_id,
+        push_reminder: false,
+        wecom_reminder: false,
+        early_reminders: [],
+        repeat_weekdays: [],
+        repeat_start_date: item.date,
+        repeat_end_date: null,
+        reminder_at: null,
+      },
     }));
+    const rows = plannedRows.map(({ row }) => row);
     const { data: savedRows, error: insertError } = await admin.from("schedule_events").insert(rows).select("*");
     if (insertError) throw new Error("event_insert_failed");
     const events = (savedRows || []).map((row) => eventResult(row as Record<string, unknown>));
+    const planByEventId = new Map(plannedRows.map(({ item, row }) => [row.id, item]));
+    const memoEvents = (savedRows || []).filter((row) => planByEventId.get(String(row.id))?.create_memo);
+    let memos: ReturnType<typeof memoResult>[] = [];
+    if (memoEvents.length) {
+      const { data: positionRows } = await admin.from("memos").select("folder_id, sort_order, all_sort_order").eq("user_id", user.id);
+      const uncategorized = (positionRows || []).filter((row) => !row.folder_id);
+      const minFolderOrder = uncategorized.length ? Math.min(...uncategorized.map((row) => Number(row.sort_order || 0))) : 0;
+      const minAllOrder = (positionRows || []).length ? Math.min(...(positionRows || []).map((row) => Number(row.all_sort_order || 0))) : 0;
+      const memoRows = memoEvents.map((row, index) => {
+        const item = planByEventId.get(String(row.id))!;
+        return {
+          id: crypto.randomUUID(),
+          user_id: user.id,
+          event_id: row.id,
+          folder_id: null,
+          sort_order: minFolderOrder - index - 1,
+          all_sort_order: minAllOrder - index - 1,
+          title: row.title,
+          content: memoHtml(item.memo_content),
+          attachments: [],
+        };
+      });
+      const { data: savedMemos, error: memoError } = await admin.from("memos").insert(memoRows).select("*");
+      if (memoError) {
+        await admin.from("schedule_events").delete().in("id", rows.map((row) => row.id)).eq("user_id", user.id);
+        throw new Error("memo_insert_failed");
+      }
+      memos = (savedMemos || []).map((row) => memoResult(row as Record<string, unknown>));
+    }
     const result = {
-      created: events.length,
+      created: events.length + memos.length,
       events,
-      message: plan.message || `已创建 ${events.length} 项安排。`,
+      memos,
+      message: `已创建 ${events.length} 项安排${memos.length ? `和 ${memos.length} 份关联备忘录` : ""}。`,
       remaining: Number(quota.remaining),
       used: Number(quota.used),
       limit: DAILY_LIMIT,
     };
     await admin.from("voice_assistant_requests").update({
       status: "completed",
-      item_count: events.length,
+      item_count: events.length + memos.length,
       event_ids: events.map((event) => event.id),
       result,
       completed_at: new Date().toISOString(),
@@ -379,7 +453,7 @@ Deno.serve(async (request) => {
     const code = error instanceof Error ? error.message : "assistant_failed";
     console.error("Voice assistant request failed", { userId: user.id, provider, code });
     await admin.from("voice_assistant_requests").update({ status: "failed", error_code: code, completed_at: new Date().toISOString() }).eq("user_id", user.id).eq("request_id", requestId);
-    const message = code === "provider_auth_failed" ? "AI 密钥无效，请更新服务配置。" : "这次安排没有创建成功，请稍后再试。";
+    const message = code === "provider_auth_failed" ? "AI 服务配置失效，请稍后再试。" : code === "memo_insert_failed" ? "关联备忘录没有保存成功，本次安排已自动取消，请重新说一次。" : code === "event_insert_failed" ? "安排没有保存成功，请重新说一次。" : "这次安排没有创建成功，请稍后再试。";
     return json(request, { code, message, remaining: Number(quota.remaining), used: Number(quota.used), limit: DAILY_LIMIT }, 502);
   }
 });

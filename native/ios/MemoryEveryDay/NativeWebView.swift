@@ -59,9 +59,14 @@ struct NativeWebView: UIViewRepresentable {
         private var liveRecognitionRequest: SFSpeechAudioBufferRecognitionRequest?
         private var liveRecognitionTask: SFSpeechRecognitionTask?
         private var liveRequestId = ""
-        private var liveTranscript = ""
+        private var liveCommittedTranscript = ""
+        private var liveCurrentSegment = ""
+        private var liveLocale = "zh-CN"
         private var liveTapInstalled = false
         private var liveResultDelivered = false
+        private var liveStopRequested = false
+        private var liveCycle = 0
+        private var liveRestartWorkItem: DispatchWorkItem?
         private let siteURL = URL(string: "https://memoryeveryday.pages.dev/")!
 
         init(isLoading: Binding<Bool>) { self.isLoading = isLoading }
@@ -200,10 +205,15 @@ struct NativeWebView: UIViewRepresentable {
         }
 
         private func startLiveSpeech(requestId: String, locale: String) {
+            liveRestartWorkItem?.cancel()
             stopLiveCapture()
             liveRequestId = requestId
-            liveTranscript = ""
+            liveCommittedTranscript = ""
+            liveCurrentSegment = ""
+            liveLocale = locale
             liveResultDelivered = false
+            liveStopRequested = false
+            liveCycle += 1
             SFSpeechRecognizer.requestAuthorization { [weak self] status in
                 guard let self else { return }
                 guard status == .authorized else {
@@ -229,10 +239,15 @@ struct NativeWebView: UIViewRepresentable {
         }
 
         private func beginLiveRecognition(requestId: String, locale: String) {
+            guard liveRequestId == requestId, !liveResultDelivered, !liveStopRequested else { return }
             guard let recognizer = SFSpeechRecognizer(locale: Locale(identifier: locale)), recognizer.isAvailable else {
                 sendLiveSpeechResult(requestId: requestId, status: "failed", message: "当前 iPhone 的语音识别暂不可用，请稍后再试。")
                 return
             }
+            liveRestartWorkItem?.cancel()
+            liveRestartWorkItem = nil
+            liveCycle += 1
+            let cycle = liveCycle
             let audioSession = AVAudioSession.sharedInstance()
             do {
                 try audioSession.setCategory(.record, mode: .measurement, options: .duckOthers)
@@ -248,21 +263,30 @@ struct NativeWebView: UIViewRepresentable {
                 liveAudioEngine.prepare()
                 try liveAudioEngine.start()
                 liveRecognitionTask = recognizer.recognitionTask(with: request) { [weak self] result, error in
-                    guard let self, self.liveRequestId == requestId, !self.liveResultDelivered else { return }
-                    if let result {
-                        let text = result.bestTranscription.formattedString.trimmingCharacters(in: .whitespacesAndNewlines)
-                        if !text.isEmpty {
-                            self.liveTranscript = text
-                            self.sendLiveSpeechResult(requestId: requestId, status: result.isFinal ? "ready" : "partial", text: text)
+                    DispatchQueue.main.async {
+                        guard let self, self.liveRequestId == requestId, self.liveCycle == cycle, !self.liveResultDelivered else { return }
+                        if let result {
+                            let text = result.bestTranscription.formattedString.trimmingCharacters(in: .whitespacesAndNewlines)
+                            if !text.isEmpty {
+                                self.liveCurrentSegment = text
+                                self.sendLiveSpeechResult(requestId: requestId, status: "partial", text: self.combinedLiveTranscript())
+                            }
+                            if result.isFinal {
+                                self.commitLiveSegment()
+                                self.liveCycle += 1
+                                self.stopLiveCapture()
+                                if self.liveStopRequested { self.completeLiveSpeech(requestId: requestId) }
+                                else { self.scheduleLiveRestart(requestId: requestId) }
+                            }
+                        } else if error != nil {
+                            self.liveCycle += 1
+                            self.stopLiveCapture()
+                            if self.liveStopRequested { self.completeLiveSpeech(requestId: requestId) }
+                            else { self.scheduleLiveRestart(requestId: requestId) }
                         }
-                        if result.isFinal { self.stopLiveCapture(keepTask: true) }
-                    } else if error != nil && self.liveTranscript.isEmpty {
-                        self.liveResultDelivered = true
-                        self.stopLiveCapture()
-                        self.sendLiveSpeechResult(requestId: requestId, status: "failed", message: "这次没有听清，请重新说一次。")
                     }
                 }
-                sendLiveSpeechResult(requestId: requestId, status: "listening")
+                sendLiveSpeechResult(requestId: requestId, status: "listening", text: combinedLiveTranscript())
             } catch {
                 stopLiveCapture()
                 sendLiveSpeechResult(requestId: requestId, status: "failed", message: "无法开始语音识别，请稍后再试。")
@@ -271,6 +295,13 @@ struct NativeWebView: UIViewRepresentable {
 
         private func stopLiveSpeech(requestId: String) {
             guard liveRequestId == requestId, !liveResultDelivered else { return }
+            liveStopRequested = true
+            liveRestartWorkItem?.cancel()
+            liveRestartWorkItem = nil
+            if liveRecognitionTask == nil {
+                completeLiveSpeech(requestId: requestId)
+                return
+            }
             liveRecognitionRequest?.endAudio()
             if liveAudioEngine.isRunning { liveAudioEngine.stop() }
             if liveTapInstalled {
@@ -279,15 +310,52 @@ struct NativeWebView: UIViewRepresentable {
             }
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.55) { [weak self] in
                 guard let self, self.liveRequestId == requestId, !self.liveResultDelivered else { return }
-                self.liveResultDelivered = true
-                let text = self.liveTranscript.trimmingCharacters(in: .whitespacesAndNewlines)
-                self.liveRecognitionTask?.finish()
-                self.stopLiveCapture()
-                self.sendLiveSpeechResult(requestId: requestId, status: text.isEmpty ? "failed" : "success", text: text, message: text.isEmpty ? "没有听到清晰的安排，请重新说一次。" : "")
+                self.completeLiveSpeech(requestId: requestId)
             }
         }
 
-        private func stopLiveCapture(keepTask: Bool = false) {
+        private func combinedLiveTranscript() -> String {
+            [liveCommittedTranscript, liveCurrentSegment]
+                .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+                .filter { !$0.isEmpty }
+                .joined(separator: " ")
+        }
+
+        private func commitLiveSegment() {
+            let segment = liveCurrentSegment.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !segment.isEmpty else { return }
+            liveCommittedTranscript = [liveCommittedTranscript, segment]
+                .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+                .filter { !$0.isEmpty }
+                .joined(separator: " ")
+            liveCurrentSegment = ""
+        }
+
+        private func scheduleLiveRestart(requestId: String) {
+            guard liveRequestId == requestId, !liveResultDelivered, !liveStopRequested else { return }
+            let workItem = DispatchWorkItem { [weak self] in
+                guard let self, self.liveRequestId == requestId, !self.liveResultDelivered, !self.liveStopRequested else { return }
+                self.beginLiveRecognition(requestId: requestId, locale: self.liveLocale)
+            }
+            liveRestartWorkItem = workItem
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.18, execute: workItem)
+        }
+
+        private func completeLiveSpeech(requestId: String) {
+            guard liveRequestId == requestId, !liveResultDelivered else { return }
+            liveResultDelivered = true
+            liveStopRequested = true
+            liveRestartWorkItem?.cancel()
+            liveRestartWorkItem = nil
+            commitLiveSegment()
+            liveCycle += 1
+            let text = combinedLiveTranscript()
+            liveRecognitionTask?.finish()
+            stopLiveCapture()
+            sendLiveSpeechResult(requestId: requestId, status: text.isEmpty ? "failed" : "success", text: text, message: text.isEmpty ? "没有听到清晰的安排，请重新说一次。" : "")
+        }
+
+        private func stopLiveCapture() {
             if liveAudioEngine.isRunning { liveAudioEngine.stop() }
             if liveTapInstalled {
                 liveAudioEngine.inputNode.removeTap(onBus: 0)
@@ -295,11 +363,9 @@ struct NativeWebView: UIViewRepresentable {
             }
             liveRecognitionRequest?.endAudio()
             liveRecognitionRequest = nil
-            if !keepTask {
-                liveRecognitionTask?.cancel()
-                liveRecognitionTask = nil
-                try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
-            }
+            liveRecognitionTask?.cancel()
+            liveRecognitionTask = nil
+            try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
         }
 
         private func sendLiveSpeechResult(requestId: String, status: String, text: String = "", message: String = "") {
