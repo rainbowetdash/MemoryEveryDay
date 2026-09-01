@@ -68,7 +68,7 @@ function renderVoiceAssistant() {
   else if (!configured) { status = `${selectedVoiceProviderName()} 等待启用`; hint = '服务密钥配置后无需更新 App 即可使用'; }
   else if (voiceAssistant.processing && voiceAssistant.captureMode === 'audio-transcribing') { status = '正在把语音转成文字…'; hint = '识别完成后会继续创建，不需要停留在这里'; }
   else if (voiceAssistant.processing) { status = '正在整理你的安排…'; hint = '可以先去其他页面，创建完成后会同步显示'; }
-  else if (voiceAssistant.listening) { status = '正在听…'; hint = voiceAssistant.captureMode === 'audio' ? '兼容录音模式，说完后再点一下' : '可以连续说多句话，说完后再点一下'; }
+  else if (voiceAssistant.listening) { status = '正在听…'; hint = ['audio', 'native-audio'].includes(voiceAssistant.captureMode) ? '兼容录音模式，说完后再点一下' : '可以连续说多句话，说完后再点一下'; }
   else if (!voiceHasRecognition()) { status = '当前设备不能直接听写'; hint = '请使用 iPhone 或 Android App'; }
   $('voice-assistant-status').textContent = status;
   $('voice-assistant-hint').textContent = hint;
@@ -185,6 +185,13 @@ async function submitVoiceRecording(audio, requestId) {
     voiceAssistant.captureMode = '';
     finishVoiceListeningError(error.message || '暂时无法把语音转成文字，请稍后再试。');
   }
+}
+
+function voiceBlobFromBase64(value, type) {
+  const binary = atob(String(value || ''));
+  const bytes = new Uint8Array(binary.length);
+  for (let index = 0; index < binary.length; index += 1) bytes[index] = binary.charCodeAt(index);
+  return new Blob([bytes], { type: type || 'audio/mp4' });
 }
 
 async function startVoiceAudioFallback() {
@@ -439,6 +446,23 @@ window.addEventListener('memoryeveryday-native-voice-assistant', (event) => {
   const detail = event.detail || {};
   if (!voiceAssistant.listening || detail.requestId !== voiceAssistant.requestId) return;
   if (detail.text) setVoiceTranscript(detail.text);
+  if (detail.status === 'audio-listening') {
+    voiceAssistant.captureMode = 'native-audio';
+    setVoiceMessage('');
+    renderVoiceAssistant();
+    return;
+  }
+  if (detail.status === 'audio-success') {
+    voiceAssistant.listening = false;
+    stopVoiceTimer();
+    try { void submitVoiceRecording(voiceBlobFromBase64(detail.audioBase64, detail.mimeType), voiceAssistant.requestId); }
+    catch { finishVoiceListeningError('没有收到完整录音，请重新说一次。'); }
+    return;
+  }
+  if (detail.status === 'audio-failed') {
+    finishVoiceListeningError(detail.message || '兼容录音没有成功，请重新说一次。');
+    return;
+  }
   if (voiceNeedsAudioFallback(detail)) { void startVoiceAudioFallback(); return; }
   if (detail.status === 'listening' || detail.status === 'partial') return;
   if (detail.status === 'ready') { voiceAssistant.recognitionEnded = true; renderVoiceAssistant(); return; }

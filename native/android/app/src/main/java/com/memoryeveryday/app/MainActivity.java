@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.media.MediaRecorder;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Build;
@@ -19,6 +20,7 @@ import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.view.MotionEvent;
 import android.view.View;
+import android.util.Base64;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
 import android.webkit.PermissionRequest;
@@ -31,6 +33,9 @@ import android.widget.ImageView;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.HashSet;
 import java.util.ArrayList;
 import java.util.Set;
@@ -44,6 +49,10 @@ public class MainActivity extends Activity {
     private View splash;
     private PermissionRequest pendingMicrophonePermissionRequest;
     private SpeechRecognizer voiceRecognizer;
+    private MediaRecorder voiceAudioRecorder;
+    private File voiceAudioFile;
+    private String voiceAudioRequestId = "";
+    private boolean voiceAudioRecording;
     private String pendingVoiceRequestId = "";
     private String pendingVoiceLocale = "zh-CN";
     private String voiceRequestId = "";
@@ -203,6 +212,19 @@ public class MainActivity extends Activity {
         } catch (Exception ignored) { }
     }
 
+    private void sendVoiceAudioResult(String requestId, String audioBase64) {
+        if (webView == null) return;
+        try {
+            String detail = new JSONObject()
+                .put("requestId", requestId)
+                .put("status", "audio-success")
+                .put("audioBase64", audioBase64)
+                .put("mimeType", "audio/mp4")
+                .toString();
+            webView.post(() -> webView.evaluateJavascript("window.dispatchEvent(new CustomEvent('memoryeveryday-native-voice-assistant',{detail:" + detail + "}));", null));
+        } catch (Exception ignored) { }
+    }
+
     private String recognitionText(Bundle results) {
         if (results == null) return "";
         ArrayList<String> matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
@@ -221,7 +243,7 @@ public class MainActivity extends Activity {
 
     private void beginVoiceRecognition(String requestId, String locale) {
         if (!SpeechRecognizer.isRecognitionAvailable(this)) {
-            sendVoiceResult(requestId, "failed", "", "当前手机没有启用可用的语音识别服务，请在系统设置中开启语音输入后重试。");
+            startVoiceAudioRecording(requestId);
             return;
         }
         voiceRequestId = requestId;
@@ -234,6 +256,95 @@ public class MainActivity extends Activity {
         voiceGeneration += 1;
         cancelVoiceRestart();
         beginVoiceRecognitionCycle(requestId, locale);
+    }
+
+    private void startVoiceAudioRecording(String requestId) {
+        discardVoiceAudioRecording();
+        voiceRequestId = requestId;
+        voiceAudioRequestId = requestId;
+        try {
+            File audioFile = File.createTempFile("voice-", ".m4a", getCacheDir());
+            MediaRecorder recorder = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ? new MediaRecorder(this) : new MediaRecorder();
+            voiceAudioFile = audioFile;
+            voiceAudioRecorder = recorder;
+            recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+            recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+            recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+            recorder.setAudioChannels(1);
+            recorder.setAudioSamplingRate(16_000);
+            recorder.setAudioEncodingBitRate(64_000);
+            recorder.setMaxDuration(90_000);
+            recorder.setMaxFileSize(8L * 1024L * 1024L);
+            recorder.setOutputFile(audioFile.getAbsolutePath());
+            recorder.setOnInfoListener((ignored, what, extra) -> {
+                if ((what == MediaRecorder.MEDIA_RECORDER_INFO_MAX_DURATION_REACHED || what == MediaRecorder.MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED) && voiceAudioRecording) {
+                    runOnUiThread(() -> finishVoiceAudioRecording(requestId));
+                }
+            });
+            recorder.setOnErrorListener((ignored, what, extra) -> runOnUiThread(() -> failVoiceAudioRecording(requestId, "兼容录音启动失败，请重新试一次。")));
+            recorder.prepare();
+            recorder.start();
+            voiceAudioRecording = true;
+            sendVoiceResult(requestId, "audio-listening", "", "");
+        } catch (Exception error) {
+            discardVoiceAudioRecording();
+            sendVoiceResult(requestId, "audio-failed", "", "当前手机无法启动录音，请确认麦克风没有被其他应用占用后重试。");
+        }
+    }
+
+    private void finishVoiceAudioRecording(String requestId) {
+        if (!voiceAudioRecording || !requestId.equals(voiceAudioRequestId)) return;
+        MediaRecorder recorder = voiceAudioRecorder;
+        File audioFile = voiceAudioFile;
+        voiceAudioRecording = false;
+        voiceAudioRecorder = null;
+        voiceAudioFile = null;
+        voiceAudioRequestId = "";
+        try {
+            recorder.stop();
+        } catch (RuntimeException error) {
+            try { recorder.release(); } catch (Exception ignored) { }
+            if (audioFile != null) audioFile.delete();
+            sendVoiceResult(requestId, "audio-failed", "", "录音时间太短，请重新点一下并说完整安排。");
+            return;
+        }
+        try { recorder.release(); } catch (Exception ignored) { }
+        new Thread(() -> {
+            try {
+                if (audioFile == null || !audioFile.exists() || audioFile.length() <= 0 || audioFile.length() > 8L * 1024L * 1024L) throw new Exception("invalid audio");
+                ByteArrayOutputStream output = new ByteArrayOutputStream((int) audioFile.length());
+                try (FileInputStream input = new FileInputStream(audioFile)) {
+                    byte[] buffer = new byte[16_384];
+                    int count;
+                    while ((count = input.read(buffer)) != -1) output.write(buffer, 0, count);
+                }
+                sendVoiceAudioResult(requestId, Base64.encodeToString(output.toByteArray(), Base64.NO_WRAP));
+            } catch (Exception error) {
+                sendVoiceResult(requestId, "audio-failed", "", "没有录到清晰的声音，请重新说一次。");
+            } finally {
+                if (audioFile != null) audioFile.delete();
+            }
+        }).start();
+    }
+
+    private void failVoiceAudioRecording(String requestId, String message) {
+        if (!requestId.equals(voiceAudioRequestId)) return;
+        discardVoiceAudioRecording();
+        sendVoiceResult(requestId, "audio-failed", "", message);
+    }
+
+    private void discardVoiceAudioRecording() {
+        MediaRecorder recorder = voiceAudioRecorder;
+        File audioFile = voiceAudioFile;
+        voiceAudioRecording = false;
+        voiceAudioRecorder = null;
+        voiceAudioFile = null;
+        voiceAudioRequestId = "";
+        if (recorder != null) {
+            try { recorder.reset(); } catch (Exception ignored) { }
+            try { recorder.release(); } catch (Exception ignored) { }
+        }
+        if (audioFile != null) audioFile.delete();
     }
 
     private String combinedVoiceTranscript() {
@@ -323,6 +434,10 @@ public class MainActivity extends Activity {
     }
 
     private void stopVoiceRecognition(String requestId) {
+        if (voiceAudioRecording && requestId.equals(voiceAudioRequestId)) {
+            finishVoiceAudioRecording(requestId);
+            return;
+        }
         if (!requestId.equals(voiceRequestId) || voiceResultDelivered) return;
         voiceStopRequested = true;
         cancelVoiceRestart();
@@ -459,6 +574,7 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onDestroy() {
+        discardVoiceAudioRecording();
         if (voiceRecognizer != null) {
             voiceRecognizer.cancel();
             voiceRecognizer.destroy();
