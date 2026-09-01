@@ -21,6 +21,15 @@ type ParsedPlan = {
   message: string;
 };
 
+type ScheduleContextItem = {
+  title: string;
+  kind: string;
+  date: string;
+  start: string;
+  end: string | null;
+  completed: boolean;
+};
+
 const DAILY_LIMIT = 10;
 const MAX_AUDIO_BYTES = 8 * 1024 * 1024;
 const toSimplifiedChinese = OpenCC.Converter({ from: "t", to: "cn" });
@@ -33,8 +42,8 @@ const allowedOrigins = new Set([
 ]);
 const colors = new Set(["blue", "navy", "cyan", "mint", "purple", "pink", "coral", "yellow", "green"]);
 const dateSignal = /(今天|明天|后天|大后天|周[一二三四五六日天]|星期[一二三四五六日天]|\d{1,2}[月/]\d{1,2}([日号])?|\d{4}-\d{1,2}-\d{1,2}|\d{1,2}[:：点时]\d{0,2}|上午|中午|下午|傍晚|晚上|凌晨|today|tomorrow|tonight|monday|tuesday|wednesday|thursday|friday|saturday|sunday|\d{1,2}(:\d{2})?\s?(am|pm))/i;
-const actionSignal = /(待办|日程|安排|提醒|备忘录|课程|上课|会议|作业|任务|复习|整理|完成|提交|截止|预约|考试|学习|写|做|去|买|读|看|交|打电话|schedule|todo|task|memo|note|remind|class|meeting|homework|review|study|finish|submit|appointment|exam|go|buy|read|write|call)/i;
-const explicitSignal = /(创建|新增|添加|记下|帮我安排|加入日程|加入待办|创建备忘录|create|add|put on my calendar)/i;
+const actionSignal = /(待办|日程|安排|提醒|备忘录|课程|上课|会议|作业|任务|复习|整理|完成|提交|截止|预约|考试|学习|写|做|去|买|读|看|交|打电话|第一个|上一项|下一项|之后|之前|空档|有空|schedule|todo|task|memo|note|remind|class|meeting|homework|assignment|review|study|finish|submit|appointment|exam|after|before|first|next|go|buy|read|write|call)/i;
+const explicitSignal = /(创建|新增|添加|记下|帮我安排|加入日程|加入待办|创建备忘录|想在|安排在|create|add|schedule|put on my calendar)/i;
 
 function corsHeaders(request: Request) {
   const origin = request.headers.get("origin") || "";
@@ -55,6 +64,10 @@ function json(request: Request, body: Record<string, unknown>, status = 200) {
 
 function hasScheduleIntent(text: string) {
   return explicitSignal.test(text) || (dateSignal.test(text) && actionSignal.test(text));
+}
+
+function isUnlimitedUser(userId: string) {
+  return new Set(String(Deno.env.get("VOICE_ASSISTANT_UNLIMITED_USER_IDS") || "").split(",").map((id) => id.trim()).filter(Boolean)).has(userId);
 }
 
 function safeTimezone(value: unknown) {
@@ -163,19 +176,24 @@ const planSchema = {
   required: ["items", "message"],
 } as const;
 
-function modelInput(text: string, timezone: string, locale: string, groups: Array<{ id: string; name: string; color: string }>) {
+function modelInput(text: string, timezone: string, locale: string, groups: Array<{ id: string; name: string; color: string }>, scheduleContext: ScheduleContextItem[]) {
   const groupDescription = groups.length
     ? groups.map((group) => `${group.id}=${group.name}`).join("；")
     : "没有可用日程表，group_id 必须为 null";
+  const scheduleDescription = scheduleContext.length
+    ? scheduleContext.map((item, index) => `${index + 1}. ${item.date} ${item.start}${item.end ? `-${item.end}` : ""} ${item.kind === "todo" ? "待办" : "日程"}${item.completed ? "（已完成）" : ""}「${item.title}」`).join("\n")
+    : "未来 30 天没有已有安排";
   const instructions = [
     "你是 MemoryEveryDay 的创建助手，只把用户明确表达的未来或当天待办、日程，以及与它们关联的备忘录转换成 JSON，不聊天、不回答知识问题。",
     "默认创建 todo；用户明确说日程、会议、上课、课程、预约、考试等时间占用型事项时用 event；用户明确说待办或任务时必须用 todo。",
     "只有用户明确要求同时创建备忘录时，create_memo 才为 true，并把用户要记录的课堂内容、作业要求或其他细节写入 memo_content。备忘录必须与同一项待办或日程关联；没有要求备忘录时 create_memo 为 false 且 memo_content 为空字符串。",
     "每个独立事项生成一项。标题简洁，备注只保留必要上下文。不得补造用户未表达的事项。",
-    "必须把相对日期换算为 YYYY-MM-DD，把时间换算为 24 小时 HH:mm。没有明确日期或开始时间的事项不要创建，并在 message 中用一句话请用户补充。",
+    "必须把相对日期换算为 YYYY-MM-DD，把时间换算为 24 小时 HH:mm。用户可以通过“今天下午第一个任务之后”“上一项结束后”“某门课之前”等方式引用已有安排，此时要先从下方已有安排中按日期、时段、顺序和标题定位，再计算新事项时间。上午为 05:00-12:00，下午为 12:00-18:00，晚上为 18:00-24:00。",
+    "引用某项安排“之后”时，优先使用它的结束时间；如果它只有单一提醒时间，则使用该时间后的下一个半小时整点。引用不唯一或无法定位时不要猜测，在 message 中请用户补充。只有完全没有日期、时间且也没有可解析的已有安排引用时，才认为信息不足。",
     "有明确结束时间才填写 end_time，否则为 null。只有语义明确匹配已有日程表时填写 group_id，否则为 null。",
     `当前用户本地时间：${localNow(timezone)}；时区：${timezone}；界面语言：${locale || "zh-CN"}。`,
     `已有日程表：${groupDescription}。`,
+    `用户未来 30 天的已有安排：\n${scheduleDescription}`,
   ].join("\n");
   return [
     { role: "system", content: instructions },
@@ -196,7 +214,7 @@ function responseText(payload: Record<string, unknown>) {
   return "";
 }
 
-async function requestPlan(provider: Provider, text: string, timezone: string, locale: string, groups: Array<{ id: string; name: string; color: string }>) {
+async function requestPlan(provider: Provider, text: string, timezone: string, locale: string, groups: Array<{ id: string; name: string; color: string }>, scheduleContext: ScheduleContextItem[]) {
   const openAI = provider === "openai";
   const apiKey = Deno.env.get(openAI ? "OPENAI_API_KEY" : "DEEPSEEK_API_KEY");
   if (!apiKey) throw new Error("not_configured");
@@ -206,11 +224,11 @@ async function requestPlan(provider: Provider, text: string, timezone: string, l
   if (openAI) format.strict = true;
   const body: Record<string, unknown> = {
     model,
-    input: modelInput(text, timezone, locale, groups),
+    input: modelInput(text, timezone, locale, groups, scheduleContext),
     text: openAI ? { format, verbosity: "low" } : { format },
     max_output_tokens: 1400,
     store: false,
-    reasoning: { effort: "none" },
+    reasoning: { effort: openAI ? "low" : "none" },
   };
 
   const response = await fetch(endpoint, {
@@ -232,16 +250,27 @@ async function requestPlan(provider: Provider, text: string, timezone: string, l
   }
 }
 
-async function requestTranscription(audio: File, locale: string) {
+async function requestTranscription(audio: File, locale: string, contextKeywords: string[]) {
   const apiKey = Deno.env.get("OPENAI_API_KEY");
   if (!apiKey) throw new Error("transcription_not_configured");
-  const model = Deno.env.get("OPENAI_TRANSCRIPTION_MODEL") || "gpt-4o-mini-transcribe";
+  const model = Deno.env.get("OPENAI_TRANSCRIPTION_MODEL") || "gpt-transcribe";
   const language = String(locale || "zh").split(/[-_]/)[0].toLowerCase().replace(/[^a-z]/g, "").slice(0, 2) || "zh";
+  const keywords = [...new Set([
+    "MemoryEveryDay", "创建", "待办", "日程", "备忘录", "复习", "作业", "课程", "weekly assignment", "assignment", "review", "homework",
+    ...contextKeywords,
+  ].map((value) => String(value || "").trim()).filter(Boolean))].slice(0, 60);
   const form = new FormData();
   form.append("file", audio, String(audio.name || "voice.webm").replace(/[^a-zA-Z0-9._-]/g, "-").slice(-100));
   form.append("model", model);
-  form.append("language", language);
-  if (language === "zh") form.append("prompt", "请使用简体中文原样转写，不要使用繁体字。场景是创建日程、待办和备忘录，常用词包括：创建、待办、日程、备忘录、复习、作业、课程、语音。");
+  if (model === "gpt-transcribe") {
+    [...new Set([language, "zh", "en"])].forEach((code) => form.append("languages[]", code));
+    keywords.forEach((keyword) => form.append("keywords[]", keyword.slice(0, 80)));
+    form.append("chunking_strategy", "auto");
+  } else {
+    form.append("language", language);
+  }
+  form.append("prompt", `请准确原样转写这段用于创建日程、待办和备忘录的中英混合语音。中文使用简体，保留英文原词、课程代码和专有名词，例如 weekly assignment、review、ACE 445。参考词：${keywords.join("、")}`.slice(0, 1200));
+  form.append("temperature", "0");
   form.append("response_format", "json");
   const response = await fetch("https://api.openai.com/v1/audio/transcriptions", {
     method: "POST",
@@ -322,6 +351,7 @@ Deno.serve(async (request) => {
   if (userError || !user) return json(request, { code: "unauthorized", message: "请先登录 MemoryEveryDay 账号。" }, 401);
 
   const admin = createClient(supabaseUrl, serviceRoleKey, { auth: { persistSession: false, autoRefreshToken: false } });
+  const unlimited = isUnlimitedUser(user.id);
   const url = new URL(request.url);
   const timezone = safeTimezone(request.method === "GET" ? url.searchParams.get("timezone") : undefined);
 
@@ -336,9 +366,14 @@ Deno.serve(async (request) => {
     if (audio.size > MAX_AUDIO_BYTES) return json(request, { code: "audio_too_large", message: "这段语音太长了，请控制在 90 秒内重新说一次。" }, 413);
     const usageDate = localDate(requestTimezone);
     const { data: usage } = await admin.from("voice_assistant_daily_usage").select("request_count").eq("user_id", user.id).eq("usage_date", usageDate).maybeSingle();
-    if (Number(usage?.request_count || 0) >= DAILY_LIMIT) return json(request, { code: "daily_limit", message: "今天的 10 次语音助手额度已经用完，明天会自动恢复。" }, 429);
+    if (!unlimited && Number(usage?.request_count || 0) >= DAILY_LIMIT) return json(request, { code: "daily_limit", message: "今天的 10 次语音助手额度已经用完，明天会自动恢复。" }, 429);
     try {
-      const text = await requestTranscription(audio, locale);
+      const [{ data: titleRows }, { data: groupRows }] = await Promise.all([
+        admin.from("schedule_events").select("title").eq("user_id", user.id).order("event_date", { ascending: false }).limit(50),
+        admin.from("schedule_groups").select("name").eq("user_id", user.id).limit(30),
+      ]);
+      const contextKeywords = [...(titleRows || []).map((row) => String(row.title || "")), ...(groupRows || []).map((row) => String(row.name || ""))];
+      const text = await requestTranscription(audio, locale, contextKeywords);
       if (!text) return json(request, { code: "empty_transcription", message: "没有识别出清晰内容，请重新说一次。" }, 422);
       return json(request, { text });
     } catch (error) {
@@ -362,9 +397,10 @@ Deno.serve(async (request) => {
     const used = Number(data?.request_count || 0);
     return json(request, {
       configured: { deepseek: Boolean(Deno.env.get("DEEPSEEK_API_KEY")), openai: Boolean(Deno.env.get("OPENAI_API_KEY")), transcription: Boolean(Deno.env.get("OPENAI_API_KEY")) },
-      limit: DAILY_LIMIT,
+      limit: unlimited ? null : DAILY_LIMIT,
       used,
-      remaining: Math.max(0, DAILY_LIMIT - used),
+      remaining: unlimited ? null : Math.max(0, DAILY_LIMIT - used),
+      unlimited,
       usageDate,
     });
   }
@@ -402,25 +438,50 @@ Deno.serve(async (request) => {
   });
   if (requestError) return json(request, { code: "request_conflict", message: "这次安排已经提交，请稍后查看日程。" }, 409);
 
-  const { data: quotaRows, error: quotaError } = await admin.rpc("claim_voice_assistant_usage", {
-    p_user_id: user.id,
-    p_usage_date: usageDate,
-    p_timezone: requestTimezone,
-    p_limit: DAILY_LIMIT,
-  });
-  const quota = Array.isArray(quotaRows) ? quotaRows[0] : quotaRows;
-  if (quotaError || !quota?.allowed) {
-    await admin.from("voice_assistant_requests").update({ status: "rejected", error_code: "daily_limit", completed_at: new Date().toISOString() }).eq("user_id", user.id).eq("request_id", requestId);
-    return json(request, { code: "daily_limit", message: "今天的 10 次语音助手额度已经用完，明天会自动恢复。", remaining: 0 }, 429);
+  let quota: { allowed: boolean; used: number; remaining: number | null } = { allowed: true, used: 0, remaining: null };
+  if (!unlimited) {
+    const { data: quotaRows, error: quotaError } = await admin.rpc("claim_voice_assistant_usage", {
+      p_user_id: user.id,
+      p_usage_date: usageDate,
+      p_timezone: requestTimezone,
+      p_limit: DAILY_LIMIT,
+    });
+    const claimed = Array.isArray(quotaRows) ? quotaRows[0] : quotaRows;
+    if (quotaError || !claimed?.allowed) {
+      await admin.from("voice_assistant_requests").update({ status: "rejected", error_code: "daily_limit", completed_at: new Date().toISOString() }).eq("user_id", user.id).eq("request_id", requestId);
+      return json(request, { code: "daily_limit", message: "今天的 10 次语音助手额度已经用完，明天会自动恢复。", remaining: 0, unlimited: false }, 429);
+    }
+    quota = { allowed: true, used: Number(claimed.used), remaining: Number(claimed.remaining) };
   }
 
   try {
     const { data: groupRows, error: groupError } = await admin.from("schedule_groups").select("id, name, color").eq("user_id", user.id).order("created_at");
     if (groupError) throw new Error("group_load_failed");
     const groups = (groupRows || []).map((group) => ({ id: String(group.id), name: String(group.name), color: String(group.color || "blue") }));
-    const plan = await requestPlan(provider, text, requestTimezone, locale, groups);
+    const contextStart = localDate(requestTimezone);
+    const contextEndDate = new Date(`${contextStart}T12:00:00Z`);
+    contextEndDate.setUTCDate(contextEndDate.getUTCDate() + 30);
+    const contextEnd = contextEndDate.toISOString().slice(0, 10);
+    const { data: contextRows, error: contextError } = await admin.from("schedule_events")
+      .select("title, item_type, event_date, start_time, end_time, completed_at")
+      .eq("user_id", user.id)
+      .gte("event_date", contextStart)
+      .lte("event_date", contextEnd)
+      .order("event_date")
+      .order("start_time")
+      .limit(80);
+    if (contextError) throw new Error("schedule_context_load_failed");
+    const scheduleContext: ScheduleContextItem[] = (contextRows || []).map((row) => ({
+      title: String(row.title || "").slice(0, 60),
+      kind: row.item_type === "todo" ? "todo" : "event",
+      date: String(row.event_date || ""),
+      start: String(row.start_time || "").slice(0, 5),
+      end: row.end_time ? String(row.end_time).slice(0, 5) : null,
+      completed: Boolean(row.completed_at),
+    }));
+    const plan = await requestPlan(provider, text, requestTimezone, locale, groups, scheduleContext);
     if (!plan.items.length) {
-      const result = { created: 0, events: [], memos: [], message: plan.message || "我听到了安排，但缺少明确的日期或开始时间，请补充后再试。", remaining: Number(quota.remaining), used: Number(quota.used), limit: DAILY_LIMIT };
+      const result = { created: 0, events: [], memos: [], message: plan.message || "我听到了安排，但缺少明确的日期、时间或可定位的已有任务，请修改后再确认。", remaining: quota.remaining, used: quota.used, limit: unlimited ? null : DAILY_LIMIT, unlimited };
       await admin.from("voice_assistant_requests").update({ status: "completed", item_count: 0, result, completed_at: new Date().toISOString() }).eq("user_id", user.id).eq("request_id", requestId);
       return json(request, result);
     }
@@ -487,9 +548,10 @@ Deno.serve(async (request) => {
       events,
       memos,
       message: `已创建 ${events.length} 项安排${memos.length ? `和 ${memos.length} 份关联备忘录` : ""}。`,
-      remaining: Number(quota.remaining),
-      used: Number(quota.used),
-      limit: DAILY_LIMIT,
+      remaining: quota.remaining,
+      used: quota.used,
+      limit: unlimited ? null : DAILY_LIMIT,
+      unlimited,
     };
     await admin.from("voice_assistant_requests").update({
       status: "completed",
@@ -504,6 +566,6 @@ Deno.serve(async (request) => {
     console.error("Voice assistant request failed", { userId: user.id, provider, code });
     await admin.from("voice_assistant_requests").update({ status: "failed", error_code: code, completed_at: new Date().toISOString() }).eq("user_id", user.id).eq("request_id", requestId);
     const message = code === "provider_auth_failed" ? "AI 服务配置失效，请稍后再试。" : code === "memo_insert_failed" ? "关联备忘录没有保存成功，本次安排已自动取消，请重新说一次。" : code === "event_insert_failed" ? "安排没有保存成功，请重新说一次。" : "这次安排没有创建成功，请稍后再试。";
-    return json(request, { code, message, remaining: Number(quota.remaining), used: Number(quota.used), limit: DAILY_LIMIT }, 502);
+    return json(request, { code, message, remaining: quota.remaining, used: quota.used, limit: unlimited ? null : DAILY_LIMIT, unlimited }, 502);
   }
 });
