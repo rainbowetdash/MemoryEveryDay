@@ -221,7 +221,7 @@ public class MainActivity extends Activity {
 
     private void beginVoiceRecognition(String requestId, String locale) {
         if (!SpeechRecognizer.isRecognitionAvailable(this)) {
-            sendVoiceResult(requestId, "failed", "", "当前手机的语音识别暂不可用，请稍后再试。");
+            sendVoiceResult(requestId, "failed", "", "当前手机没有启用可用的语音识别服务，请在系统设置中开启语音输入后重试。");
             return;
         }
         voiceRequestId = requestId;
