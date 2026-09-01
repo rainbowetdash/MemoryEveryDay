@@ -71,18 +71,13 @@ body[data-app-theme="night"] .calendar-focus-event time {
   color: #ffffff !important;
 }
 
-/* 长标题日程保持时间完整、标题最多两行，避免时间和文字互相挤压。 */
+/* 日程和待办共用同一套三列布局，让单时间与时间段严格对齐。 */
 .calendar-agenda-section .agenda-item[data-event-id] {
   display: grid;
-  grid-template-columns: 100px minmax(0, 1fr);
-  align-items: start;
-  gap: 11px;
-  min-height: 62px;
-}
-
-.calendar-agenda-section .agenda-item[data-event-id].is-todo {
   grid-template-columns: 24px 100px minmax(0, 1fr);
-  gap: 9px;
+  align-items: start;
+  column-gap: 9px;
+  min-height: 62px;
 }
 
 .calendar-agenda-section .agenda-item[data-event-id] > .todo-check {
@@ -92,7 +87,7 @@ body[data-app-theme="night"] .calendar-focus-event time {
 }
 
 .calendar-agenda-section .agenda-item[data-event-id] > .agenda-time {
-  grid-column: 1;
+  grid-column: 2;
   align-self: start;
   width: 100%;
   min-width: 0;
@@ -103,17 +98,9 @@ body[data-app-theme="night"] .calendar-focus-event time {
   white-space: nowrap;
 }
 
-.calendar-agenda-section .agenda-item[data-event-id].is-todo > .agenda-time {
-  grid-column: 2;
-}
-
 .calendar-agenda-section .agenda-item[data-event-id] > div {
-  grid-column: 2;
-  min-width: 0;
-}
-
-.calendar-agenda-section .agenda-item[data-event-id].is-todo > div {
   grid-column: 3;
+  min-width: 0;
 }
 
 .calendar-agenda-section .agenda-item[data-event-id] .agenda-title {
@@ -132,13 +119,8 @@ body[data-app-theme="night"] .calendar-focus-event time {
 
 @media (max-width: 380px) {
   .calendar-agenda-section .agenda-item[data-event-id] {
-    grid-template-columns: 91px minmax(0, 1fr);
-    gap: 9px;
-  }
-
-  .calendar-agenda-section .agenda-item[data-event-id].is-todo {
     grid-template-columns: 22px 86px minmax(0, 1fr);
-    gap: 7px;
+    column-gap: 7px;
   }
 
   .calendar-agenda-section .agenda-item[data-event-id] > .agenda-time {
