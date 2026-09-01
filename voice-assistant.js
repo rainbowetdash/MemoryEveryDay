@@ -2,7 +2,7 @@ const voiceAssistantStorageKey = 'memory-everyday-voice-provider-v1';
 const voiceAssistant = {
   provider: localStorage.getItem(voiceAssistantStorageKey) || (/^zh\b/i.test(navigator.language || '') ? 'deepseek' : 'openai'),
   quota: { limit: 10, used: 0, remaining: 10 },
-  configured: { deepseek: false, openai: false },
+  configured: { deepseek: false, openai: false, transcription: false },
   listening: false,
   recognitionEnded: false,
   stopRequested: false,
@@ -14,6 +14,11 @@ const voiceAssistant = {
   startedAt: 0,
   timer: null,
   recognition: null,
+  captureMode: '',
+  audioRecorder: null,
+  audioStream: null,
+  audioChunks: [],
+  audioStopTimer: null,
   lastEvents: [],
   lastMemos: [],
 };
@@ -25,7 +30,9 @@ function voiceNativeBridge() {
   return null;
 }
 function voiceWebRecognitionClass() { return window.SpeechRecognition || window.webkitSpeechRecognition || null; }
-function voiceHasRecognition() { return Boolean(voiceNativeBridge() || voiceWebRecognitionClass()); }
+function voiceCanRecordAudio() { return Boolean(navigator.mediaDevices?.getUserMedia && window.MediaRecorder); }
+function voiceHasRecognition() { return Boolean(voiceNativeBridge() || voiceWebRecognitionClass() || voiceCanRecordAudio()); }
+function voiceNeedsAudioFallback(detail = {}) { return detail.status === 'fallback' || (detail.status === 'failed' && /语音识别暂不可用|没有启用可用的语音识别服务/.test(String(detail.message || ''))); }
 function voiceIsScheduleText(text) {
   const date = /(今天|明天|后天|大后天|周[一二三四五六日天]|星期[一二三四五六日天]|\d{1,2}[月/]\d{1,2}([日号])?|\d{4}-\d{1,2}-\d{1,2}|\d{1,2}[:：点时]\d{0,2}|上午|中午|下午|傍晚|晚上|凌晨|today|tomorrow|tonight|monday|tuesday|wednesday|thursday|friday|saturday|sunday|\d{1,2}(:\d{2})?\s?(am|pm))/i;
   const action = /(待办|日程|安排|提醒|备忘录|课程|上课|会议|作业|任务|复习|整理|完成|提交|截止|预约|考试|学习|写|做|去|买|读|看|交|打电话|schedule|todo|task|memo|note|remind|class|meeting|homework|review|study|finish|submit|appointment|exam|go|buy|read|write|call)/i;
@@ -59,8 +66,9 @@ function renderVoiceAssistant() {
   if (!state.user) { status = '点麦克风登录后使用'; hint = '登录窗口会直接打开，不需要重复登录'; }
   else if (voiceAssistant.quota.remaining <= 0) { status = '今天的 10 次已经用完'; hint = '明天会自动恢复额度'; }
   else if (!configured) { status = `${selectedVoiceProviderName()} 等待启用`; hint = '服务密钥配置后无需更新 App 即可使用'; }
+  else if (voiceAssistant.processing && voiceAssistant.captureMode === 'audio-transcribing') { status = '正在把语音转成文字…'; hint = '识别完成后会继续创建，不需要停留在这里'; }
   else if (voiceAssistant.processing) { status = '正在整理你的安排…'; hint = '可以先去其他页面，创建完成后会同步显示'; }
-  else if (voiceAssistant.listening) { status = '正在听…'; hint = '可以连续说多句话，说完后再点一下'; }
+  else if (voiceAssistant.listening) { status = '正在听…'; hint = voiceAssistant.captureMode === 'audio' ? '兼容录音模式，说完后再点一下' : '可以连续说多句话，说完后再点一下'; }
   else if (!voiceHasRecognition()) { status = '当前设备不能直接听写'; hint = '请使用 iPhone 或 Android App'; }
   $('voice-assistant-status').textContent = status;
   $('voice-assistant-hint').textContent = hint;
@@ -80,15 +88,36 @@ async function voiceApi(path = '', options = {}) {
   return payload;
 }
 
+async function voiceAudioApi(audio, requestId) {
+  if (!supabaseClient || !state.user) throw new Error('unauthorized');
+  const { data } = await supabaseClient.auth.getSession();
+  const token = data.session?.access_token;
+  if (!token) throw new Error('unauthorized');
+  const type = audio.type || 'audio/webm';
+  const extension = /mp4|aac|m4a/i.test(type) ? 'm4a' : /ogg/i.test(type) ? 'ogg' : 'webm';
+  const body = new FormData();
+  body.append('audio', audio, `voice-${requestId}.${extension}`);
+  body.append('locale', navigator.language || 'zh-CN');
+  body.append('timezone', voiceTimezone());
+  const response = await fetch(`${supabaseUrl}/functions/v1/voice-assistant/transcribe`, {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${token}`, 'apikey': supabasePublishableKey },
+    body,
+  });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) { const error = new Error(payload.message || '暂时无法把语音转成文字'); error.code = payload.code || 'transcription_failed'; throw error; }
+  return String(payload.text || '').trim();
+}
+
 async function refreshVoiceQuota() {
-  if (!state.user) { voiceAssistant.quota = { limit: 10, used: 0, remaining: 10 }; voiceAssistant.configured = { deepseek: false, openai: false }; renderVoiceAssistant(); return; }
+  if (!state.user) { voiceAssistant.quota = { limit: 10, used: 0, remaining: 10 }; voiceAssistant.configured = { deepseek: false, openai: false, transcription: false }; renderVoiceAssistant(); return; }
   try {
     const result = await voiceApi(`?timezone=${encodeURIComponent(voiceTimezone())}`, { method: 'GET' });
     voiceAssistant.quota = { limit: Number(result.limit || 10), used: Number(result.used || 0), remaining: Number(result.remaining ?? 10) };
-    voiceAssistant.configured = { deepseek: Boolean(result.configured?.deepseek), openai: Boolean(result.configured?.openai) };
+    voiceAssistant.configured = { deepseek: Boolean(result.configured?.deepseek), openai: Boolean(result.configured?.openai), transcription: Boolean(result.configured?.transcription) };
     setVoiceMessage('');
   } catch (error) {
-    voiceAssistant.configured = { deepseek: false, openai: false };
+    voiceAssistant.configured = { deepseek: false, openai: false, transcription: false };
     setVoiceMessage(error.message || '暂时无法读取语音助手状态');
   }
   renderVoiceAssistant();
@@ -104,9 +133,95 @@ function setVoiceTranscript(text) { if (String(text || '').trim()) voiceAssistan
 function finishWebVoiceListening() {
   voiceAssistant.listening = false;
   voiceAssistant.stopRequested = false;
+  voiceAssistant.captureMode = '';
   stopVoiceTimer();
   if (voiceAssistant.transcript.trim()) void submitVoiceTranscript(voiceAssistant.transcript, voiceAssistant.requestId);
   else finishVoiceListeningError('没有听到清晰的安排，请重新说一次。');
+}
+
+function voiceRecordingMimeType() {
+  return ['audio/mp4', 'audio/webm;codecs=opus', 'audio/webm', 'audio/ogg;codecs=opus'].find((type) => window.MediaRecorder?.isTypeSupported?.(type)) || '';
+}
+
+function releaseVoiceAudioResources() {
+  clearTimeout(voiceAssistant.audioStopTimer);
+  voiceAssistant.audioStopTimer = null;
+  if (voiceAssistant.audioStream) voiceAssistant.audioStream.getTracks().forEach((track) => track.stop());
+  voiceAssistant.audioStream = null;
+  voiceAssistant.audioRecorder = null;
+  voiceAssistant.audioChunks = [];
+}
+
+function cancelVoiceAudioCapture() {
+  const recorder = voiceAssistant.audioRecorder;
+  if (recorder) {
+    recorder.ondataavailable = null;
+    recorder.onstop = null;
+    recorder.onerror = null;
+    if (recorder.state === 'recording') try { recorder.stop(); } catch {}
+  }
+  releaseVoiceAudioResources();
+}
+
+async function submitVoiceRecording(audio, requestId) {
+  voiceAssistant.listening = false;
+  voiceAssistant.stopRequested = false;
+  stopVoiceTimer();
+  if (!audio?.size) { finishVoiceListeningError('没有录到清晰的声音，请重新说一次。'); return; }
+  if (audio.size > 8 * 1024 * 1024) { finishVoiceListeningError('这段语音太长了，请控制在 90 秒内重新说一次。'); return; }
+  voiceAssistant.processing = true;
+  voiceAssistant.captureMode = 'audio-transcribing';
+  setVoiceMessage('');
+  renderVoiceAssistant();
+  try {
+    const transcript = await voiceAudioApi(audio, requestId);
+    if (!transcript) throw new Error('没有识别出清晰内容，请重新说一次。');
+    voiceAssistant.transcript = transcript;
+    voiceAssistant.processing = false;
+    voiceAssistant.captureMode = '';
+    await submitVoiceTranscript(transcript, requestId);
+  } catch (error) {
+    voiceAssistant.processing = false;
+    voiceAssistant.captureMode = '';
+    finishVoiceListeningError(error.message || '暂时无法把语音转成文字，请稍后再试。');
+  }
+}
+
+async function startVoiceAudioFallback() {
+  if (!voiceAssistant.listening || voiceAssistant.stopRequested) return;
+  if (!voiceAssistant.configured.transcription) { finishVoiceListeningError('当前手机需要兼容录音模式，但语音转文字服务尚未启用。'); return; }
+  if (!voiceCanRecordAudio()) { finishVoiceListeningError('当前手机无法启动兼容录音，请更新 Android System WebView 后重试。'); return; }
+  voiceAssistant.captureMode = 'audio';
+  setVoiceMessage('');
+  renderVoiceAssistant();
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, channelCount: 1 } });
+    if (!voiceAssistant.listening || voiceAssistant.stopRequested) {
+      stream.getTracks().forEach((track) => track.stop());
+      finishVoiceListeningError('录音尚未开始，请重新点一下麦克风。');
+      return;
+    }
+    const type = voiceRecordingMimeType();
+    const recorder = new MediaRecorder(stream, type ? { mimeType: type } : undefined);
+    voiceAssistant.audioStream = stream;
+    voiceAssistant.audioRecorder = recorder;
+    voiceAssistant.audioChunks = [];
+    recorder.ondataavailable = (event) => { if (event.data?.size) voiceAssistant.audioChunks.push(event.data); };
+    recorder.onerror = () => finishVoiceListeningError('兼容录音没有成功，请重新说一次。');
+    recorder.onstop = () => {
+      const chunks = [...voiceAssistant.audioChunks], recordedType = recorder.mimeType || type || 'audio/webm';
+      releaseVoiceAudioResources();
+      void submitVoiceRecording(new Blob(chunks, { type: recordedType }), voiceAssistant.requestId);
+    };
+    recorder.start();
+    voiceAssistant.startedAt = Date.now();
+    voiceAssistant.audioStopTimer = setTimeout(() => {
+      if (voiceAssistant.listening && voiceAssistant.captureMode === 'audio') stopVoiceListening();
+    }, 90_000);
+    renderVoiceAssistant();
+  } catch (error) {
+    finishVoiceListeningError(error?.name === 'NotAllowedError' ? '没有获得麦克风权限，请在手机设置中允许“每日备忘”使用麦克风。' : '无法启动兼容录音，请稍后再试。');
+  }
 }
 
 function startWebVoiceRecognition() {
@@ -153,6 +268,7 @@ function startVoiceListening() {
   voiceAssistant.stopRequested = false;
   voiceAssistant.transcript = '';
   voiceAssistant.committedTranscript = '';
+  voiceAssistant.captureMode = '';
   voiceAssistant.requestId = crypto.randomUUID();
   voiceAssistant.startedAt = Date.now();
   setVoiceMessage('');
@@ -160,11 +276,14 @@ function startVoiceListening() {
   renderVoiceAssistant();
   const bridge = voiceNativeBridge();
   if (bridge) {
+    voiceAssistant.captureMode = 'native';
     bridge.post({ action: 'start-live', requestId: voiceAssistant.requestId, locale: navigator.language || 'zh-CN' });
     return;
   }
+  if (!voiceWebRecognitionClass()) { void startVoiceAudioFallback(); return; }
+  voiceAssistant.captureMode = 'web';
   try { startWebVoiceRecognition(); }
-  catch { finishVoiceListeningError('当前设备不能直接听写，请使用 iPhone 或 Android App。'); }
+  catch { void startVoiceAudioFallback(); }
 }
 
 function finishVoiceListeningError(message) {
@@ -172,6 +291,9 @@ function finishVoiceListeningError(message) {
   voiceAssistant.recognitionEnded = false;
   voiceAssistant.stopRequested = false;
   voiceAssistant.recognition = null;
+  cancelVoiceAudioCapture();
+  voiceAssistant.captureMode = '';
+  voiceAssistant.processing = false;
   clearTimeout(voiceAssistant.recognitionRestartTimer);
   voiceAssistant.recognitionRestartTimer = null;
   stopVoiceTimer();
@@ -184,6 +306,12 @@ function stopVoiceListening() {
   voiceAssistant.stopRequested = true;
   clearTimeout(voiceAssistant.recognitionRestartTimer);
   voiceAssistant.recognitionRestartTimer = null;
+  if (voiceAssistant.captureMode === 'audio') {
+    if (!voiceAssistant.audioRecorder) { finishVoiceListeningError('录音尚未开始，请重新点一下麦克风。'); return; }
+    try { voiceAssistant.audioRecorder.stop(); }
+    catch { finishVoiceListeningError('兼容录音没有成功，请重新说一次。'); }
+    return;
+  }
   const bridge = voiceNativeBridge();
   if (bridge) bridge.post({ action: 'stop-live', requestId: voiceAssistant.requestId });
   else if (voiceAssistant.recognition) {
@@ -311,6 +439,7 @@ window.addEventListener('memoryeveryday-native-voice-assistant', (event) => {
   const detail = event.detail || {};
   if (!voiceAssistant.listening || detail.requestId !== voiceAssistant.requestId) return;
   if (detail.text) setVoiceTranscript(detail.text);
+  if (voiceNeedsAudioFallback(detail)) { void startVoiceAudioFallback(); return; }
   if (detail.status === 'listening' || detail.status === 'partial') return;
   if (detail.status === 'ready') { voiceAssistant.recognitionEnded = true; renderVoiceAssistant(); return; }
   if (detail.status === 'success') {

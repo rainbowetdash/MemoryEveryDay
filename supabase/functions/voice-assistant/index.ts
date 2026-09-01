@@ -21,6 +21,7 @@ type ParsedPlan = {
 };
 
 const DAILY_LIMIT = 10;
+const MAX_AUDIO_BYTES = 8 * 1024 * 1024;
 const allowedOrigins = new Set([
   "https://memoryeveryday.pages.dev",
   "http://localhost:4173",
@@ -229,6 +230,29 @@ async function requestPlan(provider: Provider, text: string, timezone: string, l
   }
 }
 
+async function requestTranscription(audio: File, locale: string) {
+  const apiKey = Deno.env.get("OPENAI_API_KEY");
+  if (!apiKey) throw new Error("transcription_not_configured");
+  const model = Deno.env.get("OPENAI_TRANSCRIPTION_MODEL") || "gpt-4o-mini-transcribe";
+  const language = String(locale || "zh").split(/[-_]/)[0].toLowerCase().replace(/[^a-z]/g, "").slice(0, 2) || "zh";
+  const form = new FormData();
+  form.append("file", audio, String(audio.name || "voice.webm").replace(/[^a-zA-Z0-9._-]/g, "-").slice(-100));
+  form.append("model", model);
+  form.append("language", language);
+  form.append("response_format", "json");
+  const response = await fetch("https://api.openai.com/v1/audio/transcriptions", {
+    method: "POST",
+    headers: { "Authorization": `Bearer ${apiKey}` },
+    body: form,
+  });
+  const payload = await response.json().catch(() => ({})) as Record<string, unknown>;
+  if (!response.ok) {
+    console.error("Voice transcription provider error", { status: response.status, code: payload.error && typeof payload.error === "object" ? (payload.error as Record<string, unknown>).code : "unknown" });
+    throw new Error(response.status === 401 ? "transcription_auth_failed" : "transcription_failed");
+  }
+  return String(payload.text || "").trim().slice(0, 600);
+}
+
 function eventResult(row: Record<string, unknown>) {
   const kind = row.item_type === "todo" ? "todo" : "event";
   return {
@@ -298,6 +322,29 @@ Deno.serve(async (request) => {
   const url = new URL(request.url);
   const timezone = safeTimezone(request.method === "GET" ? url.searchParams.get("timezone") : undefined);
 
+  if (request.method === "POST" && /\/transcribe\/?$/.test(url.pathname)) {
+    let form: FormData;
+    try { form = await request.formData(); }
+    catch { return json(request, { code: "invalid_audio", message: "没有收到可识别的语音，请重新说一次。" }, 400); }
+    const audio = form.get("audio");
+    const locale = String(form.get("locale") || "zh-CN").slice(0, 30);
+    const requestTimezone = safeTimezone(form.get("timezone"));
+    if (!(audio instanceof File) || !audio.size) return json(request, { code: "invalid_audio", message: "没有录到清晰的声音，请重新说一次。" }, 400);
+    if (audio.size > MAX_AUDIO_BYTES) return json(request, { code: "audio_too_large", message: "这段语音太长了，请控制在 90 秒内重新说一次。" }, 413);
+    const usageDate = localDate(requestTimezone);
+    const { data: usage } = await admin.from("voice_assistant_daily_usage").select("request_count").eq("user_id", user.id).eq("usage_date", usageDate).maybeSingle();
+    if (Number(usage?.request_count || 0) >= DAILY_LIMIT) return json(request, { code: "daily_limit", message: "今天的 10 次语音助手额度已经用完，明天会自动恢复。" }, 429);
+    try {
+      const text = await requestTranscription(audio, locale);
+      if (!text) return json(request, { code: "empty_transcription", message: "没有识别出清晰内容，请重新说一次。" }, 422);
+      return json(request, { text });
+    } catch (error) {
+      const code = error instanceof Error ? error.message : "transcription_failed";
+      const message = code === "transcription_not_configured" ? "兼容语音服务尚未启用，请稍后再试。" : code === "transcription_auth_failed" ? "兼容语音服务配置失效，请稍后再试。" : "暂时无法把语音转成文字，请稍后再试。";
+      return json(request, { code, message }, 502);
+    }
+  }
+
   if (request.method === "GET") {
     const statusRequestId = String(url.searchParams.get("requestId") || "");
     if (/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(statusRequestId)) {
@@ -311,7 +358,7 @@ Deno.serve(async (request) => {
     const { data } = await admin.from("voice_assistant_daily_usage").select("request_count").eq("user_id", user.id).eq("usage_date", usageDate).maybeSingle();
     const used = Number(data?.request_count || 0);
     return json(request, {
-      configured: { deepseek: Boolean(Deno.env.get("DEEPSEEK_API_KEY")), openai: Boolean(Deno.env.get("OPENAI_API_KEY")) },
+      configured: { deepseek: Boolean(Deno.env.get("DEEPSEEK_API_KEY")), openai: Boolean(Deno.env.get("OPENAI_API_KEY")), transcription: Boolean(Deno.env.get("OPENAI_API_KEY")) },
       limit: DAILY_LIMIT,
       used,
       remaining: Math.max(0, DAILY_LIMIT - used),
