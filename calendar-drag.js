@@ -1,5 +1,5 @@
 (() => {
-  const HOLD_DELAY = 650;
+  const HOLD_DELAY = 500;
   const MOVE_CANCEL_DISTANCE = 10;
   const NAVIGATION_DELAY = 720;
   const EVENT_SELECTOR = '.calendar-event[data-event-id], .calendar-focus-event[data-event-id], .agenda-item[data-event-id], .event-card[data-event-id]';
@@ -63,8 +63,9 @@
   function placeGhost(point) {
     if (!drag?.ghost) return;
     const width = drag.ghost.offsetWidth || 210, height = drag.ghost.offsetHeight || 58;
-    const x = Math.min(window.innerWidth - width - 10, Math.max(10, point.x + 16));
-    const y = Math.min(window.innerHeight - height - 10, Math.max(10, point.y + 16));
+    const x = Math.min(window.innerWidth - width - 10, Math.max(10, point.x - width / 2));
+    const preferredY = point.y - height - 18;
+    const y = Math.min(window.innerHeight - height - 10, Math.max(10, preferredY >= 10 ? preferredY : point.y + 18));
     drag.ghost.style.transform = `translate3d(${x}px,${y}px,0)`;
   }
 
