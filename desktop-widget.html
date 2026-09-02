@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    <meta name="theme-color" content="#0f1927" />
+    <title>每日备忘 · 桌面小组件</title>
+    <link rel="icon" href="./icon.svg" />
+    <link rel="stylesheet" href="./desktop-widget.css?v=1" />
+  </head>
+  <body>
+    <main class="desktop-widget" id="desktop-widget">
+      <header class="widget-titlebar" data-tauri-drag-region>
+        <div class="widget-brand" data-tauri-drag-region>
+          <span class="widget-brand-mark" aria-hidden="true">日</span>
+          <span data-tauri-drag-region><strong>每日备忘</strong><small id="sync-status">正在准备同步…</small></span>
+        </div>
+        <nav class="widget-window-actions" aria-label="小组件窗口控制">
+          <button type="button" id="refresh-widget" title="刷新同步" aria-label="刷新同步">↻</button>
+          <button type="button" id="pin-widget" class="native-window-action" title="保持置顶" aria-label="保持置顶" aria-pressed="false">◇</button>
+          <button type="button" id="minimize-widget" class="native-window-action" title="最小化" aria-label="最小化">−</button>
+          <button type="button" id="close-widget" class="native-window-action" title="关闭" aria-label="关闭">×</button>
+        </nav>
+      </header>
+
+      <section class="widget-workspace" aria-label="桌面日历与每日安排">
+        <section class="month-panel" aria-labelledby="month-label">
+          <header class="panel-header month-panel-header">
+            <div>
+              <small id="selected-date-label">今天</small>
+              <h1 id="month-label">2026年9月</h1>
+            </div>
+            <div class="month-actions">
+              <button type="button" id="previous-widget-month" aria-label="上个月">‹</button>
+              <button type="button" id="widget-today">今天</button>
+              <button type="button" id="next-widget-month" aria-label="下个月">›</button>
+              <button type="button" id="toggle-widget-zoom" aria-label="放大月历" aria-pressed="false">＋</button>
+            </div>
+          </header>
+          <div class="widget-weekdays" aria-hidden="true"><span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span></div>
+          <div class="widget-calendar" id="widget-calendar" role="grid" aria-label="月历"></div>
+          <footer class="month-panel-footer"><span><i class="legend-dot event"></i>日程</span><span><i class="legend-dot todo"></i>待办</span><small>拖到日期即可改期</small></footer>
+        </section>
+
+        <section class="day-panel" aria-labelledby="day-label">
+          <header class="panel-header day-panel-header">
+            <div>
+              <small id="day-year-label">2026年</small>
+              <h2 id="day-label">9月1日 星期二</h2>
+            </div>
+            <span class="day-count" id="day-count">暂无安排</span>
+          </header>
+          <div class="day-timeline" id="day-timeline" aria-label="所选日期的时间安排"></div>
+          <div class="day-empty is-hidden" id="day-empty"><span>☁</span><strong>这一天还没有安排</strong><small>在每日备忘 App 中添加后会自动出现在这里</small></div>
+        </section>
+      </section>
+
+      <footer class="widget-footer">
+        <span id="account-summary">尚未登录</span>
+        <span>拖动安排可改变日期和时间，放手后可以撤销</span>
+        <button type="button" id="sign-out-widget" class="is-hidden">退出登录</button>
+      </footer>
+    </main>
+
+    <section class="widget-auth" id="widget-auth" aria-labelledby="widget-auth-title">
+      <div class="widget-auth-card">
+        <span class="widget-auth-mark" aria-hidden="true">日</span>
+        <p>每日备忘 · 桌面小组件</p>
+        <h1 id="widget-auth-title">登录后，把日历留在桌面</h1>
+        <small>使用你在手机或网页端注册的同一个账号，日程和待办会自动同步。</small>
+        <form id="widget-auth-form">
+          <label>邮箱<input type="email" id="widget-auth-email" autocomplete="email" placeholder="你的每日备忘账号" required /></label>
+          <label>密码<input type="password" id="widget-auth-password" autocomplete="current-password" minlength="6" placeholder="至少 6 位" required /></label>
+          <p class="widget-auth-error" id="widget-auth-error" role="alert"></p>
+          <button type="submit" id="widget-auth-submit">登录并同步</button>
+        </form>
+        <a href="https://memoryeveryday.pages.dev" target="_blank" rel="noreferrer">还没有账号？打开每日备忘注册</a>
+      </div>
+    </section>
+
+    <div class="drag-ghost" id="widget-drag-ghost" aria-hidden="true"></div>
+    <div class="widget-drag-status" id="widget-drag-status" role="status" aria-live="polite"></div>
+    <aside class="widget-toast" id="widget-toast" role="status" aria-live="polite" aria-hidden="true">
+      <span class="widget-toast-icon" aria-hidden="true">↗</span>
+      <span class="widget-toast-copy"><strong id="widget-toast-title"></strong><small id="widget-toast-detail"></small></span>
+      <button type="button" id="undo-widget-move">撤销</button>
+      <button type="button" id="close-widget-toast" aria-label="关闭提示">×</button>
+    </aside>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script src="./calendar-reschedule.js?v=1"></script>
+    <script src="./desktop-widget-model.js?v=1"></script>
+    <script src="./desktop-widget.js?v=1"></script>
+  </body>
+</html>

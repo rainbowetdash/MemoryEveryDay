@@ -1,0 +1,17 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "desktop-widget-window",
+  "description": "Only allow the hosted MemoryEveryDay widget to control its own window.",
+  "windows": ["main"],
+  "remote": {
+    "urls": ["https://memoryeveryday.pages.dev/*"]
+  },
+  "permissions": [
+    "core:default",
+    "core:window:allow-is-always-on-top",
+    "core:window:allow-set-always-on-top",
+    "core:window:allow-minimize",
+    "core:window:allow-close",
+    "core:window:allow-start-dragging"
+  ]
+}

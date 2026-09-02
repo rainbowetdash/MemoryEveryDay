@@ -1,0 +1,45 @@
+name: Build desktop widget
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "desktop-widget-v*"
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: macos-latest
+            bundles: app,dmg
+            artifact: memoryeveryday-widget-macos
+          - platform: windows-latest
+            bundles: nsis
+            artifact: memoryeveryday-widget-windows
+    runs-on: ${{ matrix.platform }}
+    defaults:
+      run:
+        working-directory: native/desktop
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: native/desktop/package-lock.json
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: swatinem/rust-cache@v2
+        with:
+          workspaces: native/desktop/src-tauri
+      - run: npm ci
+      - run: npm run build -- --bundles ${{ matrix.bundles }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: |
+            native/desktop/src-tauri/target/release/bundle/dmg/*.dmg
+            native/desktop/src-tauri/target/release/bundle/macos/*.app
+            native/desktop/src-tauri/target/release/bundle/nsis/*-setup.exe
+          if-no-files-found: error

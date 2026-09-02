@@ -1,3 +1,6 @@
 .env.push.local
 .DS_Store
 supabase/.temp/
+native/desktop/node_modules/
+native/desktop/src-tauri/target/
+native/desktop/src-tauri/gen/

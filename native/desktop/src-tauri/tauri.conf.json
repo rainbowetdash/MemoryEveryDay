@@ -1,0 +1,40 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "MemoryEveryDay Widget",
+  "version": "0.1.0",
+  "identifier": "com.memoryeveryday.desktopwidget",
+  "build": {
+    "frontendDist": "../shell"
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "windows": [
+      {
+        "label": "main",
+        "title": "每日备忘",
+        "url": "https://memoryeveryday.pages.dev/desktop-widget.html?desktop-shell=1",
+        "width": 840,
+        "height": 560,
+        "minWidth": 660,
+        "minHeight": 430,
+        "center": true,
+        "resizable": true,
+        "maximizable": false,
+        "fullscreen": false,
+        "decorations": false,
+        "transparent": true,
+        "shadow": true
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "category": "Productivity",
+    "shortDescription": "把每日备忘日历留在桌面",
+    "longDescription": "登录每日备忘账号，在桌面查看月历和每日安排，并通过拖拽调整日期和时间。"
+  }
+}
