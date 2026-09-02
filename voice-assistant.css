@@ -131,8 +131,11 @@
 .voice-review-actions { position: relative; display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: 9px; margin-top: 10px; }
 .voice-review-actions button { min-height: 42px; border: 1px solid var(--theme-border, #cfe2f0); border-radius: 10px; background: var(--theme-surface, #fafdff); color: var(--theme-muted, #6686a2); font-size: 12px; font-weight: 850; cursor: pointer; transition: transform .16s ease, filter .16s ease, opacity .16s ease; }
 .voice-review-actions button:last-child { border-color: color-mix(in srgb, var(--app-accent, #1769aa) 72%, var(--theme-border, #cfe2f0)); background: var(--app-accent, #1769aa); color: #fff; box-shadow: 0 7px 16px color-mix(in srgb, var(--app-accent, #1769aa) 24%, transparent); }
+.voice-assistant-card.is-processing .voice-review-actions button:last-child { position: relative; padding-left: 30px; opacity: .86; }
+.voice-assistant-card.is-processing .voice-review-actions button:last-child::before { position: absolute; top: 50%; left: 16px; width: 12px; height: 12px; margin-top: -6px; border: 2px solid #ffffff66; border-top-color: #fff; border-radius: 50%; content: ""; animation: voice-confirm-spin .75s linear infinite; }
 .voice-review-actions button:not(:disabled):active { transform: translateY(1px) scale(.985); }
 .voice-review-actions button:disabled { cursor: default; opacity: .55; }
+.voice-review.is-hidden, .voice-review-actions.is-hidden { display: none; }
 .voice-assistant-card.is-reviewing .voice-mic-wrap { display: none; }
 .voice-assistant-card.is-reviewing .voice-assistant-hint { margin-bottom: 8px; }
 .voice-prompt-guide { margin-top: 14px; border: 1px solid var(--theme-border, #cfe2f0); border-radius: 15px; background: color-mix(in srgb, var(--theme-card, #f4faff) 92%, transparent); padding: 13px; text-align: left; }
@@ -164,6 +167,7 @@
 .voice-result-actions button:disabled { opacity: .52; }
 .voice-inline-message { min-height: 18px; margin: 10px 2px 0; color: #a33f47; font-size: 11px; line-height: 1.45; text-align: center; }
 .voice-inline-message[data-tone="success"] { color: #277c5b; }
+.voice-inline-message[data-tone="pending"] { color: var(--app-accent, #1769aa); }
 
 body[data-app-theme="night"] .voice-assistant-card { background: linear-gradient(145deg, #1d2c41, #172130); }
 body[data-app-theme="night"] .voice-transcript,
@@ -176,6 +180,7 @@ body[data-app-theme="night"] .voice-result-check { background: #173a30; color: #
 
 @keyframes voice-listening-ring { 0% { opacity: .65; transform: scale(.75); } 100% { opacity: 0; transform: scale(1.55); } }
 @keyframes voice-processing { from { transform: scale(.96); filter: saturate(.8); } to { transform: scale(1.02); filter: saturate(1.12); } }
+@keyframes voice-confirm-spin { to { transform: rotate(360deg); } }
 @keyframes voice-result-in { from { opacity: 0; transform: translateY(8px) scale(.985); } to { opacity: 1; transform: none; } }
 
 @media (max-width: 390px) {
@@ -188,5 +193,5 @@ body[data-app-theme="night"] .voice-result-check { background: #173a30; color: #
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .voice-mic-ring, .voice-assistant-card.is-processing .voice-mic-button { animation: none !important; }
+  .voice-mic-ring, .voice-assistant-card.is-processing .voice-mic-button, .voice-assistant-card.is-processing .voice-review-actions button:last-child::before { animation: none !important; }
 }

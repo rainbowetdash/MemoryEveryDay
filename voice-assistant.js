@@ -80,6 +80,8 @@ function renderVoiceAssistant() {
   $('voice-transcript-editor').disabled = voiceAssistant.processing;
   $('retry-voice-transcript').disabled = voiceAssistant.processing;
   $('confirm-voice-transcript').disabled = voiceAssistant.processing;
+  $('confirm-voice-transcript').textContent = voiceAssistant.processing && voiceAssistant.reviewing ? '正在创建…' : '确认创建';
+  card.setAttribute('aria-busy', String(voiceAssistant.processing));
 
   let status = '点一下开始说', hint = `使用 ${selectedVoiceProviderName()} 创建待办、日程或关联备忘录`;
   if (!state.user) { status = '点麦克风登录后使用'; hint = '登录窗口会直接打开，不需要重复登录'; }
@@ -89,6 +91,7 @@ function renderVoiceAssistant() {
   else if (voiceAssistant.processing) { status = '正在理解并创建安排…'; hint = '会结合你已有的日程判断相对时间'; }
   else if (voiceAssistant.reviewing) { status = '请检查识别结果'; hint = '中英文都可以修改，确认后才会真正创建'; }
   else if (voiceAssistant.listening) { status = '正在听…'; hint = ['audio', 'native-audio'].includes(voiceAssistant.captureMode) ? '兼容录音模式，说完后再点一下' : '可以连续说多句话，说完后再点一下'; }
+  else if (voiceAssistant.lastEvents.length) { status = '创建成功'; hint = '新安排已经显示在下方，也可以直接去日历查看'; }
   else if (!voiceHasRecognition()) { status = '当前设备不能直接听写'; hint = '请使用 iPhone 或 Android App'; }
   $('voice-assistant-status').textContent = status;
   $('voice-assistant-hint').textContent = hint;
@@ -99,13 +102,26 @@ async function voiceApi(path = '', options = {}) {
   const { data } = await supabaseClient.auth.getSession();
   const token = data.session?.access_token;
   if (!token) throw new Error('unauthorized');
-  const response = await fetch(`${supabaseUrl}/functions/v1/voice-assistant${path}`, {
-    ...options,
-    headers: { 'Authorization': `Bearer ${token}`, 'apikey': supabasePublishableKey, 'Content-Type': 'application/json', ...(options.headers || {}) },
-  });
-  const payload = await response.json().catch(() => ({}));
-  if (!response.ok) { const error = new Error(payload.message || '语音助手暂时不可用'); error.code = payload.code || 'request_failed'; error.payload = payload; throw error; }
-  return payload;
+  const { timeoutMs = options.method === 'POST' ? 35_000 : 12_000, ...fetchOptions } = options;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const response = await fetch(`${supabaseUrl}/functions/v1/voice-assistant${path}`, {
+      ...fetchOptions,
+      signal: controller.signal,
+      headers: { 'Authorization': `Bearer ${token}`, 'apikey': supabasePublishableKey, 'Content-Type': 'application/json', ...(options.headers || {}) },
+    });
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok) { const error = new Error(payload.message || '语音助手暂时不可用'); error.code = payload.code || 'request_failed'; error.payload = payload; throw error; }
+    return payload;
+  } catch (error) {
+    if (error?.name !== 'AbortError') throw error;
+    const timeoutError = new Error('创建已提交，正在确认云端结果…');
+    timeoutError.code = 'request_timeout';
+    throw timeoutError;
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 async function voiceAudioApi(audio, requestId) {
@@ -333,6 +349,9 @@ function startVoiceListening() {
   voiceAssistant.committedTranscript = '';
   voiceAssistant.captureMode = '';
   voiceAssistant.requestId = crypto.randomUUID();
+  voiceAssistant.lastEvents = [];
+  voiceAssistant.lastMemos = [];
+  $('voice-result').classList.add('is-hidden');
   voiceAssistant.startedAt = Date.now();
   $('voice-transcript-editor').value = '';
   setVoiceMessage('');
@@ -409,6 +428,18 @@ function renderVoiceResult(events, memos, message) {
   }).join('');
   $('undo-voice-result').disabled = false;
   $('undo-voice-result').textContent = '撤销本次创建';
+  requestAnimationFrame(() => result.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'nearest' }));
+}
+
+function mergeVoiceCreationIntoState(events, memos) {
+  const eventMap = new Map(state.events.map((event) => [event.id, event]));
+  events.forEach((event) => { if (event?.id) eventMap.set(event.id, event); });
+  state.events = Array.from(eventMap.values());
+  const memoMap = new Map(state.memos.map((memo) => [memo.id, memo]));
+  memos.forEach((memo) => { if (memo?.id) memoMap.set(memo.id, memo); });
+  state.memos = Array.from(memoMap.values());
+  save();
+  render();
 }
 
 async function applyVoiceCreationResult(result) {
@@ -421,15 +452,17 @@ async function applyVoiceCreationResult(result) {
     setVoiceMessage(result.message || '没有找到日期和开始时间，请补充后再试。');
     return;
   }
-  await fetchCloudEvents();
-  await fetchMemos();
-  const confirmed = new Set(state.events.map((event) => event.id));
-  const confirmedMemos = new Set(state.memos.map((memo) => memo.id));
-  if (!events.every((event) => confirmed.has(event.id)) || !memos.every((memo) => confirmedMemos.has(memo.id))) throw new Error('创建已经提交，但同步确认失败，请稍后刷新查看。');
+  mergeVoiceCreationIntoState(events, memos);
   events.forEach(scheduleNativeNotification);
   voiceAssistant.reviewing = false;
   renderVoiceResult(events, memos, result.message);
   setVoiceMessage(result.message || `已创建 ${events.length} 项安排${memos.length ? `和 ${memos.length} 份关联备忘录` : ''}`, 'success');
+  renderVoiceAssistant();
+  const [eventsSynced, memosSynced] = await Promise.all([fetchCloudEvents(), fetchMemos()]);
+  const eventIds = new Set(state.events.map((event) => event.id));
+  const memoIds = new Set(state.memos.map((memo) => memo.id));
+  if (events.some((event) => !eventIds.has(event.id)) || memos.some((memo) => !memoIds.has(memo.id))) mergeVoiceCreationIntoState(events, memos);
+  if (!eventsSynced || !memosSynced) setVoiceMessage('已经创建成功；当前列表同步较慢，稍后会自动刷新。', 'success');
 }
 
 async function waitForVoiceCreation(requestId) {
@@ -456,7 +489,7 @@ async function submitVoiceTranscript(text, requestId = crypto.randomUUID()) {
     return;
   }
   voiceAssistant.processing = true;
-  setVoiceMessage('');
+  setVoiceMessage('正在确认并创建，请稍候…', 'pending');
   renderVoiceAssistant();
   try {
     const result = await voiceApi('', { method: 'POST', body: JSON.stringify({ text: transcript, provider: voiceAssistant.provider, timezone: voiceTimezone(), locale: voiceLocale(), requestId }) });
@@ -485,6 +518,8 @@ function confirmVoiceTranscript() {
     return;
   }
   voiceAssistant.transcript = transcript;
+  setVoiceMessage('正在确认并创建，请稍候…', 'pending');
+  renderVoiceAssistant();
   void submitVoiceTranscript(transcript, crypto.randomUUID());
 }
 
