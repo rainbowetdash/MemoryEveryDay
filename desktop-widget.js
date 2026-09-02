@@ -6,7 +6,10 @@
   }) || null;
   const model = window.DesktopWidgetModel;
   const $ = (id) => document.getElementById(id);
-  const demoMode = ['127.0.0.1', 'localhost'].includes(location.hostname) && new URLSearchParams(location.search).get('demo') === '1';
+  const launchParams = new URLSearchParams(location.search);
+  const demoMode = ['127.0.0.1', 'localhost'].includes(location.hostname) && launchParams.get('demo') === '1';
+  const desktopShell = launchParams.get('desktop-shell') === '1';
+  const desktopVersion = launchParams.get('desktop-version') || '0.1.1';
   const state = {
     user: null,
     events: [],
@@ -42,6 +45,21 @@
   }
 
   function sameDay(left, right) { return model.dateKey(left) === model.dateKey(right); }
+
+  function compareVersions(left, right) {
+    const a = String(left || '0').split('.').map(Number), b = String(right || '0').split('.').map(Number);
+    for (let index = 0; index < Math.max(a.length, b.length); index += 1) {
+      const difference = (a[index] || 0) - (b[index] || 0);
+      if (difference) return difference;
+    }
+    return 0;
+  }
+
+  function desktopPlatform() {
+    if (/windows/i.test(navigator.userAgent)) return 'windows';
+    if (/macintosh|mac os x/i.test(navigator.userAgent)) return 'macos';
+    return '';
+  }
 
   function cacheKey() { return state.user ? `memory-everyday-desktop-widget-events:${state.user.id}` : ''; }
 
@@ -226,6 +244,34 @@
     $('widget-toast').setAttribute('aria-hidden', 'true');
   }
 
+  async function openExternalUrl(url) {
+    const opener = window.__TAURI__?.opener;
+    if (opener?.openUrl) return opener.openUrl(url);
+    window.open(url, '_blank', 'noopener,noreferrer');
+  }
+
+  async function checkDesktopUpdate() {
+    if (!desktopShell) return;
+    const platform = desktopPlatform();
+    if (!platform) return;
+    try {
+      const response = await fetch(`./release-info.json?desktop-update=${Date.now()}`, { cache: 'no-store' });
+      if (!response.ok) return;
+      const info = await response.json(), app = info?.apps?.[platform];
+      if (!app?.latestVersion || compareVersions(desktopVersion, app.latestVersion) >= 0) return;
+      const dialog = $('widget-update-dialog');
+      $('widget-update-title').textContent = `每日备忘桌面版 ${app.latestVersion} 可以更新`;
+      $('widget-update-copy').textContent = `当前版本 ${desktopVersion}。安装更新不会影响已同步的日程、待办和登录状态。`;
+      $('download-widget-update').onclick = async () => {
+        const downloadUrl = new URL(app.downloadUrl, location.href).href;
+        try { await openExternalUrl(downloadUrl); } catch { window.open(downloadUrl, '_blank', 'noopener,noreferrer'); }
+        dialog.close();
+      };
+      $('dismiss-widget-update').onclick = () => dialog.close();
+      dialog.showModal();
+    } catch {}
+  }
+
   async function persistEvent(event) {
     if (demoMode) return;
     const { error } = await client.from('schedule_events').update(model.eventUpdateRow(event)).eq('id', event.id).eq('user_id', state.user.id);
@@ -331,6 +377,9 @@
     const schedule = eventById(eventId);
     if (!schedule || model.isRecurring(schedule)) return false;
     state.dragging = { eventId };
+    document.body.classList.remove('is-widget-drag-primed');
+    document.body.classList.add('is-widget-dragging');
+    window.getSelection?.()?.removeAllRanges?.();
     $('widget-drag-ghost').className = `drag-ghost is-visible ${schedule.color || 'blue'}`;
     $('widget-drag-ghost').innerHTML = dragGhostMarkup(schedule);
     setDragStatus('拖到左侧日期改期，拖到右侧时间改时');
@@ -340,6 +389,7 @@
 
   function endDrag() {
     state.dragging = null;
+    document.body.classList.remove('is-widget-drag-primed', 'is-widget-dragging');
     clearTimeout(monthHoverTimer);
     monthHoverTimer = null;
     clearDropTargets();
@@ -348,17 +398,40 @@
     setDragStatus('');
   }
 
+  function clearPointerTracking() {
+    if (pointerTracking?.timer) clearTimeout(pointerTracking.timer);
+    pointerTracking = null;
+    if (!state.dragging) document.body.classList.remove('is-widget-drag-primed', 'is-widget-dragging');
+  }
+
+  function showLockedDragFeedback(eventId) {
+    const schedule = eventById(eventId);
+    if (!schedule) return;
+    document.querySelectorAll(`[data-widget-event-id="${CSS.escape(eventId)}"]`).forEach((element) => {
+      element.classList.remove('is-locked-feedback');
+      requestAnimationFrame(() => element.classList.add('is-locked-feedback'));
+      setTimeout(() => element.classList.remove('is-locked-feedback'), 420);
+    });
+    setToast('这门课程不能直接拖动', '重复课程会影响整套安排，请在每日备忘 App 中修改重复规则');
+  }
+
   function bindEventDrags(container) {
     container.querySelectorAll('[data-widget-event-id]').forEach((element) => {
       const schedule = eventById(element.dataset.widgetEventId);
-      if (!schedule || model.isRecurring(schedule)) return;
+      if (!schedule) return;
       element.addEventListener('pointerdown', (event) => {
         if (event.button !== 0 || event.target.closest('[data-widget-todo-id]')) return;
-        pointerTracking = { eventId: element.dataset.widgetEventId, pointerId: event.pointerId, startX: event.clientX, startY: event.clientY, active: false, timer: null };
+        event.preventDefault();
+        window.getSelection?.()?.removeAllRanges?.();
+        document.body.classList.add('is-widget-drag-primed');
+        pointerTracking = { eventId: element.dataset.widgetEventId, pointerId: event.pointerId, startX: event.clientX, startY: event.clientY, active: false, locked: model.isRecurring(schedule), timer: null };
         element.setPointerCapture?.(event.pointerId);
         if (event.pointerType !== 'mouse') pointerTracking.timer = setTimeout(() => {
           if (!pointerTracking || pointerTracking.pointerId !== event.pointerId) return;
-          pointerTracking.active = showDrag(pointerTracking.eventId, event);
+          if (pointerTracking.locked) {
+            showLockedDragFeedback(pointerTracking.eventId);
+            clearPointerTracking();
+          } else pointerTracking.active = showDrag(pointerTracking.eventId, event);
         }, 500);
       });
     });
@@ -400,21 +473,25 @@
     if (!pointerTracking || event.pointerId !== pointerTracking.pointerId) return;
     const distance = Math.hypot(event.clientX - pointerTracking.startX, event.clientY - pointerTracking.startY);
     if (!pointerTracking.active) {
+      if (pointerTracking.locked && distance >= 5) {
+        event.preventDefault();
+        showLockedDragFeedback(pointerTracking.eventId);
+        clearPointerTracking();
+        return;
+      }
       if (event.pointerType === 'mouse' && distance >= 5) pointerTracking.active = showDrag(pointerTracking.eventId, event);
       else if (event.pointerType !== 'mouse' && distance > 11) {
-        clearTimeout(pointerTracking.timer);
-        pointerTracking = null;
+        clearPointerTracking();
         return;
       }
     }
-    if (pointerTracking?.active) { event.preventDefault(); updatePointerTarget(event); }
+    if (pointerTracking?.active) { event.preventDefault(); window.getSelection?.()?.removeAllRanges?.(); updatePointerTarget(event); }
   }
 
   function finishPointerDrag(event) {
     if (!pointerTracking || event.pointerId !== pointerTracking.pointerId) return;
-    clearTimeout(pointerTracking.timer);
     const active = pointerTracking.active, eventId = pointerTracking.eventId, target = active ? pointerDropTarget(event) : null;
-    pointerTracking = null;
+    clearPointerTracking();
     if (!active) return;
     const options = target?.dataset.widgetDate ? { date: target.dataset.widgetDate } : target?.dataset.widgetTime ? { date: model.dateKey(state.selected), time: target.dataset.widgetTime } : null;
     endDrag();
@@ -548,6 +625,8 @@
   document.addEventListener('pointermove', onPointerMove, { passive: false });
   document.addEventListener('pointerup', finishPointerDrag);
   document.addEventListener('pointercancel', finishPointerDrag);
+  document.addEventListener('selectstart', (event) => { if (pointerTracking || state.dragging) event.preventDefault(); });
+  document.addEventListener('dragstart', (event) => { if (event.target.closest?.('[data-widget-event-id]')) event.preventDefault(); });
   window.addEventListener('focus', () => void fetchEvents({ quiet: true }));
   window.addEventListener('online', () => void fetchEvents());
   bindMonthHover($('previous-widget-month'), -1);
@@ -572,6 +651,7 @@
   render();
   void setupNativeWindowActions();
   void setupAutostartControl();
+  void checkDesktopUpdate();
   if (demoMode) startDemoMode();
   else if (client) {
     client.auth.onAuthStateChange((_event, session) => void handleSession(session?.user || null));

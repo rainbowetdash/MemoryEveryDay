@@ -1,7 +1,7 @@
 [package]
 name = "memory-everyday-desktop-widget"
-version = "0.1.1"
-description = "MemoryEveryDay desktop calendar widget"
+version = "0.1.2"
+description = "每日备忘桌面版"
 authors = ["MemoryEveryDay"]
 edition = "2021"
 
@@ -11,6 +11,7 @@ tauri-build = { version = "2", features = [] }
 [dependencies]
 tauri = { version = "2", features = [] }
 tauri-plugin-autostart = "2"
+tauri-plugin-opener = "2"
 
 [features]
 custom-protocol = ["tauri/custom-protocol"]

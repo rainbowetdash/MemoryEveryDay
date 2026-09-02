@@ -4,16 +4,16 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
     <meta name="theme-color" content="#0f1927" />
-    <title>每日备忘 · 桌面小组件</title>
-    <link rel="icon" href="./icon.svg" />
-    <link rel="stylesheet" href="./desktop-widget.css?v=2" />
+    <title>每日备忘桌面版</title>
+    <link rel="icon" href="./memory-everyday-app-icon.png?v=1" />
+    <link rel="stylesheet" href="./desktop-widget.css?v=3" />
   </head>
   <body>
     <main class="desktop-widget" id="desktop-widget">
       <header class="widget-titlebar" data-tauri-drag-region>
         <div class="widget-brand" data-tauri-drag-region>
-          <span class="widget-brand-mark" aria-hidden="true">日</span>
-          <span data-tauri-drag-region><strong>每日备忘</strong><small id="sync-status">正在准备同步…</small></span>
+          <img class="widget-brand-mark" src="./memory-everyday-app-icon.png?v=1" alt="" aria-hidden="true" />
+          <span data-tauri-drag-region><strong>每日备忘桌面版</strong><small id="sync-status">正在准备同步…</small></span>
         </div>
         <nav class="widget-window-actions" aria-label="小组件窗口控制">
           <button type="button" id="refresh-widget" title="刷新同步" aria-label="刷新同步">↻</button>
@@ -65,8 +65,8 @@
 
     <section class="widget-auth" id="widget-auth" aria-labelledby="widget-auth-title">
       <div class="widget-auth-card">
-        <span class="widget-auth-mark" aria-hidden="true">日</span>
-        <p>每日备忘 · 桌面小组件</p>
+        <img class="widget-auth-mark" src="./memory-everyday-app-icon.png?v=1" alt="" aria-hidden="true" />
+        <p>每日备忘桌面版</p>
         <h1 id="widget-auth-title">登录后，把日历留在桌面</h1>
         <small>使用你在手机或网页端注册的同一个账号，日程和待办会自动同步。</small>
         <form id="widget-auth-form">
@@ -78,6 +78,19 @@
         <a href="https://memoryeveryday.pages.dev" target="_blank" rel="noreferrer">还没有账号？打开每日备忘注册</a>
       </div>
     </section>
+
+    <dialog class="widget-update-dialog" id="widget-update-dialog" aria-labelledby="widget-update-title">
+      <section class="widget-update-card">
+        <span class="widget-update-icon" aria-hidden="true">↑</span>
+        <p>发现新版本</p>
+        <h2 id="widget-update-title">每日备忘桌面版可以更新</h2>
+        <small id="widget-update-copy">新版已经准备好，安装更新不会影响已同步的数据。</small>
+        <div class="widget-update-actions">
+          <button type="button" id="dismiss-widget-update">稍后提醒我</button>
+          <button type="button" id="download-widget-update">下载更新</button>
+        </div>
+      </section>
+    </dialog>
 
     <div class="drag-ghost" id="widget-drag-ghost" aria-hidden="true"></div>
     <div class="widget-drag-status" id="widget-drag-status" role="status" aria-live="polite"></div>
@@ -91,6 +104,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     <script src="./calendar-reschedule.js?v=1"></script>
     <script src="./desktop-widget-model.js?v=1"></script>
-    <script src="./desktop-widget.js?v=2"></script>
+    <script src="./desktop-widget.js?v=3"></script>
   </body>
 </html>

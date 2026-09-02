@@ -6,6 +6,7 @@ fn main() {
             tauri_plugin_autostart::MacosLauncher::LaunchAgent,
             None,
         ))
+        .plugin(tauri_plugin_opener::init())
         .run(tauri::generate_context!())
-        .expect("failed to run MemoryEveryDay desktop widget");
+        .expect("failed to run 每日备忘桌面版");
 }

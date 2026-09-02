@@ -1,4 +1,4 @@
-name: Build desktop widget
+name: Build 每日备忘桌面版
 
 on:
   workflow_dispatch:
@@ -14,10 +14,10 @@ jobs:
         include:
           - platform: macos-latest
             bundles: app,dmg
-            artifact: memoryeveryday-widget-macos
+            artifact: memoryeveryday-desktop-macos
           - platform: windows-latest
             bundles: nsis
-            artifact: memoryeveryday-widget-windows
+            artifact: memoryeveryday-desktop-windows
     runs-on: ${{ matrix.platform }}
     defaults:
       run:
