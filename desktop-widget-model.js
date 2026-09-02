@@ -62,6 +62,10 @@
     return (Array.isArray(events) ? events : []).filter((event) => eventOccursOn(event, date)).sort((a, b) => `${a.time}${a.title}`.localeCompare(`${b.time}${b.title}`, 'zh-CN'));
   }
 
+  function calendarDotColors(events) {
+    return (Array.isArray(events) ? events : []).map((event) => String(event?.color || 'blue'));
+  }
+
   function monthDays(showing) {
     const first = new Date(showing.getFullYear(), showing.getMonth(), 1, 12);
     const start = new Date(first);
@@ -102,6 +106,7 @@
     isRecurring,
     eventOccursOn,
     eventsForDate,
+    calendarDotColors,
     monthDays,
     moveEvent,
     eventUpdateRow,

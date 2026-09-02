@@ -99,11 +99,12 @@
     $('toggle-widget-zoom').setAttribute('aria-label', state.zoomed ? '缩小月历' : '放大月历');
     $('toggle-widget-zoom').setAttribute('aria-pressed', String(state.zoomed));
     $('widget-calendar').innerHTML = model.monthDays(state.showing).map((date) => {
-      const dayEvents = eventsOn(date), key = model.dateKey(date), colors = [...new Set(dayEvents.map((event) => event.color || 'blue'))].slice(0, 5);
+      const dayEvents = eventsOn(date), key = model.dateKey(date), colors = model.calendarDotColors(dayEvents);
+      const dotSize = colors.length > 12 ? 3 : colors.length > 6 ? 4 : 5, dotGap = colors.length > 6 ? 1 : 3;
       const dots = colors.map((color) => `<i style="--dot-color:${eventColor({ color })}"></i>`).join('');
       const previews = dayEvents.slice(0, 2).map((event) => `<span class="widget-day-event ${escapeHtml(event.color || 'blue')} ${model.isRecurring(event) ? 'is-recurring' : ''}" data-widget-event-id="${escapeHtml(event.id)}" title="${escapeHtml(`${model.timeLabel(event)} ${event.title}`)}">${escapeHtml(event.time)} ${escapeHtml(event.title)}</span>`).join('');
       const overflow = dayEvents.length > 2 ? `<span class="widget-day-event" style="--event-color:var(--muted)">另有 ${dayEvents.length - 2} 项</span>` : '';
-      return `<button type="button" class="widget-day ${date.getMonth() !== state.showing.getMonth() ? 'is-other' : ''} ${sameDay(date, state.selected) ? 'is-selected' : ''} ${sameDay(date, new Date()) ? 'is-today' : ''}" data-widget-date="${key}" role="gridcell" aria-label="${escapeHtml(`${formatSelectedDate(date)}，${dayEvents.length}项安排`)}"><span class="widget-day-number">${date.getDate()}</span><span class="widget-day-dots">${dots}</span><span class="widget-day-events">${previews}${overflow}</span></button>`;
+      return `<button type="button" class="widget-day ${date.getMonth() !== state.showing.getMonth() ? 'is-other' : ''} ${sameDay(date, state.selected) ? 'is-selected' : ''} ${sameDay(date, new Date()) ? 'is-today' : ''}" data-widget-date="${key}" role="gridcell" aria-label="${escapeHtml(`${formatSelectedDate(date)}，${dayEvents.length}项安排`)}"><span class="widget-day-number">${date.getDate()}</span><span class="widget-day-dots" style="--dot-size:${dotSize}px;--dot-gap:${dotGap}px">${dots}</span><span class="widget-day-events">${previews}${overflow}</span></button>`;
     }).join('');
     $('widget-calendar').querySelectorAll('[data-widget-date]').forEach((button) => {
       button.addEventListener('click', () => selectDate(button.dataset.widgetDate));
@@ -645,6 +646,7 @@
     state.events = [
       { id: 'demo-1', title: 'ACE 445 · Review 上课笔记', note: '整理今天的重点', kind: 'event', completedAt: '', date: key, time: '09:00', endTime: '10:20', color: 'cyan', groupId: 'course', weeklyDays: [], repeatStartDate: key, repeatEndDate: '' },
       { id: 'demo-2', title: '完成 Weekly Assignment', note: '提交前检查引用格式', kind: 'todo', completedAt: '', date: key, time: '11:00', endTime: '', color: 'navy', groupId: 'course', weeklyDays: [], repeatStartDate: key, repeatEndDate: '' },
+      { id: 'demo-5', title: '复习课程笔记', note: '整理重点与待确认问题', kind: 'todo', completedAt: '', date: key, time: '13:00', endTime: '', color: 'navy', groupId: 'course', weeklyDays: [], repeatStartDate: key, repeatEndDate: '' },
       { id: 'demo-3', title: '团队项目会议', note: '重复日程请在主应用中修改', kind: 'event', completedAt: '', date: key, time: '15:00', endTime: '15:50', color: 'purple', groupId: 'course', weeklyDays: [today.getDay()], repeatStartDate: key, repeatEndDate: '' },
       { id: 'demo-4', title: '阅读 19 页书', note: '晚饭后完成', kind: 'todo', completedAt: '', date: model.dateKey(tomorrow), time: '20:00', endTime: '', color: 'mint', groupId: 'life', weeklyDays: [], repeatStartDate: model.dateKey(tomorrow), repeatEndDate: '' },
     ];

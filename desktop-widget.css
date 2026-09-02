@@ -124,8 +124,8 @@ body:not(.is-tauri) .native-window-action { display: none; }
 .widget-day.is-today .widget-day-number { background: var(--accent); color: #fff; }
 .widget-day.is-drop-target { z-index: 4; border: 3px solid var(--accent-bright); padding: 3px; background: color-mix(in srgb, var(--accent) 18%, var(--panel)); box-shadow: 0 0 0 4px rgba(70,160,226,.18), 0 0 20px rgba(70,160,226,.42); transform: scale(1.055); }
 .widget-day-number { display: grid; place-items: center; width: 19px; height: 19px; border-radius: 50%; font-size: 10px; font-weight: 850; }
-.widget-day-dots { position: absolute; right: 5px; bottom: 5px; left: 5px; display: flex; justify-content: center; gap: 3px; }
-.widget-day-dots i { display: block; width: 5px; height: 5px; border-radius: 50%; background: var(--dot-color); box-shadow: 0 0 0 1px color-mix(in srgb, var(--dot-color) 32%, transparent); }
+.widget-day-dots { position: absolute; right: 5px; bottom: 5px; left: 5px; display: flex; flex-wrap: wrap; align-content: end; justify-content: center; gap: var(--dot-gap, 3px); max-height: 11px; }
+.widget-day-dots i { display: block; flex: 0 0 var(--dot-size, 5px); width: var(--dot-size, 5px); height: var(--dot-size, 5px); border-radius: 50%; background: var(--dot-color); box-shadow: 0 0 0 1px color-mix(in srgb, var(--dot-color) 32%, transparent); }
 .widget-day-events { display: none; margin-top: 3px; gap: 2px; }
 .widget-day-event { display: block; width: 100%; overflow: hidden; border: 0; border-left: 3px solid var(--event-color); border-radius: 4px; background: color-mix(in srgb, var(--event-color) 14%, var(--panel)); color: var(--text); padding: 2px 3px; text-overflow: ellipsis; white-space: nowrap; font-size: 8px; font-weight: 750; cursor: grab; }
 .desktop-widget.is-calendar-expanded .widget-day-dots { display: none; }

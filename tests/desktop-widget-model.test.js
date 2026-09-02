@@ -27,4 +27,10 @@ assert.equal(model.eventOccursOn(repeating, new Date(2026, 8, 4, 12)), false);
 assert.equal(model.moveEvent(repeating, { date: '2026-09-08' }).error, 'recurring_event');
 
 assert.equal(model.monthDays(new Date(2026, 8, 1, 12)).length, 42);
+assert.deepEqual(model.calendarDotColors([
+  { color: 'cyan' },
+  { color: 'blue' },
+  { color: 'blue' },
+  { color: 'mint' },
+]), ['cyan', 'blue', 'blue', 'mint']);
 console.log('desktop widget model tests passed');
