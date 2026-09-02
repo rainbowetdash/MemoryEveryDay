@@ -16,29 +16,29 @@
       "hint": "下载后可直接安装更新"
     },
     "macos": {
-      "latestVersion": "0.1.0",
-      "downloadUrl": "./downloads/MemoryEveryDay-Widget-macOS-0.1.0.dmg",
-      "downloadName": "MemoryEveryDay-Widget-macOS-0.1.0.dmg",
+      "latestVersion": "0.1.1",
+      "downloadUrl": "./downloads/MemoryEveryDay-Widget-macOS-0.1.1.dmg",
+      "downloadName": "MemoryEveryDay-Widget-macOS-0.1.1.dmg",
       "label": "macOS 桌面小组件",
       "hint": "Apple 芯片 Mac，拖入应用程序即可使用"
     },
     "windows": {
-      "latestVersion": "0.1.0",
-      "downloadUrl": "./downloads/MemoryEveryDay-Widget-Windows-0.1.0-setup.exe",
-      "downloadName": "MemoryEveryDay-Widget-Windows-0.1.0-setup.exe",
+      "latestVersion": "0.1.1",
+      "downloadUrl": "./downloads/MemoryEveryDay-Widget-Windows-0.1.1-setup.exe",
+      "downloadName": "MemoryEveryDay-Widget-Windows-0.1.1-setup.exe",
       "label": "Windows 桌面小组件",
       "hint": "64 位 Windows 安装程序"
     }
   },
   "announcement": {
-    "id": "2026-09-01-desktop-widget-preview",
-    "eyebrow": "桌面小组件上线",
-    "title": "月历和今天安排，现在可以留在电脑桌面",
-    "summary": "macOS 与 Windows 首个可用版本已经开放下载。",
+    "id": "2026-09-01-desktop-widget-011",
+    "eyebrow": "桌面小组件 0.1.1",
+    "title": "显示更利落，也可以跟随电脑自动启动",
+    "summary": "macOS 与 Windows 新版已经开放下载。",
     "items": [
-      "登录同一个账号，日程和待办会自动同步。",
-      "左侧拖动可改变日期，右侧拖动可按半小时改变时间。",
-      "移动后可以撤销，也可以直接勾选完成待办。"
+      "待办勾号重新绘制，在 Windows 上也会稳定居中。",
+      "清除了圆角外层的方形窗口阴影。",
+      "底部新增开机启动开关，可以随时开启或关闭。"
     ]
   }
 }

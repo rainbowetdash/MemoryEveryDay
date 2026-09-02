@@ -5,7 +5,7 @@ const zoomStorageKey = 'memory-everyday-calendar-scale-v2';
 const pendingSyncKey = 'memory-everyday-pending-sync';
 const authReminderKey = 'memory-everyday-auth-reminder-shown';
 const floatingActionPositionKey = 'memory-everyday-floating-action-position-v1';
-const releaseInfoUrl = './release-info.json?v=45';
+const releaseInfoUrl = './release-info.json?v=46';
 const releaseAnnouncementStorageKeyBase = 'memory-everyday-release-announcement-seen';
 const launchParams = new URLSearchParams(window.location.search);
 const isNativeShell = launchParams.get('native-shell') === '1';
@@ -14,8 +14,8 @@ const fallbackReleaseInfo = {
   apps: {
     ios: { latestVersion: '1.0.15', downloadUrl: './downloads/ipa-1-0-15', downloadName: 'MemoryEveryDay-1.0.15.ipa', label: 'iPhone IPA', hint: '用于 SideStore、AltStore、Sideloadly 等侧载工具' },
     android: { latestVersion: '1.0.10', downloadUrl: './downloads/apk-1-0-10', downloadName: 'MemoryEveryDay-1.0.10.apk', label: 'Android APK', hint: '下载后可直接安装更新' },
-    macos: { latestVersion: '0.1.0', downloadUrl: './downloads/MemoryEveryDay-Widget-macOS-0.1.0.dmg', downloadName: 'MemoryEveryDay-Widget-macOS-0.1.0.dmg', label: 'macOS 桌面小组件', hint: 'Apple 芯片 Mac，拖入应用程序即可使用' },
-    windows: { latestVersion: '0.1.0', downloadUrl: './downloads/MemoryEveryDay-Widget-Windows-0.1.0-setup.exe', downloadName: 'MemoryEveryDay-Widget-Windows-0.1.0-setup.exe', label: 'Windows 桌面小组件', hint: '64 位 Windows 安装程序' }
+    macos: { latestVersion: '0.1.1', downloadUrl: './downloads/MemoryEveryDay-Widget-macOS-0.1.1.dmg', downloadName: 'MemoryEveryDay-Widget-macOS-0.1.1.dmg', label: 'macOS 桌面小组件', hint: 'Apple 芯片 Mac，拖入应用程序即可使用' },
+    windows: { latestVersion: '0.1.1', downloadUrl: './downloads/MemoryEveryDay-Widget-Windows-0.1.1-setup.exe', downloadName: 'MemoryEveryDay-Widget-Windows-0.1.1-setup.exe', label: 'Windows 桌面小组件', hint: '64 位 Windows 安装程序' }
   },
   announcement: null
 };
