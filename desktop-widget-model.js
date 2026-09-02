@@ -1,8 +1,8 @@
 (function (root, factory) {
-  const api = factory(root?.CalendarReschedule);
+  const api = factory(root?.CalendarReschedule, root?.CalendarDotVisibility);
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   if (root) root.DesktopWidgetModel = api;
-})(typeof globalThis !== 'undefined' ? globalThis : this, function (rescheduleApi) {
+})(typeof globalThis !== 'undefined' ? globalThis : this, function (rescheduleApi, dotVisibilityApi) {
   function pad(value) { return String(value).padStart(2, '0'); }
 
   function dateKey(date) {
@@ -62,8 +62,9 @@
     return (Array.isArray(events) ? events : []).filter((event) => eventOccursOn(event, date)).sort((a, b) => `${a.time}${a.title}`.localeCompare(`${b.time}${b.title}`, 'zh-CN'));
   }
 
-  function calendarDotColors(events) {
-    return (Array.isArray(events) ? events : []).map((event) => String(event?.color || 'blue'));
+  function calendarDotColors(events, occurrenceDate, now = new Date()) {
+    const visible = dotVisibilityApi?.visibleEvents ? dotVisibilityApi.visibleEvents(events, occurrenceDate, now) : (Array.isArray(events) ? events : []).filter((event) => !isCompleted(event));
+    return visible.map((event) => String(event?.color || 'blue'));
   }
 
   function monthDays(showing) {

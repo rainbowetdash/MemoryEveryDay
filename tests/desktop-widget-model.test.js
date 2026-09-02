@@ -1,5 +1,6 @@
 const assert = require('node:assert/strict');
 global.CalendarReschedule = require('../calendar-reschedule.js');
+global.CalendarDotVisibility = require('../calendar-dot-visibility.js');
 delete require.cache[require.resolve('../desktop-widget-model.js')];
 const model = require('../desktop-widget-model.js');
 
@@ -32,5 +33,5 @@ assert.deepEqual(model.calendarDotColors([
   { color: 'blue' },
   { color: 'blue' },
   { color: 'mint' },
-]), ['cyan', 'blue', 'blue', 'mint']);
+], new Date(2026, 8, 2, 12), new Date(2026, 8, 2, 8)), ['cyan', 'blue', 'blue', 'mint']);
 console.log('desktop widget model tests passed');

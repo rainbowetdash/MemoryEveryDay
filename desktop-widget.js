@@ -91,6 +91,22 @@
 
   function eventsOn(date) { return model.eventsForDate(state.events, date); }
 
+  function calendarDotView(dayEvents, date, now = new Date()) {
+    const colors = model.calendarDotColors(dayEvents, date, now), dotSize = colors.length > 12 ? 3 : colors.length > 6 ? 4 : 5, dotGap = colors.length > 6 ? 1 : 3;
+    return { dotSize, dotGap, dots: colors.map((color) => `<i style="--dot-color:${eventColor({ color })}"></i>`).join('') };
+  }
+
+  function refreshCalendarDots(now = new Date()) {
+    $('widget-calendar').querySelectorAll('[data-widget-date]').forEach((cell) => {
+      const date = model.dateFromKey(cell.dataset.widgetDate), container = cell.querySelector('.widget-day-dots');
+      if (!date || !container) return;
+      const view = calendarDotView(eventsOn(date), date, now);
+      container.style.setProperty('--dot-size', `${view.dotSize}px`);
+      container.style.setProperty('--dot-gap', `${view.dotGap}px`);
+      container.innerHTML = view.dots;
+    });
+  }
+
   function renderCalendar() {
     $('month-label').textContent = formatMonth(state.showing);
     $('selected-date-label').textContent = sameDay(state.selected, new Date()) ? '今天' : formatSelectedDate(state.selected);
@@ -98,13 +114,12 @@
     $('toggle-widget-zoom').textContent = state.zoomed ? '−' : '＋';
     $('toggle-widget-zoom').setAttribute('aria-label', state.zoomed ? '缩小月历' : '放大月历');
     $('toggle-widget-zoom').setAttribute('aria-pressed', String(state.zoomed));
+    const now = new Date();
     $('widget-calendar').innerHTML = model.monthDays(state.showing).map((date) => {
-      const dayEvents = eventsOn(date), key = model.dateKey(date), colors = model.calendarDotColors(dayEvents);
-      const dotSize = colors.length > 12 ? 3 : colors.length > 6 ? 4 : 5, dotGap = colors.length > 6 ? 1 : 3;
-      const dots = colors.map((color) => `<i style="--dot-color:${eventColor({ color })}"></i>`).join('');
+      const dayEvents = eventsOn(date), key = model.dateKey(date), dotView = calendarDotView(dayEvents, date, now);
       const previews = dayEvents.slice(0, 2).map((event) => `<span class="widget-day-event ${escapeHtml(event.color || 'blue')} ${model.isRecurring(event) ? 'is-recurring' : ''}" data-widget-event-id="${escapeHtml(event.id)}" title="${escapeHtml(`${model.timeLabel(event)} ${event.title}`)}">${escapeHtml(event.time)} ${escapeHtml(event.title)}</span>`).join('');
       const overflow = dayEvents.length > 2 ? `<span class="widget-day-event" style="--event-color:var(--muted)">另有 ${dayEvents.length - 2} 项</span>` : '';
-      return `<button type="button" class="widget-day ${date.getMonth() !== state.showing.getMonth() ? 'is-other' : ''} ${sameDay(date, state.selected) ? 'is-selected' : ''} ${sameDay(date, new Date()) ? 'is-today' : ''}" data-widget-date="${key}" role="gridcell" aria-label="${escapeHtml(`${formatSelectedDate(date)}，${dayEvents.length}项安排`)}"><span class="widget-day-number">${date.getDate()}</span><span class="widget-day-dots" style="--dot-size:${dotSize}px;--dot-gap:${dotGap}px">${dots}</span><span class="widget-day-events">${previews}${overflow}</span></button>`;
+      return `<button type="button" class="widget-day ${date.getMonth() !== state.showing.getMonth() ? 'is-other' : ''} ${sameDay(date, state.selected) ? 'is-selected' : ''} ${sameDay(date, new Date()) ? 'is-today' : ''}" data-widget-date="${key}" role="gridcell" aria-label="${escapeHtml(`${formatSelectedDate(date)}，${dayEvents.length}项安排`)}"><span class="widget-day-number">${date.getDate()}</span><span class="widget-day-dots" style="--dot-size:${dotView.dotSize}px;--dot-gap:${dotView.dotGap}px">${dotView.dots}</span><span class="widget-day-events">${previews}${overflow}</span></button>`;
     }).join('');
     $('widget-calendar').querySelectorAll('[data-widget-date]').forEach((button) => {
       button.addEventListener('click', () => selectDate(button.dataset.widgetDate));
@@ -633,7 +648,7 @@
   document.addEventListener('pointercancel', finishPointerDrag);
   document.addEventListener('selectstart', (event) => { if (pointerTracking || state.dragging) event.preventDefault(); });
   document.addEventListener('dragstart', (event) => { if (event.target.closest?.('[data-widget-event-id]')) event.preventDefault(); });
-  window.addEventListener('focus', () => void fetchEvents({ quiet: true }));
+  window.addEventListener('focus', () => { refreshCalendarDots(); void fetchEvents({ quiet: true }); });
   window.addEventListener('online', () => void fetchEvents());
   bindMonthHover($('previous-widget-month'), -1);
   bindMonthHover($('next-widget-month'), 1);
@@ -656,6 +671,7 @@
   }
 
   render();
+  setInterval(refreshCalendarDots, 30000);
   void setupNativeWindowActions();
   void setupAutostartControl();
   void checkDesktopUpdate();
