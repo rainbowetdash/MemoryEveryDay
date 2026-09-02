@@ -285,6 +285,11 @@
     if (moved.error === 'recurring_event') { setToast('重复日程暂不支持直接拖动', '请打开每日备忘主应用修改重复规则'); return; }
     if (moved.error) { setToast('无法移动这项安排', '请稍后再试'); return; }
     const previous = { ...current }, next = moved.event;
+    if (next.date === current.date && next.time === current.time && (next.endTime || '') === (current.endTime || '')) {
+      state.undo = null;
+      setToast('位置没有改变', '这项安排仍在原来的日期和时间');
+      return;
+    }
     state.events = state.events.map((event) => event.id === eventId ? next : event);
     if (options.date) {
       state.selected = model.dateFromKey(next.date) || state.selected;
