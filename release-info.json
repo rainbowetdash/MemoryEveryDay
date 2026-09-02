@@ -14,17 +14,31 @@
       "downloadName": "MemoryEveryDay-1.0.10.apk",
       "label": "Android APK",
       "hint": "下载后可直接安装更新"
+    },
+    "macos": {
+      "latestVersion": "0.1.0",
+      "downloadUrl": "./downloads/MemoryEveryDay-Widget-macOS-0.1.0.dmg",
+      "downloadName": "MemoryEveryDay-Widget-macOS-0.1.0.dmg",
+      "label": "macOS 桌面小组件",
+      "hint": "Apple 芯片 Mac，拖入应用程序即可使用"
+    },
+    "windows": {
+      "latestVersion": "0.1.0",
+      "downloadUrl": "./downloads/MemoryEveryDay-Widget-Windows-0.1.0-setup.exe",
+      "downloadName": "MemoryEveryDay-Widget-Windows-0.1.0-setup.exe",
+      "label": "Windows 桌面小组件",
+      "hint": "64 位 Windows 安装程序"
     }
   },
   "announcement": {
-    "id": "2026-08-31-voice-assistant-reliability",
-    "eyebrow": "语音助手更新",
-    "title": "连续说，创建后清楚确认",
-    "summary": "语音内容不再逐句覆盖，并支持同时创建关联备忘录。",
+    "id": "2026-09-01-desktop-widget-preview",
+    "eyebrow": "桌面小组件上线",
+    "title": "月历和今天安排，现在可以留在电脑桌面",
+    "summary": "macOS 与 Windows 首个可用版本已经开放下载。",
     "items": [
-      "停顿或换句话时会保留前文，说完再点一下即可。",
-      "可以明确说创建待办、日程、备忘录加日程或备忘录加待办。",
-      "未登录时点麦克风会直接打开登录，创建成功后会显示确认结果。"
+      "登录同一个账号，日程和待办会自动同步。",
+      "左侧拖动可改变日期，右侧拖动可按半小时改变时间。",
+      "移动后可以撤销，也可以直接勾选完成待办。"
     ]
   }
 }

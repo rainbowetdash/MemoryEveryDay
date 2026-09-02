@@ -117,11 +117,13 @@
 
 .push-help-dialog {
   width: min(430px, calc(100% - 30px));
+  max-height: calc(100dvh - 24px);
   margin: auto;
   border: 0;
   border-radius: 14px;
   background: #fafdff;
   box-shadow: 0 22px 70px #163b5d38;
+  overflow: auto;
 }
 
 .release-notice-dialog {
@@ -314,7 +316,8 @@
 .app-download-option.is-recommended { box-shadow: 0 0 0 1px #70add43d; }
 .app-download-option > .app-download-platform-icon { display: grid; place-items: center; width: 26px; height: 28px; color: #296d9d; }
 .app-download-platform-icon svg { display: block; width: 23px; height: 23px; fill: currentColor; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-.app-download-option.android .app-download-platform-icon svg { fill: none; }
+.app-download-option:is(.android, .macos) .app-download-platform-icon svg { fill: none; }
+.app-download-option.windows .app-download-platform-icon svg { stroke: none; }
 .app-download-platform-icon svg path { vector-effect: non-scaling-stroke; }
 .app-download-option strong, .app-download-option small { display: block; }
 .app-download-option strong { font-size: 13px; }
