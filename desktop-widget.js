@@ -494,6 +494,48 @@
     $('close-widget').onclick = () => appWindow.close();
   }
 
+  function nativeAutostart() {
+    const direct = window.__TAURI__?.autostart;
+    if (direct?.enable && direct?.disable && direct?.isEnabled) return direct;
+    const invoke = window.__TAURI__?.core?.invoke;
+    if (!invoke) return null;
+    return {
+      enable: () => invoke('plugin:autostart|enable'),
+      disable: () => invoke('plugin:autostart|disable'),
+      isEnabled: () => invoke('plugin:autostart|is_enabled'),
+    };
+  }
+
+  async function setupAutostartControl() {
+    const button = $('autostart-widget'), autostart = nativeAutostart();
+    if (!button || !autostart) return;
+    const update = (enabled) => {
+      button.setAttribute('aria-checked', String(Boolean(enabled)));
+      button.title = enabled ? '关闭开机自动启动' : '开启开机自动启动';
+      button.setAttribute('aria-label', button.title);
+    };
+    try {
+      update(await autostart.isEnabled());
+      button.disabled = false;
+    } catch {
+      button.disabled = true;
+      button.title = '当前系统暂时无法设置开机启动';
+      return;
+    }
+    button.onclick = async () => {
+      if (button.disabled) return;
+      const next = button.getAttribute('aria-checked') !== 'true';
+      button.disabled = true;
+      try {
+        if (next) await autostart.enable(); else await autostart.disable();
+        update(await autostart.isEnabled());
+        setToast(next ? '已开启开机启动' : '已关闭开机启动', next ? '下次开机后会自动打开每日备忘' : '以后可以随时重新开启');
+      } catch {
+        setToast('开机启动没有修改', '请稍后再试');
+      } finally { button.disabled = false; }
+    };
+  }
+
   $('widget-auth-form').addEventListener('submit', authenticate);
   $('previous-widget-month').onclick = () => changeShowingMonth(-1);
   $('next-widget-month').onclick = () => changeShowingMonth(1);
@@ -529,6 +571,7 @@
 
   render();
   void setupNativeWindowActions();
+  void setupAutostartControl();
   if (demoMode) startDemoMode();
   else if (client) {
     client.auth.onAuthStateChange((_event, session) => void handleSession(session?.user || null));

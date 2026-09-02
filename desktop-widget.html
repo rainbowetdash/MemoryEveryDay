@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#0f1927" />
     <title>每日备忘 · 桌面小组件</title>
     <link rel="icon" href="./icon.svg" />
-    <link rel="stylesheet" href="./desktop-widget.css?v=1" />
+    <link rel="stylesheet" href="./desktop-widget.css?v=2" />
   </head>
   <body>
     <main class="desktop-widget" id="desktop-widget">
@@ -57,7 +57,8 @@
 
       <footer class="widget-footer">
         <span id="account-summary">尚未登录</span>
-        <span>拖动安排可改变日期和时间，放手后可以撤销</span>
+        <span>拖动安排即可改期或改时，放手后可以撤销</span>
+        <button type="button" id="autostart-widget" class="widget-autostart native-window-action" role="switch" aria-checked="false" disabled><i aria-hidden="true"></i><span>开机启动</span></button>
         <button type="button" id="sign-out-widget" class="is-hidden">退出登录</button>
       </footer>
     </main>
@@ -90,6 +91,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     <script src="./calendar-reschedule.js?v=1"></script>
     <script src="./desktop-widget-model.js?v=1"></script>
-    <script src="./desktop-widget.js?v=1"></script>
+    <script src="./desktop-widget.js?v=2"></script>
   </body>
 </html>
