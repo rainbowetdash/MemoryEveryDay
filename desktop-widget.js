@@ -577,6 +577,9 @@
     const appWindow = await nativeWindow();
     document.body.classList.toggle('is-tauri', Boolean(appWindow));
     if (!appWindow) return;
+    document.addEventListener('selectstart', (event) => {
+      if (!event.target.closest('input, textarea, [contenteditable="true"]')) event.preventDefault();
+    });
     try {
       const pinned = await appWindow.isAlwaysOnTop();
       $('pin-widget').setAttribute('aria-pressed', String(pinned));
@@ -595,7 +598,10 @@
         if (event.button !== 0) return;
         event.preventDefault();
         event.stopPropagation();
-        appWindow.startResizeDragging(handle.dataset.windowResize).catch(() => setToast('暂时无法缩放窗口', '请重新打开桌面版后再试'));
+        window.getSelection()?.removeAllRanges();
+        appWindow.startResizeDragging(handle.dataset.windowResize)
+          .catch(() => setToast('暂时无法缩放窗口', '请重新打开桌面版后再试'))
+          .finally(() => window.getSelection()?.removeAllRanges());
       };
     });
   }
