@@ -54,7 +54,7 @@ button { -webkit-app-region: no-drag; }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 7px 9px 6px 13px;
+  padding: 7px 15px 6px 13px;
   border-bottom: 1px solid color-mix(in srgb, var(--border) 74%, transparent);
   background: color-mix(in srgb, var(--shell) 76%, transparent);
   user-select: none;
@@ -89,6 +89,19 @@ img.widget-brand-mark, img.widget-auth-mark { display: block; object-fit: cover;
 .widget-window-actions button:active, .month-actions button:active { transform: scale(.94); }
 .widget-window-actions button[aria-pressed="true"] { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, var(--surface)); color: var(--accent); }
 body:not(.is-tauri) .native-window-action { display: none; }
+
+.window-resize-handle { display: none; position: fixed; z-index: 3000; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-app-region: no-drag; }
+body.is-tauri .window-resize-handle { display: block; }
+.window-resize-handle.is-north { top: 0; right: 14px; left: 14px; height: 7px; cursor: ns-resize; }
+.window-resize-handle.is-east { top: 14px; right: 0; bottom: 14px; width: 7px; cursor: ew-resize; }
+.window-resize-handle.is-south { right: 14px; bottom: 0; left: 14px; height: 7px; cursor: ns-resize; }
+.window-resize-handle.is-west { top: 14px; bottom: 14px; left: 0; width: 7px; cursor: ew-resize; }
+.window-resize-handle.is-north-east, .window-resize-handle.is-south-west { width: 14px; height: 14px; cursor: nesw-resize; }
+.window-resize-handle.is-north-west, .window-resize-handle.is-south-east { width: 14px; height: 14px; cursor: nwse-resize; }
+.window-resize-handle.is-north-east { top: 0; right: 0; }
+.window-resize-handle.is-south-east { right: 0; bottom: 0; }
+.window-resize-handle.is-south-west { bottom: 0; left: 0; }
+.window-resize-handle.is-north-west { top: 0; left: 0; }
 
 .widget-workspace { display: grid; grid-template-columns: minmax(330px, 1.02fr) minmax(300px, .98fr); min-height: 0; }
 .month-panel, .day-panel { min-width: 0; min-height: 0; padding: 16px 17px 12px; }
@@ -274,6 +287,21 @@ body:not(.is-tauri) .native-window-action { display: none; }
   .panel-header h1 { font-size: 21px; }
   .panel-header h2 { font-size: 18px; }
   .month-panel-footer small { display: none; }
+}
+
+@media (max-height: 480px) {
+  .desktop-widget { grid-template-rows: 42px minmax(0, 1fr) 31px; }
+  .widget-titlebar { padding-top: 5px; padding-bottom: 4px; }
+  .month-panel, .day-panel { padding-top: 11px; padding-bottom: 8px; }
+  .widget-weekdays { margin-top: 9px; margin-bottom: 4px; }
+  .widget-calendar { grid-template-rows: repeat(6, minmax(31px, 1fr)); gap: 3px; }
+  .month-panel-footer { min-height: 21px; padding-top: 5px; }
+  .day-timeline { margin-top: 8px; }
+  .timeline-slot { min-height: 43px; }
+}
+
+@media (min-height: 760px) {
+  .widget-calendar { align-self: start; width: 100%; height: min(100%, 520px); }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -590,6 +590,14 @@
     };
     $('minimize-widget').onclick = () => appWindow.minimize();
     $('close-widget').onclick = () => appWindow.close();
+    document.querySelectorAll('[data-window-resize]').forEach((handle) => {
+      handle.onpointerdown = (event) => {
+        if (event.button !== 0) return;
+        event.preventDefault();
+        event.stopPropagation();
+        appWindow.startResizeDragging(handle.dataset.windowResize).catch(() => setToast('暂时无法缩放窗口', '请重新打开桌面版后再试'));
+      };
+    });
   }
 
   function nativeAutostart() {
