@@ -26,11 +26,28 @@
   let pointerTracking = null;
   let lastTimelineDate = '';
   let lastTimelineHadEvents = false;
+  let widgetUiScale = 1;
+  const compactCanvas = { width: 620, height: 430 };
 
   const colorHex = {
     blue: '#328ccd', navy: '#3266a7', cyan: '#2db3d6', mint: '#42aaa4', purple: '#8a64c7',
     pink: '#d96696', coral: '#dc795d', yellow: '#c79424', green: '#4d9b63',
   };
+
+  function updateWidgetScale() {
+    const viewportWidth = Math.max(1, window.innerWidth);
+    const viewportHeight = Math.max(1, window.innerHeight);
+    const scale = Math.min(1, viewportWidth / compactCanvas.width, viewportHeight / compactCanvas.height);
+    const stage = $('widget-scale-stage');
+    if (!stage) return;
+    widgetUiScale = scale;
+    stage.style.width = `${viewportWidth / scale}px`;
+    stage.style.height = `${viewportHeight / scale}px`;
+    stage.style.setProperty('--widget-ui-scale', String(scale));
+    stage.style.setProperty('--widget-frame-radius', `${18 / scale}px`);
+    stage.style.setProperty('--widget-frame-border', `${1 / scale}px`);
+    document.body.classList.toggle('is-widget-scaled', scale < .999);
+  }
 
   function escapeHtml(value) {
     return String(value ?? '').replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
@@ -379,9 +396,12 @@
   function placeGhost(pointer) {
     if (!state.dragging) return;
     const ghost = $('widget-drag-ghost'), width = ghost.offsetWidth || 220, height = ghost.offsetHeight || 52;
-    const x = Math.max(10, Math.min(window.innerWidth - width - 10, pointer.clientX - width / 2));
-    const above = pointer.clientY - height - 16;
-    const y = Math.max(10, Math.min(window.innerHeight - height - 10, above > 8 ? above : pointer.clientY + 16));
+    const inset = 10 / widgetUiScale, gap = 16 / widgetUiScale;
+    const stageWidth = window.innerWidth / widgetUiScale, stageHeight = window.innerHeight / widgetUiScale;
+    const pointerX = pointer.clientX / widgetUiScale, pointerY = pointer.clientY / widgetUiScale;
+    const x = Math.max(inset, Math.min(stageWidth - width - inset, pointerX - width / 2));
+    const above = pointerY - height - gap;
+    const y = Math.max(inset, Math.min(stageHeight - height - inset, above > inset ? above : pointerY + gap));
     ghost.style.transform = `translate3d(${x}px,${y}px,0)`;
   }
 
@@ -664,6 +684,7 @@
   document.addEventListener('dragstart', (event) => { if (event.target.closest?.('[data-widget-event-id]')) event.preventDefault(); });
   window.addEventListener('focus', () => { refreshCalendarDots(); void fetchEvents({ quiet: true }); });
   window.addEventListener('online', () => void fetchEvents());
+  window.addEventListener('resize', updateWidgetScale);
   bindMonthHover($('previous-widget-month'), -1);
   bindMonthHover($('next-widget-month'), 1);
 
@@ -684,6 +705,7 @@
     render();
   }
 
+  updateWidgetScale();
   render();
   setInterval(refreshCalendarDots, 30000);
   void setupNativeWindowActions();

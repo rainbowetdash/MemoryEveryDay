@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#0f1927" />
     <title>每日备忘桌面版</title>
     <link rel="icon" href="./memory-everyday-app-icon.png?v=1" />
-    <link rel="stylesheet" href="./desktop-widget.css?v=6" />
+    <link rel="stylesheet" href="./desktop-widget.css?v=7" />
   </head>
   <body>
     <div class="window-resize-handle is-north" data-window-resize="North" aria-hidden="true"></div>
@@ -17,6 +17,7 @@
     <div class="window-resize-handle is-south-east" data-window-resize="SouthEast" aria-hidden="true"></div>
     <div class="window-resize-handle is-south-west" data-window-resize="SouthWest" aria-hidden="true"></div>
     <div class="window-resize-handle is-north-west" data-window-resize="NorthWest" aria-hidden="true"></div>
+    <div class="widget-scale-stage" id="widget-scale-stage">
     <main class="desktop-widget" id="desktop-widget">
       <header class="widget-titlebar" data-tauri-drag-region>
         <div class="widget-brand" data-tauri-drag-region>
@@ -108,11 +109,12 @@
       <button type="button" id="undo-widget-move">撤销</button>
       <button type="button" id="close-widget-toast" aria-label="关闭提示">×</button>
     </aside>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     <script src="./calendar-reschedule.js?v=1"></script>
     <script src="./calendar-dot-visibility.js?v=1"></script>
     <script src="./desktop-widget-model.js?v=3"></script>
-    <script src="./desktop-widget.js?v=8"></script>
+    <script src="./desktop-widget.js?v=9"></script>
   </body>
 </html>

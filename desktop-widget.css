@@ -21,6 +21,9 @@
   --coral: #dc795d;
   --yellow: #c79424;
   --green: #4d9b63;
+  --widget-ui-scale: 1;
+  --widget-frame-radius: 18px;
+  --widget-frame-border: 1px;
 }
 
 * { box-sizing: border-box; }
@@ -32,6 +35,16 @@ button, input { font: inherit; }
 button { -webkit-app-region: no-drag; }
 .is-hidden { display: none !important; }
 
+.widget-scale-stage {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transform: scale(var(--widget-ui-scale));
+  transform-origin: top left;
+}
+
 .desktop-widget {
   position: relative;
   display: grid;
@@ -41,8 +54,8 @@ button { -webkit-app-region: no-drag; }
   min-width: 660px;
   min-height: 430px;
   overflow: hidden;
-  border: 1px solid rgba(131, 164, 190, .34);
-  border-radius: 18px;
+  border: var(--widget-frame-border) solid rgba(131, 164, 190, .34);
+  border-radius: var(--widget-frame-radius);
   background:
     radial-gradient(circle at 10% 5%, rgba(104, 187, 239, .15), transparent 34%),
     linear-gradient(145deg, var(--shell), color-mix(in srgb, var(--shell) 92%, #dfeff9));
@@ -298,6 +311,15 @@ body.is-tauri .window-resize-handle { display: block; }
   .month-panel-footer { min-height: 21px; padding-top: 5px; }
   .day-timeline { margin-top: 8px; }
   .timeline-slot { min-height: 43px; }
+}
+
+@media (max-width: 480px), (max-height: 360px) {
+  .widget-update-card { padding: 14px; }
+  .widget-update-icon { width: 32px; height: 32px; margin-bottom: 7px; border-radius: 10px; font-size: 17px; }
+  .widget-update-card > h2 { margin-block: 5px; font-size: 15px; }
+  .widget-update-card > small { font-size: 9px; line-height: 1.45; }
+  .widget-update-actions { gap: 6px; margin-top: 10px; }
+  .widget-update-actions button { height: 31px; font-size: 9px; }
 }
 
 @media (min-height: 760px) {
