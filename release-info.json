@@ -16,29 +16,29 @@
       "hint": "下载后可直接安装更新"
     },
     "macos": {
-      "latestVersion": "0.1.3",
-      "downloadUrl": "./downloads/MemoryEveryDay-Desktop-macOS-0.1.3.dmg",
-      "downloadName": "MemoryEveryDay-Desktop-macOS-0.1.3.dmg",
+      "latestVersion": "0.1.4",
+      "downloadUrl": "./downloads/MemoryEveryDay-Desktop-macOS-0.1.4.dmg",
+      "downloadName": "MemoryEveryDay-Desktop-macOS-0.1.4.dmg",
       "label": "macOS 每日备忘桌面版",
       "hint": "Apple 芯片 Mac，拖入应用程序即可使用"
     },
     "windows": {
-      "latestVersion": "0.1.3",
-      "downloadUrl": "./downloads/MemoryEveryDay-Desktop-Windows-0.1.3-setup.exe",
-      "downloadName": "MemoryEveryDay-Desktop-Windows-0.1.3-setup.exe",
+      "latestVersion": "0.1.4",
+      "downloadUrl": "./downloads/MemoryEveryDay-Desktop-Windows-0.1.4-setup.exe",
+      "downloadName": "MemoryEveryDay-Desktop-Windows-0.1.4-setup.exe",
       "label": "Windows 每日备忘桌面版",
       "hint": "64 位 Windows 安装程序"
     }
   },
   "announcement": {
-    "id": "2026-09-03-desktop-app-013",
-    "eyebrow": "每日备忘桌面版 0.1.3",
-    "title": "桌面小组件现在可以自由缩放",
+    "id": "2026-09-04-desktop-app-014",
+    "eyebrow": "每日备忘桌面版 0.1.4",
+    "title": "桌面小组件现在可以缩得更小",
     "summary": "macOS 与 Windows 新版已经开放下载。",
     "items": [
-      "拖动窗口的四条边或四个角，都可以直接调整桌面小组件大小。",
-      "缩小时会自动收紧留白和间距，月历与当天安排仍保持左右分区。",
-      "放大时月历不会被过度拉长，日程信息依然整齐、易读。"
+      "最小尺寸从 620×430 缩小到 310×215，宽度和高度都减少一半。",
+      "进入小尺寸后会自动等比例缩放，月历与当天安排仍保持左右分区。",
+      "重新拉大窗口时会自动恢复正常比例，不需要额外切换显示模式。"
     ]
   }
 }
