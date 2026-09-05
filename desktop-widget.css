@@ -329,3 +329,22 @@ body.is-tauri .window-resize-handle { display: block; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }
+
+
+.widget-size-presets { display: flex; flex: none; align-items: center; gap: 2px; margin-right: 6px; padding: 2px; border: 1px solid var(--border); border-radius: 9px; background: var(--surface-strong); -webkit-app-region: no-drag; }
+.widget-size-presets button { display: grid; place-items: center; min-width: calc(27px / var(--widget-ui-scale)); height: calc(24px / var(--widget-ui-scale)); padding: 0; border: 1px solid transparent; border-radius: 6px; color: var(--muted); background: transparent; font-size: calc(11px / var(--widget-ui-scale)); font-weight: 750; cursor: pointer; }
+.widget-size-presets button:hover { color: var(--accent); background: var(--panel); }
+.widget-size-presets button[aria-pressed="true"] { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 40%, var(--border)); background: var(--panel); box-shadow: 0 1px 4px var(--shadow); }
+.widget-size-presets button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.widget-size-presets button:disabled { opacity: .55; cursor: wait; }
+body.is-widget-scaled .desktop-widget { grid-template-rows: calc(40px / var(--widget-ui-scale)) minmax(0, 1fr) 31px; }
+.widget-auth-size-controls { position: absolute; top: calc(9px / var(--widget-ui-scale)); right: calc(12px / var(--widget-ui-scale)); }
+.widget-size-status { position: fixed; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+@media (max-height: 480px) {
+  .widget-auth-card { padding: 17px; }
+  .widget-auth-mark { width: 42px; height: 42px; margin-bottom: 8px; }
+  .widget-auth-card > h1 { font-size: 18px; }
+  .widget-auth-card form { gap: 8px; margin-top: 12px; }
+  .widget-auth-card > a { margin-top: 10px; }
+}

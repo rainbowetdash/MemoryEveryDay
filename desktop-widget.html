@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#0f1927" />
     <title>每日备忘桌面版</title>
     <link rel="icon" href="./memory-everyday-app-icon.png?v=1" />
-    <link rel="stylesheet" href="./desktop-widget.css?v=7" />
+    <link rel="stylesheet" href="./desktop-widget.css?v=8" />
   </head>
   <body>
     <div class="window-resize-handle is-north" data-window-resize="North" aria-hidden="true"></div>
@@ -17,6 +17,7 @@
     <div class="window-resize-handle is-south-east" data-window-resize="SouthEast" aria-hidden="true"></div>
     <div class="window-resize-handle is-south-west" data-window-resize="SouthWest" aria-hidden="true"></div>
     <div class="window-resize-handle is-north-west" data-window-resize="NorthWest" aria-hidden="true"></div>
+    <div id="widget-size-status" class="widget-size-status" role="status" aria-live="polite"></div>
     <div class="widget-scale-stage" id="widget-scale-stage">
     <main class="desktop-widget" id="desktop-widget">
       <header class="widget-titlebar" data-tauri-drag-region>
@@ -25,6 +26,11 @@
           <span data-tauri-drag-region><strong>每日备忘桌面版</strong><small id="sync-status">正在准备同步…</small></span>
         </div>
         <nav class="widget-window-actions" aria-label="小组件窗口控制">
+          <div class="widget-size-presets native-window-action" role="group" aria-label="窗口大小">
+            <button type="button" data-widget-size="large" title="大窗口 · 840 × 560" aria-label="大窗口" aria-pressed="false">大</button>
+            <button type="button" data-widget-size="medium" title="中窗口 · 620 × 430" aria-label="中窗口" aria-pressed="false">中</button>
+            <button type="button" data-widget-size="small" title="小窗口 · 310 × 215" aria-label="小窗口" aria-pressed="false">小</button>
+          </div>
           <button type="button" id="refresh-widget" title="刷新同步" aria-label="刷新同步">↻</button>
           <button type="button" id="pin-widget" class="native-window-action" title="保持置顶" aria-label="保持置顶" aria-pressed="false">◇</button>
           <button type="button" id="minimize-widget" class="native-window-action" title="最小化" aria-label="最小化">−</button>
@@ -73,6 +79,11 @@
     </main>
 
     <section class="widget-auth" id="widget-auth" aria-labelledby="widget-auth-title">
+      <div class="widget-auth-size-controls"><div class="widget-size-presets native-window-action" role="group" aria-label="窗口大小">
+            <button type="button" data-widget-size="large" title="大窗口 · 840 × 560" aria-label="大窗口" aria-pressed="false">大</button>
+            <button type="button" data-widget-size="medium" title="中窗口 · 620 × 430" aria-label="中窗口" aria-pressed="false">中</button>
+            <button type="button" data-widget-size="small" title="小窗口 · 310 × 215" aria-label="小窗口" aria-pressed="false">小</button>
+          </div></div>
       <div class="widget-auth-card">
         <img class="widget-auth-mark" src="./memory-everyday-app-icon.png?v=1" alt="" aria-hidden="true" />
         <p>每日备忘桌面版</p>
@@ -114,7 +125,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     <script src="./calendar-reschedule.js?v=1"></script>
     <script src="./calendar-dot-visibility.js?v=1"></script>
-    <script src="./desktop-widget-model.js?v=3"></script>
-    <script src="./desktop-widget.js?v=9"></script>
+    <script src="./desktop-widget-model.js?v=4"></script>
+    <script src="./desktop-widget.js?v=10"></script>
   </body>
 </html>

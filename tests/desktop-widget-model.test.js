@@ -35,3 +35,11 @@ assert.deepEqual(model.calendarDotColors([
   { color: 'mint' },
 ], new Date(2026, 8, 2, 12), new Date(2026, 8, 2, 8)), ['cyan', 'blue', 'blue', 'mint']);
 console.log('desktop widget model tests passed');
+
+// Preset resizing stays inside a monitor's usable area, including negative origins.
+const { windowSizePresets, windowPresetBounds } = require('../desktop-widget-model.js');
+assert.deepEqual(windowSizePresets.small, { width: 310, height: 215, label: '小' });
+assert.deepEqual(windowPresetBounds('large', { x: 0, y: 23, width: 1440, height: 877 }, { x: 1250, y: 750 }), { width: 840, height: 560, x: 600, y: 340 });
+assert.deepEqual(windowPresetBounds('medium', { x: -1920, y: 0, width: 1920, height: 1080 }, { x: -100, y: 900 }), { width: 620, height: 430, x: -620, y: 650 });
+assert.deepEqual(windowPresetBounds('large', { x: 0, y: 0, width: 800, height: 500 }, { x: 0, y: 0 }), { width: 800, height: 500, x: 0, y: 0 });
+assert.equal(windowPresetBounds('unknown', {}, {}), null);

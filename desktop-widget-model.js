@@ -96,7 +96,27 @@
     return event?.endTime ? `${event.time}–${event.endTime}` : String(event?.time || '');
   }
 
+  const windowSizePresets = Object.freeze({
+    large: { width: 840, height: 560, label: '大' },
+    medium: { width: 620, height: 430, label: '中' },
+    small: { width: 310, height: 215, label: '小' },
+  });
+
+  function windowPresetBounds(key, workArea, position) {
+    const preset = windowSizePresets[key];
+    if (!preset) return null;
+    const width = Math.max(310, Math.min(preset.width, Math.floor(workArea.width)));
+    const height = Math.max(215, Math.min(preset.height, Math.floor(workArea.height)));
+    return {
+      width, height,
+      x: Math.round(Math.max(workArea.x, Math.min(position.x, workArea.x + workArea.width - width))),
+      y: Math.round(Math.max(workArea.y, Math.min(position.y, workArea.y + workArea.height - height))),
+    };
+  }
+
   return {
+    windowSizePresets,
+    windowPresetBounds,
     dateKey,
     dateFromKey,
     normalizeTime,

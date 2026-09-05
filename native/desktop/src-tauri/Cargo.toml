@@ -1,6 +1,6 @@
 [package]
 name = "memory-everyday-desktop-widget"
-version = "0.1.4"
+version = "0.1.5"
 description = "每日备忘桌面版"
 authors = ["MemoryEveryDay"]
 edition = "2021"

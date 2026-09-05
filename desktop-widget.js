@@ -47,6 +47,7 @@
     stage.style.setProperty('--widget-frame-radius', `${18 / scale}px`);
     stage.style.setProperty('--widget-frame-border', `${1 / scale}px`);
     document.body.classList.toggle('is-widget-scaled', scale < .999);
+    updateWindowSizeButtons();
   }
 
   function escapeHtml(value) {
@@ -593,6 +594,49 @@
     try { return window.__TAURI__?.window?.getCurrentWindow?.() || null; } catch { return null; }
   }
 
+  let resizingToPreset = false;
+  let activeWindowPreset = null;
+
+  function updateWindowSizeButtons() {
+    const matches = (size) => size && Math.abs(window.innerWidth - size.width) <= 2 && Math.abs(window.innerHeight - size.height) <= 2;
+    const selected = matches(activeWindowPreset) ? activeWindowPreset.key : Object.keys(model.windowSizePresets).find((key) => matches(model.windowSizePresets[key]));
+    document.querySelectorAll('[data-widget-size]').forEach((button) => {
+      button.setAttribute('aria-pressed', String(button.dataset.widgetSize === selected));
+      button.disabled = resizingToPreset;
+    });
+  }
+
+  async function setWindowSizePreset(key, appWindow) {
+    if (resizingToPreset) return;
+    if (compareVersions(desktopVersion, '0.1.5') < 0) {
+      setToast('更新桌面版后即可一键缩放', '请安装 0.1.5 或更新版本，当前仍可拖动边缘缩放');
+      void checkDesktopUpdate();
+      return;
+    }
+    resizingToPreset = true;
+    updateWindowSizeButtons();
+    try {
+      const api = window.__TAURI__;
+      const [monitor, position] = await Promise.all([api.window.currentMonitor(), appWindow.outerPosition()]);
+      if (!monitor) throw new Error('Monitor unavailable');
+      const area = monitor.workArea || { position: monitor.position, size: monitor.size }, scale = monitor.scaleFactor;
+      const bounds = model.windowPresetBounds(key, {
+        x: area.position.x / scale, y: area.position.y / scale,
+        width: area.size.width / scale, height: area.size.height / scale,
+      }, { x: position.x / scale, y: position.y / scale });
+      if (!bounds) return;
+      await appWindow.setSize(new api.dpi.LogicalSize(bounds.width, bounds.height));
+      await appWindow.setPosition(new api.dpi.LogicalPosition(bounds.x, bounds.y));
+      activeWindowPreset = { key, ...bounds };
+      $('widget-size-status').textContent = `已切换到${model.windowSizePresets[key].label}窗口`;
+    } catch {
+      setToast('暂时无法切换窗口大小', '可以继续拖动边缘调整，或稍后再试');
+    } finally {
+      resizingToPreset = false;
+      updateWindowSizeButtons();
+    }
+  }
+
   async function setupNativeWindowActions() {
     const appWindow = await nativeWindow();
     document.body.classList.toggle('is-tauri', Boolean(appWindow));
@@ -611,6 +655,9 @@
       $('pin-widget').setAttribute('aria-pressed', String(!pinned));
       $('pin-widget').textContent = !pinned ? '◆' : '◇';
     };
+    document.querySelectorAll('[data-widget-size]').forEach((button) => {
+      button.onclick = () => void setWindowSizePreset(button.dataset.widgetSize, appWindow);
+    });
     $('minimize-widget').onclick = () => appWindow.minimize();
     $('close-widget').onclick = () => appWindow.close();
     document.querySelectorAll('[data-window-resize]').forEach((handle) => {
