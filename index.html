@@ -23,7 +23,7 @@
     <link rel="stylesheet" href="./memo-editor-visibility.css?v=1" />
     <link rel="stylesheet" href="./day-header-position.css?v=1" />
     <link rel="stylesheet" href="./memo-status.css?v=2" />
-    <link rel="stylesheet" href="./event-notes.css?v=1" />
+    <link rel="stylesheet" href="./event-notes.css?v=2" />
     <link rel="stylesheet" href="./memo-delete-confirm.css?v=1" />
     <link rel="stylesheet" href="./memo-integration.css?v=4" />
     <link rel="stylesheet" href="./memo-folders.css?v=1" />
@@ -297,6 +297,7 @@
     <dialog id="event-dialog">
       <form method="dialog" id="event-form" novalidate>
         <div class="modal-header event-modal-header"><div class="event-type-heading"><p class="modal-eyebrow" id="event-dialog-eyebrow">新的安排</p><input id="event-kind" type="hidden" value="event" /><div id="event-type-picker" class="event-type-picker"><button type="button" id="event-type-trigger" class="event-type-trigger" aria-expanded="false" aria-haspopup="listbox" aria-controls="event-type-list"><span id="event-dialog-title">添加日程</span><i aria-hidden="true"></i></button><div id="event-type-list" class="event-type-list is-hidden" role="listbox" aria-label="选择安排类型"><button type="button" class="event-type-option is-selected" data-event-kind="event" role="option" aria-selected="true"><span class="event-type-symbol event-symbol">◷</span><span><strong>日程</strong><small>时间结束后自动显示为已过去</small></span><b aria-hidden="true">✓</b></button><button type="button" class="event-type-option" data-event-kind="todo" role="option" aria-selected="false"><span class="event-type-symbol todo-symbol">□</span><span><strong>待办</strong><small>只有手动勾选后才会完成</small></span><b aria-hidden="true">✓</b></button></div></div></div><button type="button" id="close-event-dialog" class="close-button" aria-label="关闭">×</button></div>
+        <p id="event-save-status" class="event-save-status is-hidden" role="status" aria-live="polite" aria-atomic="true"></p>
         <label>内容<input id="event-title" name="title" required maxlength="60" placeholder="例如：和朋友喝咖啡" /></label>
         <label class="event-note-field">备注<input id="event-note" name="note" maxlength="140" placeholder="例如：带上作业和水杯（可选）" /></label>
         <div id="todo-completion-row" class="todo-completion-row is-hidden"><span id="todo-completion-icon" class="todo-completion-icon" aria-hidden="true">□</span><span><strong id="todo-completion-title">还未完成</strong><small id="todo-completion-copy">待办不会因为时间过去而自动完成</small></span><button type="button" id="todo-completion-toggle">标记完成</button></div>
@@ -622,7 +623,7 @@
     <script src="./memo-time-suggestions.js?v=1"></script>
     <script src="./calendar-reschedule.js?v=1"></script>
     <script src="./calendar-dot-visibility.js?v=1"></script>
-    <script src="./app.js?v=175"></script>
+    <script src="./app.js?v=176"></script>
     <script src="./calendar-drag.js?v=2"></script>
     <script src="./settings.js?v=10"></script>
     <script src="./voice-assistant.js?v=8"></script>

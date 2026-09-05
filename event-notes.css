@@ -33,3 +33,24 @@ body[data-app-theme="night"] .event-note-preview {
 body[data-app-theme="night"] .event-note-preview b {
   color: #d3e6f5;
 }
+
+.event-save-status {
+  position: sticky;
+  top: 0;
+  z-index: 4;
+  margin: -4px 0 16px;
+  padding: 9px 12px;
+  border: 1px solid #c6deed;
+  border-radius: 8px;
+  background: #eef7fc;
+  color: #426980;
+  font-size: 12px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.event-save-status[data-tone="success"] { color: #286b56; }
+.event-save-status[data-tone="error"] { color: #a3333d; background: #fff3f3; border-color: #e6c0c5; }
+body[data-app-theme="night"] .event-save-status { background: #1c3041; border-color: #38566c; color: #bdd8e8; }
+body[data-app-theme="night"] .event-save-status[data-tone="success"] { color: #9ed8bf; }
+body[data-app-theme="night"] .event-save-status[data-tone="error"] { background: #38252f; border-color: #80505d; color: #ffbac2; }
