@@ -14,7 +14,7 @@ const appWindow = {
   setPosition: async position => { frame = { ...frame, x: position.x, y: position.y }; },
 };
 const context = vm.createContext({
-  model, desktopVersion: '0.1.6', compareVersions: () => 1, updateWindowSizeButtons: () => {},
+  model, desktopVersion: '0.1.6', compareVersions: () => 1, updateWindowSizeButtons: () => {}, updateWidgetScale: () => {},
   $: () => ({}), setToast: () => {}, checkDesktopUpdate: async () => {},
   window: { __TAURI__: {
     window: { currentMonitor: async () => ({ scaleFactor: scale, workArea: { position: { x: area.x * scale, y: area.y * scale }, size: { width: area.width * scale, height: area.height * scale } } }) },

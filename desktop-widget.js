@@ -640,7 +640,7 @@
       setToast('暂时无法切换窗口大小', '可以继续拖动边缘调整，或稍后再试');
     } finally {
       resizingToPreset = false;
-      updateWindowSizeButtons();
+      updateWidgetScale();
     }
   }
 
