@@ -43,3 +43,24 @@ assert.deepEqual(windowPresetBounds('large', { x: 0, y: 23, width: 1440, height:
 assert.deepEqual(windowPresetBounds('medium', { x: -1920, y: 0, width: 1920, height: 1080 }, { x: -100, y: 900 }), { width: 620, height: 430, x: -620, y: 650 });
 assert.deepEqual(windowPresetBounds('large', { x: 0, y: 0, width: 800, height: 500 }, { x: 0, y: 0 }), { width: 800, height: 500, x: 0, y: 0 });
 assert.equal(windowPresetBounds('unknown', {}, {}), null);
+
+const { windowResizeAnchor } = require('../desktop-widget-model.js');
+const area = { x: 0, y: 23, width: 1440, height: 877 };
+for (const original of [
+  { x: 1130, y: 23, width: 310, height: 215 },
+  { x: 1118, y: 35, width: 310, height: 215 },
+  { x: 0, y: 23, width: 310, height: 215 },
+  { x: 1130, y: 685, width: 310, height: 215 },
+  { x: 0, y: 685, width: 310, height: 215 },
+]) {
+  const anchor = windowResizeAnchor(area, original);
+  let frame = original;
+  for (const key of ['large', 'medium', 'small', 'large', 'small']) frame = windowPresetBounds(key, area, frame, anchor);
+  assert.deepEqual(frame, original, 'preset round trips must preserve the original corner and margin');
+}
+const leftMonitor = { x: -1920, y: 23, width: 1920, height: 1057 };
+const rightTop = { x: -310, y: 23, width: 310, height: 215 };
+assert.deepEqual(windowPresetBounds('large', leftMonitor, rightTop, windowResizeAnchor(leftMonitor, rightTop)), { x: -840, y: 23, width: 840, height: 560 });
+const cramped = { x: 0, y: 0, width: 800, height: 500 }, inset = { x: 478, y: 12, width: 310, height: 215 }, anchor = windowResizeAnchor(cramped, inset);
+const expanded = windowPresetBounds('large', cramped, inset, anchor);
+assert.deepEqual(windowPresetBounds('small', cramped, expanded, anchor), inset, 'temporary clamping must not erase the original gap');

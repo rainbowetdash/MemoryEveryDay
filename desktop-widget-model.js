@@ -102,19 +102,29 @@
     small: { width: 310, height: 215, label: '小' },
   });
 
-  function windowPresetBounds(key, workArea, position) {
+  function windowResizeAnchor(workArea, frame) {
+    const left = frame.x - workArea.x, right = workArea.x + workArea.width - frame.x - frame.width;
+    const top = frame.y - workArea.y, bottom = workArea.y + workArea.height - frame.y - frame.height;
+    return { horizontal: right < left ? 'right' : 'left', vertical: bottom < top ? 'bottom' : 'top',
+      gapX: Math.max(0, Math.min(left, right)), gapY: Math.max(0, Math.min(top, bottom)) };
+  }
+
+  function windowPresetBounds(key, workArea, position, anchor = null) {
     const preset = windowSizePresets[key];
     if (!preset) return null;
     const width = Math.max(310, Math.min(preset.width, Math.floor(workArea.width)));
     const height = Math.max(215, Math.min(preset.height, Math.floor(workArea.height)));
+    const x = anchor ? (anchor.horizontal === 'right' ? workArea.x + workArea.width - anchor.gapX - width : workArea.x + anchor.gapX) : position.x;
+    const y = anchor ? (anchor.vertical === 'bottom' ? workArea.y + workArea.height - anchor.gapY - height : workArea.y + anchor.gapY) : position.y;
     return {
       width, height,
-      x: Math.round(Math.max(workArea.x, Math.min(position.x, workArea.x + workArea.width - width))),
-      y: Math.round(Math.max(workArea.y, Math.min(position.y, workArea.y + workArea.height - height))),
+      x: Math.round(Math.max(workArea.x, Math.min(x, workArea.x + workArea.width - width))),
+      y: Math.round(Math.max(workArea.y, Math.min(y, workArea.y + workArea.height - height))),
     };
   }
 
   return {
+    windowResizeAnchor,
     windowSizePresets,
     windowPresetBounds,
     dateKey,

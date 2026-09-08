@@ -2067,7 +2067,7 @@ dependencies = [
 
 [[package]]
 name = "memory-everyday-desktop-widget"
-version = "0.1.5"
+version = "0.1.6"
 dependencies = [
  "tauri",
  "tauri-build",

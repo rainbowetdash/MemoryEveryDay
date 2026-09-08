@@ -596,6 +596,7 @@
 
   let resizingToPreset = false;
   let activeWindowPreset = null;
+  let windowPresetPlacement = null;
 
   function updateWindowSizeButtons() {
     const matches = (size) => size && Math.abs(window.innerWidth - size.width) <= 2 && Math.abs(window.innerHeight - size.height) <= 2;
@@ -617,17 +618,23 @@
     updateWindowSizeButtons();
     try {
       const api = window.__TAURI__;
-      const [monitor, position] = await Promise.all([api.window.currentMonitor(), appWindow.outerPosition()]);
+      const [monitor, position, size] = await Promise.all([api.window.currentMonitor(), appWindow.outerPosition(), appWindow.innerSize()]);
       if (!monitor) throw new Error('Monitor unavailable');
       const area = monitor.workArea || { position: monitor.position, size: monitor.size }, scale = monitor.scaleFactor;
-      const bounds = model.windowPresetBounds(key, {
-        x: area.position.x / scale, y: area.position.y / scale,
-        width: area.size.width / scale, height: area.size.height / scale,
-      }, { x: position.x / scale, y: position.y / scale });
+      const workArea = { x: area.position.x / scale, y: area.position.y / scale,
+        width: area.size.width / scale, height: area.size.height / scale };
+      const frame = { x: position.x / scale, y: position.y / scale, width: size.width / scale, height: size.height / scale };
+      // Retain the anchor through a preset sequence, including screen-boundary clamping.
+      // A manual move/resize or monitor change starts a new sequence at the user's new placement.
+      const sameArea = windowPresetPlacement && JSON.stringify(windowPresetPlacement.workArea) === JSON.stringify(workArea);
+      const sameFrame = sameArea && ['x', 'y', 'width', 'height'].every((field) => Math.abs(frame[field] - windowPresetPlacement.frame[field]) <= 2);
+      const anchor = sameFrame ? windowPresetPlacement.anchor : model.windowResizeAnchor(workArea, frame);
+      const bounds = model.windowPresetBounds(key, workArea, frame, anchor);
       if (!bounds) return;
       await appWindow.setSize(new api.dpi.LogicalSize(bounds.width, bounds.height));
       await appWindow.setPosition(new api.dpi.LogicalPosition(bounds.x, bounds.y));
       activeWindowPreset = { key, ...bounds };
+      windowPresetPlacement = { workArea, frame: bounds, anchor };
       $('widget-size-status').textContent = `已切换到${model.windowSizePresets[key].label}窗口`;
     } catch {
       setToast('暂时无法切换窗口大小', '可以继续拖动边缘调整，或稍后再试');
