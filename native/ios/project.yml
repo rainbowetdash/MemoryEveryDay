@@ -13,13 +13,43 @@ targets:
     platform: iOS
     sources:
       - path: MemoryEveryDay
+      - path: Shared
       - path: ../../wecom-daily-memo-icon.png
         buildPhase: resources
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.memoryeveryday.app
         INFOPLIST_FILE: MemoryEveryDay/Info.plist
+        CODE_SIGN_ENTITLEMENTS: MemoryEveryDay.entitlements
         CODE_SIGN_STYLE: Automatic
         TARGETED_DEVICE_FAMILY: "1,2"
     dependencies:
       - sdk: Speech.framework
+      - target: MemoryEveryDayWidget
+        embed: true
+
+  MemoryEveryDayWidget:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: MemoryEveryDayWidget
+      - path: Shared
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.memoryeveryday.app.widget
+        INFOPLIST_FILE: MemoryEveryDayWidget/Info.plist
+        CODE_SIGN_ENTITLEMENTS: MemoryEveryDay.entitlements
+        CODE_SIGN_STYLE: Automatic
+        TARGETED_DEVICE_FAMILY: "1,2"
+        SKIP_INSTALL: YES
+  MemoryEveryDayTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: MemoryEveryDayTests
+    dependencies:
+      - target: MemoryEveryDay
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.memoryeveryday.app.tests
+        GENERATE_INFOPLIST_FILE: YES

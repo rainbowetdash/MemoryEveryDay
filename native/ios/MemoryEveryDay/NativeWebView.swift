@@ -16,6 +16,7 @@ struct NativeWebView: UIViewRepresentable {
         configuration.userContentController.add(context.coordinator, name: "notifications")
         configuration.userContentController.add(context.coordinator, name: "audio")
         configuration.userContentController.add(context.coordinator, name: "appReady")
+        configuration.userContentController.add(context.coordinator, name: "calendarWidget")
         configuration.userContentController.addUserScript(WKUserScript(
             source: """
             (function () {
@@ -131,6 +132,15 @@ struct NativeWebView: UIViewRepresentable {
         }
 
         func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+            if message.name == "calendarWidget" {
+                guard message.frameInfo.isMainFrame,
+                      message.frameInfo.securityOrigin.protocol == "https",
+                      message.frameInfo.securityOrigin.host == "memoryeveryday.pages.dev",
+                      let body = message.body as? [String: Any] else { return }
+                let saved = WidgetStore.write(body)
+                webView?.evaluateJavaScript("window.dispatchEvent(new CustomEvent('native-widget-status',{detail:{saved:\(saved)}}))")
+                return
+            }
             if message.name == "appReady" { markAppReady(); return }
             guard let body = message.body as? [String: Any] else { return }
             if message.name == "notifications" { handleNotificationMessage(body) }

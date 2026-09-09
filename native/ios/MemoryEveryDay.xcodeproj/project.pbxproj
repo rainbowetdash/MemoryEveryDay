@@ -7,23 +7,65 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1ABADE9895634595AC4D9FAA /* MemoryEveryDayWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = F75CAA5AD9CCA2A08202B788 /* MemoryEveryDayWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		4FD93AD8B607237882B00062 /* MemoryEveryDayWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9C0602C9DE42D2537A1876 /* MemoryEveryDayWidget.swift */; };
 		679057FCCFE10F5F17C72A53 /* MemoryEveryDayApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A190ECCF176AEB43BF2040B /* MemoryEveryDayApp.swift */; };
 		6F9F0C957E7C61F493477B00 /* Speech.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A3E627BBF15D6EBBB016B7F /* Speech.framework */; };
 		742CC35C04EA5A6DB5B64555 /* NativeWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 707193388A2EF760226F0F53 /* NativeWebView.swift */; };
 		86DC3C3B59053FA5629C2342 /* wecom-daily-memo-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 39EC438F09E292F6A19AF4CF /* wecom-daily-memo-icon.png */; };
 		90C48BCD5D991A30555B38D5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 050668D8E90482CF513E4135 /* Assets.xcassets */; };
+		9E0DD9862DD2EAB11F35681F /* WidgetSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7826C68E0B2CA5AAD1CC1D4B /* WidgetSnapshot.swift */; };
 		A179E768B16822E3A8375129 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D2A41037F997210B0F1D58B5 /* LaunchScreen.storyboard */; };
+		BEC162AD20CA40767C061C6C /* WidgetSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7826C68E0B2CA5AAD1CC1D4B /* WidgetSnapshot.swift */; };
+		E54440D850372E5F034B9E94 /* WidgetBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 994E2D943FA385BD3C1010A9 /* WidgetBridgeTests.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		399C90874BDDFCD030B3962D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7F7890687F6F6A7EF15EF9DB /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C83516F3D23D01A915A149A5;
+			remoteInfo = MemoryEveryDay;
+		};
+		FE4CEB1A3A5D406C6F268973 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7F7890687F6F6A7EF15EF9DB /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A8AE78C6DC86A9DE4897817D;
+			remoteInfo = MemoryEveryDayWidget;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		65EF20071845C302A416F7A3 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				1ABADE9895634595AC4D9FAA /* MemoryEveryDayWidget.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		050668D8E90482CF513E4135 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		39EC438F09E292F6A19AF4CF /* wecom-daily-memo-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wecom-daily-memo-icon.png"; sourceTree = "<group>"; };
 		4A3E627BBF15D6EBBB016B7F /* Speech.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Speech.framework; path = System/Library/Frameworks/Speech.framework; sourceTree = SDKROOT; };
 		707193388A2EF760226F0F53 /* NativeWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeWebView.swift; sourceTree = "<group>"; };
+		7826C68E0B2CA5AAD1CC1D4B /* WidgetSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetSnapshot.swift; sourceTree = "<group>"; };
 		9062D620E4FFA5143828F61E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		994E2D943FA385BD3C1010A9 /* WidgetBridgeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetBridgeTests.swift; sourceTree = "<group>"; };
 		9A190ECCF176AEB43BF2040B /* MemoryEveryDayApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryEveryDayApp.swift; sourceTree = "<group>"; };
+		9C4AB08EB0CA9ADE3B1E1210 /* MemoryEveryDayTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = MemoryEveryDayTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		CE9C0602C9DE42D2537A1876 /* MemoryEveryDayWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryEveryDayWidget.swift; sourceTree = "<group>"; };
+		CF6636AF38435A80A9058A89 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		D2A41037F997210B0F1D58B5 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		F1A8094CAA3344A70B07E0DC /* MemoryEveryDay.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = MemoryEveryDay.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F75CAA5AD9CCA2A08202B788 /* MemoryEveryDayWidget.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = MemoryEveryDayWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -46,10 +88,21 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		249DBD31DD73E39711BCEDFA /* MemoryEveryDayWidget */ = {
+			isa = PBXGroup;
+			children = (
+				CF6636AF38435A80A9058A89 /* Info.plist */,
+				CE9C0602C9DE42D2537A1876 /* MemoryEveryDayWidget.swift */,
+			);
+			path = MemoryEveryDayWidget;
+			sourceTree = "<group>";
+		};
 		33A2ECC12D2CAA69B0A2E9BD /* Products */ = {
 			isa = PBXGroup;
 			children = (
 				F1A8094CAA3344A70B07E0DC /* MemoryEveryDay.app */,
+				9C4AB08EB0CA9ADE3B1E1210 /* MemoryEveryDayTests.xctest */,
+				F75CAA5AD9CCA2A08202B788 /* MemoryEveryDayWidget.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -59,9 +112,28 @@
 			children = (
 				5B57F307D3EEAF92E7D6A002 /* MemoryEveryDay */,
 				8122A2AD7CB0F2F3260E7C2F /* MemoryEveryDay */,
+				5A3093E9F058B695191CF8B3 /* MemoryEveryDayTests */,
+				249DBD31DD73E39711BCEDFA /* MemoryEveryDayWidget */,
+				3CCA09C736FBD5D6CA93E542 /* Shared */,
 				23DE0E5C9421901696FACF0F /* Frameworks */,
 				33A2ECC12D2CAA69B0A2E9BD /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		3CCA09C736FBD5D6CA93E542 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				7826C68E0B2CA5AAD1CC1D4B /* WidgetSnapshot.swift */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		5A3093E9F058B695191CF8B3 /* MemoryEveryDayTests */ = {
+			isa = PBXGroup;
+			children = (
+				994E2D943FA385BD3C1010A9 /* WidgetBridgeTests.swift */,
+			);
+			path = MemoryEveryDayTests;
 			sourceTree = "<group>";
 		};
 		5B57F307D3EEAF92E7D6A002 /* MemoryEveryDay */ = {
@@ -88,6 +160,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		A8AE78C6DC86A9DE4897817D /* MemoryEveryDayWidget */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DE13AA1E17BAA9F0F46B10F6 /* Build configuration list for PBXNativeTarget "MemoryEveryDayWidget" */;
+			buildPhases = (
+				1D5D58397A7026F94F31C262 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MemoryEveryDayWidget;
+			packageProductDependencies = (
+			);
+			productName = MemoryEveryDayWidget;
+			productReference = F75CAA5AD9CCA2A08202B788 /* MemoryEveryDayWidget.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		C83516F3D23D01A915A149A5 /* MemoryEveryDay */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = EC6D3BDBB64993EB463AF3F3 /* Build configuration list for PBXNativeTarget "MemoryEveryDay" */;
@@ -95,10 +184,12 @@
 				88F896B765C4C33E38A51A16 /* Sources */,
 				EDA895B9DCACF798BA5FE5C1 /* Resources */,
 				D8BBAB105EED2AEE83AF0E64 /* Frameworks */,
+				65EF20071845C302A416F7A3 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				960FD7290B72C18E18C9AB60 /* PBXTargetDependency */,
 			);
 			name = MemoryEveryDay;
 			packageProductDependencies = (
@@ -106,6 +197,24 @@
 			productName = MemoryEveryDay;
 			productReference = F1A8094CAA3344A70B07E0DC /* MemoryEveryDay.app */;
 			productType = "com.apple.product-type.application";
+		};
+		E12272A2A38D2E9471F3813D /* MemoryEveryDayTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 28B0C68D4546D42DAF9E28A0 /* Build configuration list for PBXNativeTarget "MemoryEveryDayTests" */;
+			buildPhases = (
+				1F0C8036D31F3A3FAAF711E6 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				39078268B16E84A58754B506 /* PBXTargetDependency */,
+			);
+			name = MemoryEveryDayTests;
+			packageProductDependencies = (
+			);
+			productName = MemoryEveryDayTests;
+			productReference = 9C4AB08EB0CA9ADE3B1E1210 /* MemoryEveryDayTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
 
@@ -116,9 +225,16 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
+					A8AE78C6DC86A9DE4897817D = {
+						DevelopmentTeam = 6X7732M9V3;
+						ProvisioningStyle = Automatic;
+					};
 					C83516F3D23D01A915A149A5 = {
 						DevelopmentTeam = 6X7732M9V3;
 						ProvisioningStyle = Automatic;
+					};
+					E12272A2A38D2E9471F3813D = {
+						DevelopmentTeam = 6X7732M9V3;
 					};
 				};
 			};
@@ -137,6 +253,8 @@
 			projectRoot = "";
 			targets = (
 				C83516F3D23D01A915A149A5 /* MemoryEveryDay */,
+				A8AE78C6DC86A9DE4897817D /* MemoryEveryDayWidget */,
+				E12272A2A38D2E9471F3813D /* MemoryEveryDayTests */,
 			);
 		};
 /* End PBXProject section */
@@ -155,18 +273,102 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		1D5D58397A7026F94F31C262 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4FD93AD8B607237882B00062 /* MemoryEveryDayWidget.swift in Sources */,
+				BEC162AD20CA40767C061C6C /* WidgetSnapshot.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1F0C8036D31F3A3FAAF711E6 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E54440D850372E5F034B9E94 /* WidgetBridgeTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		88F896B765C4C33E38A51A16 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				679057FCCFE10F5F17C72A53 /* MemoryEveryDayApp.swift in Sources */,
 				742CC35C04EA5A6DB5B64555 /* NativeWebView.swift in Sources */,
+				9E0DD9862DD2EAB11F35681F /* WidgetSnapshot.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		39078268B16E84A58754B506 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C83516F3D23D01A915A149A5 /* MemoryEveryDay */;
+			targetProxy = 399C90874BDDFCD030B3962D /* PBXContainerItemProxy */;
+		};
+		960FD7290B72C18E18C9AB60 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A8AE78C6DC86A9DE4897817D /* MemoryEveryDayWidget */;
+			targetProxy = FE4CEB1A3A5D406C6F268973 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		2A96BE22FB38A294DFB4A501 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.memoryeveryday.app.tests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MemoryEveryDay.app/MemoryEveryDay";
+			};
+			name = Release;
+		};
+		3434F0C13961B97D13F67D61 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = MemoryEveryDay.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = MemoryEveryDayWidget/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.memoryeveryday.app.widget;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		3BCD87F9F7FBA5294DC4F69B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = MemoryEveryDay.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = MemoryEveryDayWidget/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.memoryeveryday.app.widget;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		96DCD702AADE3916CFB47AFC /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -224,10 +426,28 @@
 			};
 			name = Release;
 		};
+		B2CD7D146141545C5930D240 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.memoryeveryday.app.tests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MemoryEveryDay.app/MemoryEveryDay";
+			};
+			name = Debug;
+		};
 		BCED53EFF1A2C1126C873DD4 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = MemoryEveryDay.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				INFOPLIST_FILE = MemoryEveryDay/Info.plist;
@@ -309,6 +529,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = MemoryEveryDay.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				INFOPLIST_FILE = MemoryEveryDay/Info.plist;
@@ -325,11 +546,29 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		28B0C68D4546D42DAF9E28A0 /* Build configuration list for PBXNativeTarget "MemoryEveryDayTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B2CD7D146141545C5930D240 /* Debug */,
+				2A96BE22FB38A294DFB4A501 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
 		4B51C31169543C72E44209AF /* Build configuration list for PBXProject "MemoryEveryDay" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				EF5BD999B4D0894C1725EE6C /* Debug */,
 				96DCD702AADE3916CFB47AFC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		DE13AA1E17BAA9F0F46B10F6 /* Build configuration list for PBXNativeTarget "MemoryEveryDayWidget" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3434F0C13961B97D13F67D61 /* Debug */,
+				3BCD87F9F7FBA5294DC4F69B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

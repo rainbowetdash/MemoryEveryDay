@@ -1,5 +1,6 @@
 import SwiftUI
 import UserNotifications
+import WidgetKit
 
 extension Notification.Name {
     static let memoryEveryDayTestNotificationPresented = Notification.Name("MemoryEveryDayTestNotificationPresented")
@@ -25,6 +26,7 @@ final class MemoryEveryDayAppDelegate: NSObject, UIApplicationDelegate, UNUserNo
 struct MemoryEveryDayApp: App {
     @UIApplicationDelegateAdaptor(MemoryEveryDayAppDelegate.self) private var appDelegate
     @State private var isLoading = true
+    @Environment(\.scenePhase) private var scenePhase
 
     var body: some Scene {
         WindowGroup {
@@ -32,6 +34,9 @@ struct MemoryEveryDayApp: App {
                 NativeWebView(isLoading: $isLoading)
                     .ignoresSafeArea()
                 if isLoading { AppSplashView() }
+            }
+            .onChange(of: scenePhase) { _, phase in
+                if phase == .active { WidgetCenter.shared.reloadTimelines(ofKind: "MemoryEveryDayCalendar") }
             }
         }
     }

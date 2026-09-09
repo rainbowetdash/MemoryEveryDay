@@ -2,11 +2,11 @@
   "schemaVersion": 1,
   "apps": {
     "ios": {
-      "latestVersion": "1.0.15",
-      "downloadUrl": "./downloads/ipa-1-0-15",
-      "downloadName": "MemoryEveryDay-1.0.15.ipa",
+      "latestVersion": "1.0.16",
+      "downloadUrl": "./downloads/ipa-1-0-16",
+      "downloadName": "MemoryEveryDay-1.0.16.ipa",
       "label": "iPhone IPA",
-      "hint": "用于 SideStore、AltStore、Sideloadly 等侧载工具"
+      "hint": "SideStore 安装时请保留应用扩展，更新后打开应用同步小组件"
     },
     "android": {
       "latestVersion": "1.0.10",
@@ -31,14 +31,14 @@
     }
   },
   "announcement": {
-    "id": "2026-09-08-desktop-app-016",
-    "eyebrow": "每日备忘桌面版 0.1.6",
-    "title": "切换窗口大小，保留你放好的位置",
-    "summary": "macOS 与 Windows 新版已经开放下载。",
+    "id": "2026-09-09-ios-widget-016",
+    "eyebrow": "每日备忘 iPhone 1.0.16",
+    "title": "把月历与今日安排放到手机桌面",
+    "summary": "新增固定大号 iPhone 小组件，保留熟悉的蓝白分栏。",
     "items": [
-      "窗口放在右上角时，切换大、中、小会保持右侧和顶部的距离。",
-      "放大后再缩小，会回到原来的贴边位置，不用重新拖动。",
-      "手动移动或自由缩放后，后续尺寸切换会以你新放好的位置为准。"
+      "左侧查看整月和彩色圆点，右侧查看今天的日程与待办。",
+      "打开应用后更新内容；点击小组件可进入应用继续编辑。",
+      "使用 SideStore 更新时请保留应用扩展，再从主屏幕添加“每日备忘”小组件。"
     ]
   }
 }

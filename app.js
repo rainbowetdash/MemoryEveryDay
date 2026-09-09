@@ -5,14 +5,14 @@ const zoomStorageKey = 'memory-everyday-calendar-scale-v2';
 const pendingSyncKey = 'memory-everyday-pending-sync';
 const authReminderKey = 'memory-everyday-auth-reminder-shown';
 const floatingActionPositionKey = 'memory-everyday-floating-action-position-v1';
-const releaseInfoUrl = './release-info.json?v=51';
+const releaseInfoUrl = './release-info.json?v=52';
 const releaseAnnouncementStorageKeyBase = 'memory-everyday-release-announcement-seen';
 const launchParams = new URLSearchParams(window.location.search);
 const isNativeShell = launchParams.get('native-shell') === '1';
 const legacyNativeVersions = { ios: '1.0.4', android: '1.0.0' };
 const fallbackReleaseInfo = {
   apps: {
-    ios: { latestVersion: '1.0.15', downloadUrl: './downloads/ipa-1-0-15', downloadName: 'MemoryEveryDay-1.0.15.ipa', label: 'iPhone IPA', hint: '用于 SideStore、AltStore、Sideloadly 等侧载工具' },
+    ios: { latestVersion: '1.0.16', downloadUrl: './downloads/ipa-1-0-16', downloadName: 'MemoryEveryDay-1.0.16.ipa', label: 'iPhone IPA', hint: '用于 SideStore、AltStore、Sideloadly 等侧载工具' },
     android: { latestVersion: '1.0.10', downloadUrl: './downloads/apk-1-0-10', downloadName: 'MemoryEveryDay-1.0.10.apk', label: 'Android APK', hint: '下载后可直接安装更新' },
     macos: { latestVersion: '0.1.6', downloadUrl: './downloads/MemoryEveryDay-Desktop-macOS-0.1.6.dmg', downloadName: 'MemoryEveryDay-Desktop-macOS-0.1.6.dmg', label: 'macOS 每日备忘桌面版', hint: 'Apple 芯片 Mac，拖入应用程序即可使用' },
     windows: { latestVersion: '0.1.6', downloadUrl: './downloads/MemoryEveryDay-Desktop-Windows-0.1.6-setup.exe', downloadName: 'MemoryEveryDay-Desktop-Windows-0.1.6-setup.exe', label: 'Windows 每日备忘桌面版', hint: '64 位 Windows 安装程序' }
@@ -40,6 +40,7 @@ let releaseDownloadFlow = false;
 let launchNoticesFinished = false;
 let authReminderPending = false;
 let nativeAppReadySignaled = false;
+let mobileWidgetTimer = null;
 let memoAutosaveTimer = null;
 let memoSavePromise = null;
 let memoSaveQueued = false;
@@ -146,7 +147,7 @@ function normalizeEventGroups() { state.events = state.events.map((event) => ({ 
 function pendingStorageKey(user = state.user) { return user ? `${pendingSyncKey}:${user.id}` : pendingSyncKey; }
 function readPending(user = state.user) { try { const value = JSON.parse(localStorage.getItem(pendingStorageKey(user)) || '[]'); return Array.isArray(value) ? value : []; } catch { return []; } }
 function writePending(value) { if (state.user) localStorage.setItem(pendingStorageKey(), JSON.stringify(value)); }
-function save() { normalizeEventGroups(); writeStoredEvents(userStorageKey(), state.events); }
+function save() { normalizeEventGroups(); writeStoredEvents(userStorageKey(), state.events); syncMobileWidget(); }
 function visibleEvents() { return state.activeGroupId === 'all' ? state.events : state.events.filter((event) => eventGroupId(event) === state.activeGroupId); }
 function normalizeWeeklyDays(value) { return [...new Set((Array.isArray(value) ? value : []).map(Number).filter((day) => Number.isInteger(day) && day >= 0 && day <= 6))].sort((a, b) => a - b); }
 function normalizeRepeatDate(value) { return /^\d{4}-\d{2}-\d{2}$/.test(String(value || '')) ? String(value) : ''; }
@@ -487,7 +488,7 @@ function setupInteractionFeedback() {
     pressed.clear();
   });
 }
-function render() { renderGroups(); renderCalendar(); renderAgenda(); renderDay(); renderMemos(); renderAnniversaries(); refreshPastEventStyles(); }
+function render() { syncMobileWidget(); renderGroups(); renderCalendar(); renderAgenda(); renderDay(); renderMemos(); renderAnniversaries(); refreshPastEventStyles(); }
 document.querySelectorAll('.tab').forEach((tab) => { tab.onclick = () => { document.querySelectorAll('.tab').forEach((t) => t.classList.remove('is-active')); tab.classList.add('is-active'); document.querySelectorAll('.screen').forEach((screen) => screen.classList.toggle('is-hidden', screen.id !== tab.dataset.screen)); updateFloatingAction(tab.dataset.screen); updateSidebarAvailability(tab.dataset.screen); }; });
 $('previous-month').onclick = () => { state.showing.setMonth(state.showing.getMonth() - 1); renderCalendar(); }; $('next-month').onclick = () => { state.showing.setMonth(state.showing.getMonth() + 1); renderCalendar(); }; $('today-button').onclick = $('jump-today').onclick = () => { state.selected = new Date(); state.showing = new Date(); render(); };
 function renderDayYearList() { const list = $('day-year-list'), selectedYear = state.dayPickerShowing.getFullYear(); list.innerHTML = ''; for (let year = earliestSelectableYear; year <= latestSelectableYear; year += 1) { const option = document.createElement('button'); option.type = 'button'; option.className = `day-year-option ${year === selectedYear ? 'is-selected' : ''}`; option.textContent = `${year}年`; option.onclick = () => { const month = state.dayPickerShowing.getMonth(), day = state.dayPickerShowing.getDate(), lastDay = new Date(year, month + 1, 0).getDate(); state.dayPickerShowing = new Date(year, month, Math.min(day, lastDay)); list.classList.add('is-hidden'); $('day-picker-year').setAttribute('aria-expanded', 'false'); renderDayPicker(); }; list.append(option); } }
@@ -802,3 +803,16 @@ setupInteractionFeedback();
 void checkReleaseNotices();
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { refreshPastEventStyles(); void stopRemindersOnOpen(); } else void flushMemoAutosave(); });
 window.addEventListener('focus', () => { refreshPastEventStyles(); void stopRemindersOnOpen(); });
+
+
+
+function syncMobileWidget() {
+  const bridge = window.webkit?.messageHandlers?.calendarWidget;
+  if (!isNativeShell || !bridge || !state.authReady || !window.MemoryWidgetSnapshot) return;
+  clearTimeout(mobileWidgetTimer);
+  const publish = () => bridge.postMessage(window.MemoryWidgetSnapshot.build(state.events, Boolean(state.user), eventOccursOn));
+  if (document.hidden || !state.user) publish();
+  else mobileWidgetTimer = setTimeout(publish, 300);
+}
+document.addEventListener('visibilitychange', syncMobileWidget);
+window.addEventListener('pagehide', syncMobileWidget);
