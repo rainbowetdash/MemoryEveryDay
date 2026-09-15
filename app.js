@@ -823,6 +823,7 @@ function dueBadge(event) {
   return status ? `<span class="due-badge" data-tone="${status.tone}">${escapeHtml(status.label)}</span>` : '';
 }
 function updateTodoPlanningFields() {
+  syncPlanningPicker('todo-planning-mode');
   const todo = $('event-kind').value === 'todo', pending = todo && $('todo-planning-mode').value === 'pending';
   $('todo-planning-fields').classList.toggle('is-hidden', !todo);
   $('schedule-editor-trigger').classList.toggle('is-hidden', pending);
@@ -838,6 +839,7 @@ function renderPlanning() {
   $('planning-entry-copy').textContent = nearest ? `${window.TodoPlanning.due(nearest)?.label || ''} · ${nearest.title}` : pending.length ? '还没决定什么时候做，也不会忘记' : '先记下来，时间以后定';
   if (!$('planning-dialog').open) return;
   const filter = $('planning-filter').value;
+  syncPlanningPicker('planning-filter');
   const items = window.TodoPlanning.sort(todos.filter(item => filter === 'done' ? isTodoCompleted(item) : !isTodoCompleted(item) && (filter === 'open' || window.TodoPlanning.pending(item))));
   $('planning-title').textContent = filter === 'pending' ? '待安排' : filter === 'done' ? '已完成待办' : '全部未完成';
   const signature = JSON.stringify([filter, items, dateKey(new Date())]);
@@ -862,8 +864,45 @@ function openPlanningEvent(id, schedule = false) {
   $('planning-dialog').close(); openEventDialog(event);
   if (schedule) { $('todo-planning-mode').value = 'scheduled'; updateTodoPlanningFields(); openScheduleEditor(); }
 }
-$('planning-entry').onclick = () => { $('planning-feedback').textContent = ''; $('planning-filter').value = state.events.some(item => window.TodoPlanning.pending(item) && !isTodoCompleted(item)) ? 'pending' : 'open'; $('planning-dialog').showModal(); renderPlanning(); };
+$('planning-entry').onclick = () => { $('planning-feedback').textContent = ''; $('planning-filter').value = 'pending'; closePlanningPickers(); $('planning-dialog').showModal(); renderPlanning(); };
 $('planning-close').onclick = () => $('planning-dialog').close();
 $('planning-filter').onchange = renderPlanning;
 $('planning-add').onclick = () => { $('planning-dialog').close(); openEventDialog(null, {kind:'todo'}); };
 $('todo-planning-mode').onchange = () => { updateTodoPlanningFields(); if ($('todo-planning-mode').value === 'scheduled') openScheduleEditor(); };
+
+function syncPlanningPicker(id) {
+  const input = $(id), picker = input.closest('.planning-picker');
+  const options = [...picker.querySelectorAll('[data-value]')];
+  const selected = options.find(option => option.dataset.value === input.value);
+  picker.querySelector('.planning-picker-trigger > span').textContent = selected.firstChild.textContent;
+  options.forEach(option => option.setAttribute('aria-checked', String(option === selected)));
+}
+function closePlanningPickers() {
+  document.querySelectorAll('.planning-picker').forEach(picker => {
+    picker.querySelector('[role="menu"]').hidden = true;
+    picker.querySelector('.planning-picker-trigger').setAttribute('aria-expanded', 'false');
+  });
+}
+document.querySelectorAll('.planning-picker').forEach(picker => {
+  const input = picker.querySelector('input'), trigger = picker.querySelector('.planning-picker-trigger'), menu = picker.querySelector('[role="menu"]');
+  const options = [...menu.querySelectorAll('[data-value]')];
+  trigger.onclick = () => {
+    const opening = menu.hidden; closePlanningPickers(); menu.hidden = !opening;
+    trigger.setAttribute('aria-expanded', String(opening));
+    if (opening) options.find(option => option.dataset.value === input.value).focus();
+  };
+  options.forEach(option => option.onclick = () => {
+    input.value = option.dataset.value; syncPlanningPicker(input.id); closePlanningPickers(); trigger.focus();
+    input.dispatchEvent(new Event('change', {bubbles:true}));
+  });
+  picker.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && !menu.hidden) { event.preventDefault(); event.stopPropagation(); closePlanningPickers(); trigger.focus(); }
+    if (['ArrowDown','ArrowUp','Home','End'].includes(event.key)) {
+      event.preventDefault(); menu.hidden = false; trigger.setAttribute('aria-expanded','true');
+      const index = options.indexOf(document.activeElement);
+      options[event.key === 'Home' ? 0 : event.key === 'End' ? options.length-1 : (index + (event.key === 'ArrowDown' ? 1 : -1) + options.length) % options.length].focus();
+    }
+    if (event.key === 'Tab') closePlanningPickers();
+  });
+});
+document.addEventListener('click', event => { if (!event.target.closest('.planning-picker')) closePlanningPickers(); });

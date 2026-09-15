@@ -4,3 +4,46 @@
 #planning-dialog{width:min(560px,calc(100% - 28px));max-height:85dvh;box-sizing:border-box;padding:22px;border:1px solid #d9e7f2;border-radius:24px;color:#213e56;background:#f8fbfe}#planning-dialog::backdrop{background:#12334c55;backdrop-filter:blur(4px)}.planning-header{display:flex;align-items:center;justify-content:space-between;gap:12px}.planning-header h2{margin:0;font-size:23px}.planning-intro{font-size:13px;color:#637b8e;line-height:1.6}.planning-tools{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}.planning-tools select{flex:1;min-height:42px;border:1px solid #cddfeb;border-radius:12px;padding:8px;background:white;color:#24465e}.planning-tools button,.planning-actions button{border:1px solid #cddfeb;border-radius:10px;background:#eef7fe;color:#246a9d;padding:9px 12px;cursor:pointer}.planning-tools button{background:#287fba;color:white;border:0}.planning-card{padding:14px;background:white;border:1px solid #dce8f1;border-radius:15px;margin-bottom:10px}.planning-card-main{display:flex;align-items:flex-start;gap:10px}.planning-card-main .todo-check{flex-shrink:0;position:static;margin-top:2px}.planning-title{border:0;background:none;color:#203e56;font-size:15px;font-weight:650;text-align:left;padding:0;overflow-wrap:anywhere;cursor:pointer}.planning-meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px;align-items:center;font-size:11px;color:#647e91}.planning-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:12px}.due-badge{display:inline-block;font-size:11px;font-weight:600;border-radius:7px;padding:3px 6px;background:#edf4fb;color:#476e91;line-height:1.4;margin-top:3px}.due-badge[data-tone=overdue]{background:#fff0ee;color:#b64d40}.due-badge[data-tone=soon]{background:#fff5df;color:#8d6216}.due-badge[data-tone=done]{background:#edf4f2;color:#68837a}.planning-done .planning-title{text-decoration:line-through;color:#8495a0}.planning-feedback{min-height:18px;color:#378071;font-size:12px}.planning-empty{padding:30px 10px;text-align:center;color:#718698;line-height:1.8}
 @media(max-width:480px){#planning-dialog{padding:18px}.planning-entry{padding:10px 12px}.planning-header h2{font-size:21px}}
 #event-form .todo-planning-fields.is-hidden,#event-form .schedule-editor-trigger.is-hidden,#event-form .push-reminder-row.is-hidden{display:none!important}
+
+/* Shared palette keeps every planning surface readable in all app themes. */
+body .planning-entry,body .todo-planning-fields,body #planning-dialog{background:var(--theme-card,#f4faff)!important;border-color:var(--theme-border,#cfe2f0)!important;color:var(--theme-text,#183b60)!important}
+body .planning-entry strong,body #planning-dialog .planning-title,body #planning-dialog h2,body .todo-planning-fields label,body .planning-field-label{color:var(--theme-text,#183b60)!important}
+body .planning-entry small,body .planning-intro,body .planning-meta,body .planning-empty,body .todo-planning-fields small{color:var(--theme-muted,#637b8e)!important}
+body .planning-entry b{color:var(--app-accent,#1769aa)}
+body .planning-card{background:var(--theme-surface,#fafdff);border-color:var(--theme-border,#cfe2f0)}
+body .planning-actions button,body #planning-close{background:var(--theme-tint,#e3f2ff);border-color:var(--theme-border,#cfe2f0);color:var(--app-accent,#1769aa)}
+body #planning-add{background:var(--app-accent,#1769aa);color:var(--theme-surface,#fff)}
+body .planning-feedback{color:var(--theme-text,#183b60)}
+body .planning-done .planning-title{color:var(--theme-muted,#637b8e)!important}
+body .due-badge{background:var(--theme-tint,#e3f2ff);color:var(--theme-text,#183b60)}
+body[data-app-theme="night"] .due-badge[data-tone="overdue"]{background:#482c32;color:#ffb6aa}
+body[data-app-theme="night"] .due-badge[data-tone="soon"]{background:#443b26;color:#ffe0a0}
+body[data-app-theme="night"] .due-badge[data-tone="done"]{background:#243e37;color:#badfd0}
+.planning-picker{position:relative;flex:1;min-width:0}
+body .planning-picker-trigger{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:44px;padding:10px 12px;border:1px solid var(--theme-border,#cfe2f0);border-radius:12px;background:var(--theme-surface,#fafdff);color:var(--theme-text,#183b60);text-align:left;cursor:pointer}
+.planning-picker-menu{position:absolute;top:calc(100% + 6px);left:0;right:0;z-index:12;padding:6px;border:1px solid var(--theme-border,#cfe2f0);border-radius:14px;background:var(--theme-surface,#fafdff);box-shadow:0 10px 28px #0003}
+.planning-picker-menu[hidden]{display:none}
+body .planning-picker-menu button{display:flex;justify-content:space-between;align-items:center;width:100%;min-height:44px;padding:10px 12px;border:0;border-radius:9px;background:transparent;color:var(--theme-text,#183b60);text-align:left;cursor:pointer}
+body .planning-picker-menu button[aria-checked="true"],body .planning-picker-menu button:hover{background:var(--theme-tint,#e3f2ff);color:var(--app-accent,#1769aa)}
+.planning-picker-menu button[aria-checked="false"] span{visibility:hidden}
+.planning-picker :focus-visible,.planning-actions button:focus-visible,.planning-title:focus-visible{outline:2px solid var(--app-accent,#1769aa);outline-offset:2px}
+.planning-field-label{display:block;margin-bottom:8px;font-size:14px;font-weight:600}
+@media(max-width:540px){
+  #calendar-screen:not(.is-hidden){overflow-y:auto;overscroll-behavior-y:contain;scrollbar-width:thin}
+  #calendar-screen .calendar-date-header{padding-top:12px;padding-bottom:8px}
+  #calendar-screen .calendar-toolbar{margin-bottom:8px}
+  #calendar-screen .planning-entry{min-height:44px;margin:0 0 8px;padding:9px 12px;border-radius:12px}
+  #calendar-screen .planning-entry>span{display:flex;align-items:center;gap:10px;flex:1}
+  #calendar-screen .planning-entry strong{flex-shrink:0}
+  #calendar-screen .planning-entry small{font-size:11px}
+  #calendar-screen[data-calendar-zoom="0"] .calendar-scroll{height:clamp(218px,28dvh,258px)!important}
+  #calendar-screen .calendar-agenda-section{flex:1 0 auto;min-height:180px;margin-top:12px;overflow:visible;padding-bottom:16px}
+  #calendar-screen .calendar-agenda-section .section-heading{display:flex;flex-wrap:wrap;gap:5px 12px;align-items:center;margin-bottom:10px}
+  #calendar-screen #schedule-count{font-size:15px;line-height:1.5;font-weight:750;color:var(--theme-text,#183b60)}
+  #calendar-screen .calendar-drag-tip{font-size:10px;color:var(--theme-muted,#637b8e)}
+  #calendar-screen .calendar-agenda-section .agenda-list{flex:0 0 auto;overflow:visible;padding-right:0;padding-bottom:40px}
+}
+body .planning-entry small,body .planning-intro,body .planning-meta,body .planning-empty,body .todo-planning-fields small{color:color-mix(in srgb,var(--theme-muted,#637b8e) 55%,var(--theme-text,#183b60))!important}
+body[data-app-theme="night"] #todo-due-date{color-scheme:dark}
+.planning-picker .chevron::before{border-color:var(--app-accent,#1769aa)}
+.planning-picker-trigger[aria-expanded="true"] .chevron::before{transform:rotate(225deg) translate(-2px,-2px)}
