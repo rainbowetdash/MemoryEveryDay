@@ -16,3 +16,7 @@ iOS 工程可以用 Xcode 打开 `ios/MemoryEveryDay.xcodeproj`。在真机导�
 - 首次快照覆盖当月月历首格起的 98 天，重复安排复用网页日期规则；超出覆盖范围提示打开应用更新。日程结束后隐藏月历圆点，待办只有手动完成后移除。右侧最多展示三项，更多内容在应用内查看。
 - 主应用及扩展使用 `group.com.memoryeveryday.app`。兼容 SideStore / AltStore 在 `ALTAppGroups` 中写入的重签名后组标识。真机需要保留扩展且两者具有匹配的 App Group 权限；模拟器通过不代表 SideStore 真机签名已经验证。
 - `project.yml` 是项目来源，修改目标配置后运行 xcodegen 重新生成 Xcode 工程。IPA 包含 `Payload/MemoryEveryDay.app/PlugIns/MemoryEveryDayWidget.appex`，由 SideStore 在安装时签名。
+
+### iPhone 1.0.17 安装名称兼容
+
+主应用的 CFBundleName / CFBundleDisplayName 使用 `Memory Everyday`，小组件使用 `Memory Everyday Widget`，避免 SideStore 将中文名称作为 appIdName 注册时被拒绝。应用标识、共享容器和应用内中文保持不变。主屏幕图标与系统添加小组件列表会显示英文名称。此前 1.0.8、1.0.15、1.0.16 的主应用名称也为中文，不能将旧版安装成功归因于原来使用英文名称。
