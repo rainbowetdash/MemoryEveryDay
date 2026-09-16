@@ -47,3 +47,9 @@ body .planning-entry small,body .planning-intro,body .planning-meta,body .planni
 body[data-app-theme="night"] #todo-due-date{color-scheme:dark}
 .planning-picker .chevron::before{border-color:var(--app-accent,#1769aa)}
 .planning-picker-trigger[aria-expanded="true"] .chevron::before{transform:rotate(225deg) translate(-2px,-2px)}
+
+/* iOS date controls have an intrinsic minimum width; let the grid shrink. */
+#event-form .todo-planning-fields{grid-template-columns:minmax(0,1fr);min-width:0;max-width:100%}
+#event-form .todo-planning-fields>*,#event-form .todo-planning-fields label{min-width:0;max-width:100%}
+#event-form #todo-due-date{display:block;width:100%;min-width:0;max-width:100%;box-sizing:border-box;min-inline-size:0}
+#todo-due-date::-webkit-date-and-time-value{min-width:0;text-align:left}

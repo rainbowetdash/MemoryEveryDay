@@ -147,7 +147,7 @@
       @media (max-width: 540px) { #event-dialog { width: calc(100% - 24px); max-height: calc(100dvh - 24px); overflow-y: auto; overscroll-behavior: contain; } #event-dialog form { padding: 20px; } #event-dialog .time-inputs { grid-template-columns: minmax(0, 1fr); gap: 12px; } }
     </style>
     <title>每日备忘</title>
-  <link rel="stylesheet" href="./todo-planning.css?v=2" />
+  <link rel="stylesheet" href="./todo-planning.css?v=3" />
 </head>
   <body>
     <main class="app-shell is-sidebar-available" id="app-shell">
@@ -631,9 +631,9 @@
     <script src="./calendar-reschedule.js?v=1"></script>
     <script src="./calendar-dot-visibility.js?v=1"></script>
     <script src="./mobile-widget.js?v=1"></script>
-    <dialog id="planning-dialog" aria-labelledby="planning-title"><div class="planning-header"><h2 id="planning-title">待安排</h2><button type="button" class="close-button" id="planning-close" aria-label="关闭待安排">×</button></div><p class="planning-intro">先把事情记下来。截止日期临近的会排在前面，过了今天也不会消失。</p><div class="planning-tools"><div class="planning-picker" data-picker="planning-filter"><input type="hidden" id="planning-filter" value="pending" /><button type="button" class="planning-picker-trigger" aria-label="查看待办" aria-haspopup="menu" aria-expanded="false" aria-controls="planning-filter-menu"><span>待安排</span><i class="chevron" aria-hidden="true"></i></button><div id="planning-filter-menu" class="planning-picker-menu" role="menu" aria-label="查看待办" hidden><button type="button" role="menuitemradio" aria-checked="true" data-value="pending">待安排<span aria-hidden="true">✓</span></button><button type="button" role="menuitemradio" aria-checked="false" data-value="open">全部未完成<span aria-hidden="true">✓</span></button><button type="button" role="menuitemradio" aria-checked="false" data-value="done">已完成<span aria-hidden="true">✓</span></button></div></div><button type="button" id="planning-add">＋ 记一件事</button></div><div id="planning-feedback" class="planning-feedback" role="status" aria-live="polite"></div><div id="planning-list"></div></dialog>
+    <dialog id="planning-dialog" aria-labelledby="planning-title"><div class="planning-header"><h2 id="planning-title">待安排</h2><button type="button" class="close-button" id="planning-close" aria-label="关闭待安排">×</button></div><p class="planning-intro">先把事情记下来。截止日期临近的会排在前面，过了今天也不会消失。</p><div class="planning-tools"><div class="planning-picker" data-picker="planning-filter"><input type="hidden" id="planning-filter" value="pending" /><button type="button" class="planning-picker-trigger" aria-label="查看待办" aria-haspopup="menu" aria-expanded="false" aria-controls="planning-filter-menu"><span>待安排</span><i class="chevron" aria-hidden="true"></i></button><div id="planning-filter-menu" class="planning-picker-menu" role="menu" aria-label="查看待办" hidden><button type="button" role="menuitemradio" aria-checked="true" data-value="pending">待安排<span aria-hidden="true">✓</span></button><button type="button" role="menuitemradio" aria-checked="false" data-value="open">全部未完成<span aria-hidden="true">✓</span></button></div></div><button type="button" id="planning-add">＋ 记一件事</button></div><div id="planning-feedback" class="planning-feedback" role="status" aria-live="polite"></div><div id="planning-list"></div></dialog>
     <script src="./todo-planning.js?v=1"></script>
-    <script src="./app.js?v=182"></script>
+    <script src="./app.js?v=183"></script>
     <script src="./calendar-drag.js?v=2"></script>
     <script src="./settings.js?v=10"></script>
     <script src="./voice-assistant.js?v=8"></script>

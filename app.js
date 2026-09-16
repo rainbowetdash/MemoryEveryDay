@@ -840,12 +840,12 @@ function renderPlanning() {
   if (!$('planning-dialog').open) return;
   const filter = $('planning-filter').value;
   syncPlanningPicker('planning-filter');
-  const items = window.TodoPlanning.sort(todos.filter(item => filter === 'done' ? isTodoCompleted(item) : !isTodoCompleted(item) && (filter === 'open' || window.TodoPlanning.pending(item))));
-  $('planning-title').textContent = filter === 'pending' ? '待安排' : filter === 'done' ? '已完成待办' : '全部未完成';
+  const items = window.TodoPlanning.sort(todos.filter(item => !isTodoCompleted(item) && (filter === 'open' || window.TodoPlanning.pending(item))));
+  $('planning-title').textContent = filter === 'pending' ? '待安排' : '全部未完成';
   const signature = JSON.stringify([filter, items, dateKey(new Date())]);
   if (signature === planningRenderedSignature) return;
   planningRenderedSignature = signature;
-  $('planning-list').innerHTML = items.length ? items.map(item => `<article class="planning-card ${item.completedAt ? 'planning-done' : ''}"><div class="planning-card-main">${todoCheckMarkup(item)}<div><button type="button" class="planning-title" data-planning-edit="${escapeHtml(item.id)}">${escapeHtml(item.title)}</button><div class="planning-meta">${dueBadge(item)}<span>${item.date ? `${escapeHtml(item.date)} ${escapeHtml(eventTimeLabel(item))} 做` : '尚未安排时间'}</span></div></div></div>${item.completedAt ? '' : `<div class="planning-actions"><button type="button" data-planning-now="${escapeHtml(item.id)}">现在做</button><button type="button" data-planning-schedule="${escapeHtml(item.id)}">${item.date ? '调整时间' : '安排时间'}</button></div>`}</article>`).join('') : `<div class="planning-empty">${filter === 'done' ? '完成的待办会留在这里，也可以恢复。' : filter === 'pending' ? '暂时没有待安排的事。<br>有新任务，先记一条就好。' : '目前没有未完成的待办。'}</div>`;
+  $('planning-list').innerHTML = items.length ? items.map(item => `<article class="planning-card ${item.completedAt ? 'planning-done' : ''}"><div class="planning-card-main">${todoCheckMarkup(item)}<div><button type="button" class="planning-title" data-planning-edit="${escapeHtml(item.id)}">${escapeHtml(item.title)}</button><div class="planning-meta">${dueBadge(item)}<span>${item.date ? `${escapeHtml(item.date)} ${escapeHtml(eventTimeLabel(item))} 做` : '尚未安排时间'}</span></div></div></div>${item.completedAt ? '' : `<div class="planning-actions"><button type="button" data-planning-now="${escapeHtml(item.id)}">现在做</button><button type="button" data-planning-schedule="${escapeHtml(item.id)}">${item.date ? '调整时间' : '安排时间'}</button></div>`}</article>`).join('') : `<div class="planning-empty">${filter === 'pending' ? '暂时没有待安排的事。<br>有新任务，先记一条就好。' : '目前没有未完成的待办。'}</div>`;
   bindTodoChecks();
   $('planning-list').querySelectorAll('[data-planning-edit]').forEach(button => button.onclick = () => openPlanningEvent(button.dataset.planningEdit));
   $('planning-list').querySelectorAll('[data-planning-schedule]').forEach(button => button.onclick = () => openPlanningEvent(button.dataset.planningSchedule, true));
