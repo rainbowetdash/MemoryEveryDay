@@ -53,3 +53,59 @@ body[data-app-theme="night"] #todo-due-date{color-scheme:dark}
 #event-form .todo-planning-fields>*,#event-form .todo-planning-fields label{min-width:0;max-width:100%}
 #event-form #todo-due-date{display:block;width:100%;min-width:0;max-width:100%;box-sizing:border-box;min-inline-size:0}
 #todo-due-date::-webkit-date-and-time-value{min-width:0;text-align:left}
+
+/* One shared overview for scheduled and unscheduled todos. */
+#planning-dialog{width:min(740px,calc(100% - 28px));max-height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 32px);overflow-y:auto;overscroll-behavior:contain}
+.planning-eyebrow{display:block;margin-bottom:5px;font-size:11px;color:var(--theme-muted,#637b8e)}
+.planning-matrix{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border:1px solid var(--theme-border,#cfe2f0);border-radius:18px;overflow:hidden;background:var(--theme-surface,#fafdff)}
+[data-quadrant="0"]{--quadrant-color:#c96659}[data-quadrant="1"]{--quadrant-color:#5386b3}[data-quadrant="2"]{--quadrant-color:#b18a37}[data-quadrant="3"]{--quadrant-color:#558f7b}
+.planning-quadrant{padding:12px;min-width:0;min-height:112px;background:color-mix(in srgb,var(--quadrant-color) 7%,var(--theme-surface,#fafdff))}
+.planning-quadrant:nth-child(odd){border-right:2px solid var(--theme-border,#cfe2f0)}
+.planning-quadrant:nth-child(-n+2){border-bottom:2px solid var(--theme-border,#cfe2f0)}
+body .planning-quadrant h3{display:flex;align-items:center;justify-content:space-between;gap:4px;font-size:13px;margin:0 0 4px;color:var(--theme-text,#183b60)!important}
+.planning-quadrant h3 span{font-size:11px;font-weight:600;opacity:.75}
+body .planning-quadrant>small{font-size:11px;color:color-mix(in srgb,var(--theme-text,#183b60) 70%,var(--theme-muted,#637b8e))!important}
+.planning-dots{display:flex;flex-wrap:wrap;align-content:flex-start;gap:0;margin-top:8px;max-height:96px;overflow-y:auto;scrollbar-width:thin}
+.planning-dot{width:32px;height:32px;display:grid;place-items:center;flex:0 0 32px;border:0;padding:0;border-radius:50%;background:transparent;cursor:pointer}
+.planning-dot i{display:block;width:12px;height:12px;border-radius:50%;background:var(--quadrant-color);box-shadow:0 0 0 3px color-mix(in srgb,var(--quadrant-color) 16%,transparent)}
+.planning-dot:hover,.planning-dot:focus-visible{outline:2px solid var(--quadrant-color);outline-offset:-3px;background:var(--theme-tint,#e3f2ff)}
+.quadrant-empty{font-size:11px;color:var(--theme-muted,#637b8e);padding:8px 0}
+.planning-matrix-hint,.planning-sort-hint{font-size:11px;line-height:1.6;color:color-mix(in srgb,var(--theme-text,#183b60) 65%,var(--theme-muted,#637b8e));margin:9px 0 14px}
+.planning-list-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:18px}
+.planning-list-heading h3{font-size:16px;margin:0;color:var(--theme-text,#183b60)}
+#planning-add{padding:10px 12px;border:0;border-radius:11px;font-size:13px;cursor:pointer}
+#planning-dialog .planning-tools{margin:12px 0 6px;flex-wrap:nowrap}
+#planning-dialog .planning-tools .planning-picker-trigger{font-size:13px;gap:4px}
+#planning-dialog .planning-feedback:empty{display:none}
+#planning-dialog .planning-card.is-highlighted{border-color:var(--app-accent,#1769aa);box-shadow:0 0 0 2px var(--app-accent,#1769aa);outline:none}
+.priority-badge{font-size:11px;color:var(--theme-text,#183b60);padding:3px 6px;border-radius:7px;background:color-mix(in srgb,var(--quadrant-color) 15%,var(--theme-surface,#fafdff))}
+.planning-importance{display:flex;gap:8px}
+.planning-importance button{flex:1;min-height:42px;border:1px solid var(--theme-border,#cfe2f0);border-radius:11px;background:var(--theme-surface,#fafdff);color:var(--theme-text,#183b60);cursor:pointer}
+.planning-importance button[aria-pressed="true"]{border-color:var(--app-accent,#1769aa);background:var(--theme-tint,#e3f2ff);box-shadow:inset 0 0 0 1px var(--app-accent,#1769aa);font-weight:700}
+#event-form #todo-due-date{display:none}
+#todo-due-trigger{min-width:0;max-width:100%;width:100%;box-sizing:border-box}
+#todo-due-dialog{width:min(380px,calc(100% - 32px));padding:20px;border:1px solid var(--theme-border,#cfe2f0);border-radius:22px;background:var(--theme-surface,#fafdff);color:var(--theme-text,#183b60);max-height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 32px);overflow-y:auto}
+#todo-due-dialog::backdrop{background:#10233766;backdrop-filter:blur(3px)}
+#todo-due-dialog h2{font-size:21px;margin:0;color:var(--theme-text,#183b60)}
+#todo-due-dialog .close-button{background:var(--theme-tint,#e3f2ff);color:var(--app-accent,#1769aa)}
+#todo-due-dialog .mini-calendar-header{display:flex;align-items:center;justify-content:space-between;margin:16px 0 12px;color:var(--theme-text,#183b60)}
+#todo-due-dialog .mini-nav{width:40px;height:40px;border:1px solid var(--theme-border,#cfe2f0);border-radius:12px;background:var(--theme-card,#f4faff);color:var(--app-accent,#1769aa)}
+.due-weekdays,.due-calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px;text-align:center}
+.due-weekdays{font-size:12px;color:var(--theme-muted,#637b8e);margin-bottom:8px}
+#todo-due-dialog .mini-day{width:100%;height:auto;min-height:36px;aspect-ratio:1;border:1px solid transparent;border-radius:10px;background:transparent;color:var(--theme-text,#183b60);padding:0;font-size:14px;cursor:pointer}
+#todo-due-dialog .mini-day.is-other{opacity:.45}
+#todo-due-dialog .mini-day.is-today{border-color:var(--app-accent,#1769aa);font-weight:750}
+#todo-due-dialog .mini-day.is-selected{background:var(--app-accent,#1769aa)!important;color:var(--theme-surface,#fff)!important;opacity:1}
+#todo-due-dialog button:focus-visible{outline:2px solid var(--app-accent,#1769aa);outline-offset:2px}
+.due-calendar-actions{display:flex;justify-content:space-between;gap:12px;margin-top:14px;padding-top:14px;border-top:1px solid var(--theme-border,#cfe2f0)}
+.due-calendar-actions button{padding:10px 14px;border:0;border-radius:11px;background:var(--theme-tint,#e3f2ff);color:var(--app-accent,#1769aa);cursor:pointer}
+@media(max-width:540px){
+ #planning-dialog{padding:16px}
+ .planning-quadrant{padding:10px;min-height:105px}
+ body .planning-quadrant h3{font-size:11px}
+ .planning-eyebrow{font-size:10px}
+ #planning-dialog .planning-header h2{font-size:22px}
+ #todo-due-dialog{padding:16px}
+ #event-dialog{max-height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 32px)!important}
+}
+body #todo-due-dialog .mini-day.is-other{color:var(--theme-muted,#637b8e)!important;opacity:1}

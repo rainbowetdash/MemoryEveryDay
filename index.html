@@ -147,7 +147,7 @@
       @media (max-width: 540px) { #event-dialog { width: calc(100% - 24px); max-height: calc(100dvh - 24px); overflow-y: auto; overscroll-behavior: contain; } #event-dialog form { padding: 20px; } #event-dialog .time-inputs { grid-template-columns: minmax(0, 1fr); gap: 12px; } }
     </style>
     <title>每日备忘</title>
-  <link rel="stylesheet" href="./todo-planning.css?v=3" />
+  <link rel="stylesheet" href="./todo-planning.css?v=4" />
 </head>
   <body>
     <main class="app-shell is-sidebar-available" id="app-shell">
@@ -177,7 +177,7 @@
             <button type="button" id="calendar-zoom-in" class="zoom-button" aria-label="放大月历" title="放大月历"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
           </div>
         </div>
-        <button type="button" id="planning-entry" class="planning-entry"><span><strong id="planning-entry-title">待安排</strong><small id="planning-entry-copy">先记下来，时间以后定</small></span><b aria-hidden="true">›</b></button>
+        <button type="button" id="planning-entry" class="planning-entry"><span><strong id="planning-entry-title">待办总览</strong><small id="planning-entry-copy">先记下来，时间以后定</small></span><b aria-hidden="true">›</b></button>
         <div class="calendar-scroll" id="calendar-scroll"><div class="calendar-canvas"><div class="weekdays" aria-hidden="true"><span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span></div><div class="calendar-grid" id="calendar-grid"></div></div></div>
         <section id="calendar-focus-list" class="calendar-focus-list is-hidden" aria-label="本月有安排的日期"></section>
         <section class="up-next calendar-agenda-section" aria-live="polite" aria-label="所选日期的日程">
@@ -305,7 +305,8 @@
         <div id="todo-completion-row" class="todo-completion-row is-hidden"><span id="todo-completion-icon" class="todo-completion-icon" aria-hidden="true">□</span><span><strong id="todo-completion-title">还未完成</strong><small id="todo-completion-copy">待办不会因为时间过去而自动完成</small></span><button type="button" id="todo-completion-toggle">标记完成</button></div>
         <div id="todo-planning-fields" class="todo-planning-fields is-hidden">
           <div><span class="planning-field-label">什么时候做</span><div class="planning-picker" data-picker="todo-planning-mode"><input type="hidden" id="todo-planning-mode" value="pending" /><button type="button" class="planning-picker-trigger" aria-label="什么时候做" aria-haspopup="menu" aria-expanded="false" aria-controls="todo-planning-mode-menu"><span>暂不安排时间</span><i class="chevron" aria-hidden="true"></i></button><div id="todo-planning-mode-menu" class="planning-picker-menu" role="menu" aria-label="什么时候做" hidden><button type="button" role="menuitemradio" aria-checked="true" data-value="pending">暂不安排时间<span aria-hidden="true">✓</span></button><button type="button" role="menuitemradio" aria-checked="false" data-value="scheduled">安排日期和时间<span aria-hidden="true">✓</span></button></div></div></div>
-          <label>截止日期 · Due（可选）<input id="todo-due-date" type="date" /></label>
+          <div><span class="planning-field-label" id="todo-due-label">截止日期 · Due（可选）</span><input id="todo-due-date" type="hidden" /><button type="button" id="todo-due-trigger" class="planning-picker-trigger" aria-labelledby="todo-due-label todo-due-value" aria-haspopup="dialog"><span id="todo-due-value">不设截止日期</span><span aria-hidden="true">▦</span></button></div>
+          <div><span class="planning-field-label">重要性</span><input type="hidden" id="todo-importance" value="false" /><div class="planning-importance" role="group" aria-label="待办重要性"><button type="button" data-importance="false" aria-pressed="true">普通</button><button type="button" data-importance="true" aria-pressed="false">☆ 重要</button></div></div>
           <small>截止日期是最晚完成的那一天，与准备动手的时间分开。待办只会在你勾选后完成。</small>
         </div>
         <input id="event-date" name="date" type="hidden" />
@@ -631,9 +632,26 @@
     <script src="./calendar-reschedule.js?v=1"></script>
     <script src="./calendar-dot-visibility.js?v=1"></script>
     <script src="./mobile-widget.js?v=1"></script>
-    <dialog id="planning-dialog" aria-labelledby="planning-title"><div class="planning-header"><h2 id="planning-title">待安排</h2><button type="button" class="close-button" id="planning-close" aria-label="关闭待安排">×</button></div><p class="planning-intro">先把事情记下来。截止日期临近的会排在前面，过了今天也不会消失。</p><div class="planning-tools"><div class="planning-picker" data-picker="planning-filter"><input type="hidden" id="planning-filter" value="pending" /><button type="button" class="planning-picker-trigger" aria-label="查看待办" aria-haspopup="menu" aria-expanded="false" aria-controls="planning-filter-menu"><span>待安排</span><i class="chevron" aria-hidden="true"></i></button><div id="planning-filter-menu" class="planning-picker-menu" role="menu" aria-label="查看待办" hidden><button type="button" role="menuitemradio" aria-checked="true" data-value="pending">待安排<span aria-hidden="true">✓</span></button><button type="button" role="menuitemradio" aria-checked="false" data-value="open">全部未完成<span aria-hidden="true">✓</span></button></div></div><button type="button" id="planning-add">＋ 记一件事</button></div><div id="planning-feedback" class="planning-feedback" role="status" aria-live="polite"></div><div id="planning-list"></div></dialog>
-    <script src="./todo-planning.js?v=1"></script>
-    <script src="./app.js?v=183"></script>
+    <dialog id="planning-dialog" aria-labelledby="planning-title">
+      <div class="planning-header"><div><small class="planning-eyebrow">先看轻重缓急，再决定什么时候做</small><h2 id="planning-title">待办总览</h2></div><button type="button" class="close-button" id="planning-close" aria-label="关闭待办总览">×</button></div>
+      <p class="planning-intro">已安排和待安排的事情，都在这里。</p>
+      <div class="planning-matrix" id="planning-matrix" aria-label="待办四象限"></div>
+      <p class="planning-matrix-hint">每个圆点代表一件事，点击定位下方详情。<br>已逾期或未来两天内截止 = 紧急；没有截止日期 = 不紧急。</p>
+      <div class="planning-list-heading"><h3>未完成待办 <span id="planning-total"></span></h3><button type="button" id="planning-add">＋ 记一件事</button></div>
+      <div class="planning-tools"><div class="planning-picker" data-picker="planning-filter"><input type="hidden" id="planning-filter" value="open" /><button type="button" class="planning-picker-trigger" aria-label="查看待办" aria-haspopup="menu" aria-expanded="false" aria-controls="planning-filter-menu"><span>全部未完成</span><i class="chevron" aria-hidden="true"></i></button><div id="planning-filter-menu" class="planning-picker-menu" role="menu" aria-label="查看待办" hidden><button type="button" role="menuitemradio" aria-checked="true" data-value="open">全部未完成<span aria-hidden="true">✓</span></button><button type="button" role="menuitemradio" aria-checked="false" data-value="pending">仅待安排<span aria-hidden="true">✓</span></button></div></div><div class="planning-picker" data-picker="planning-sort"><input type="hidden" id="planning-sort" value="priority" /><button type="button" class="planning-picker-trigger" aria-label="待办排序" aria-haspopup="menu" aria-expanded="false" aria-controls="planning-sort-menu"><span>综合优先级</span><i class="chevron" aria-hidden="true"></i></button><div id="planning-sort-menu" class="planning-picker-menu" role="menu" aria-label="待办排序" hidden><button type="button" role="menuitemradio" aria-checked="true" data-value="priority">综合优先级<span aria-hidden="true">✓</span></button><button type="button" role="menuitemradio" aria-checked="false" data-value="due">截止日期排序<span aria-hidden="true">✓</span></button></div></div></div>
+      <p class="planning-sort-hint" id="planning-sort-hint"></p>
+      <div id="planning-feedback" class="planning-feedback" role="status" aria-live="polite"></div><div id="planning-list"></div>
+    </dialog>
+    <dialog id="todo-due-dialog" aria-labelledby="todo-due-title">
+      <div class="planning-header"><h2 id="todo-due-title">截止日期</h2><button type="button" class="close-button" id="todo-due-close" aria-label="关闭截止日期日历">×</button></div>
+      <p class="planning-intro">选择最晚完成的日期，动手时间可以以后再定。</p>
+      <div class="mini-calendar-header"><button type="button" class="mini-nav" id="due-previous-month" aria-label="截止日期上个月">‹</button><strong id="due-month-label" aria-live="polite"></strong><button type="button" class="mini-nav" id="due-next-month" aria-label="截止日期下个月">›</button></div>
+      <div class="due-weekdays" aria-hidden="true"><span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span></div>
+      <div id="due-calendar-grid" class="due-calendar-grid" aria-label="选择截止日期"></div>
+      <div class="due-calendar-actions"><button type="button" id="due-clear">不设截止日期</button><button type="button" id="due-today">今天</button></div>
+    </dialog>
+    <script src="./todo-planning.js?v=2"></script>
+    <script src="./app.js?v=184"></script>
     <script src="./calendar-drag.js?v=2"></script>
     <script src="./settings.js?v=10"></script>
     <script src="./voice-assistant.js?v=8"></script>

@@ -1,7 +1,7 @@
-const cache = "memory-everyday-v226";
+const cache = "memory-everyday-v227";
 const files = [
-  "/todo-planning.js?v=1",
-  "/todo-planning.css?v=3",
+  "/todo-planning.js?v=2",
+  "/todo-planning.css?v=4",
   "/mobile-widget.js?v=1",
   "/",
   "/index.html",
@@ -51,11 +51,11 @@ const files = [
   "/desktop-widget.css?v=8",
   "/desktop-widget-model.js?v=5",
   "/desktop-widget.js?v=12",
-  "/app.js?v=183",
+  "/app.js?v=184",
   "/calendar-drag.js?v=2",
   "/settings.js?v=10",
   "/voice-assistant.js?v=8",
-  "/release-info.json?v=54",
+  "/release-info.json?v=55",
   "/manifest.webmanifest",
   "/icon.svg",
   "/wecom-daily-memo-icon.png",

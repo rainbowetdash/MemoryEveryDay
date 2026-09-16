@@ -17,8 +17,21 @@
     const label = item.completedAt ? `${item.dueDate} 截止` : days < 0 ? `已逾期 ${-days} 天` : days === 0 ? '今天截止' : days === 1 ? '明天截止' : `${item.dueDate.slice(5).replace('-', '/')} 截止`;
     return {days, label, tone: item.completedAt ? 'done' : days < 0 ? 'overdue' : days <= 2 ? 'soon' : 'later'};
   }
-  function sort(items) {
-    return [...items].sort((a,b) => (a.dueDate || '9999-12-31').localeCompare(b.dueDate || '9999-12-31') || Number(pending(b))-Number(pending(a)) || a.title.localeCompare(b.title,'zh-CN'));
+  const quadrants = [
+    {id:'do',label:'重要 · 紧急',hint:'优先处理'},
+    {id:'plan',label:'重要 · 不紧急',hint:'留出时间'},
+    {id:'soon',label:'不重要 · 紧急',hint:'尽快处理'},
+    {id:'later',label:'不重要 · 不紧急',hint:'有空再做'}
+  ];
+  function priority(item, now = new Date()) {
+    const deadline = due(item, now), urgent = Boolean(deadline && deadline.days <= 2);
+    return item.important ? (urgent ? 0 : 1) : (urgent ? 2 : 3);
   }
-  return {pending, due, sort, validDate: value => day(value) !== null};
+  function sort(items, mode = 'due', now = new Date()) {
+    const deadline = item => day(item.dueDate) === null ? '9999-12-31' : item.dueDate;
+    return [...items].sort((a,b) => (mode === 'priority' ? priority(a,now)-priority(b,now) : 0)
+      || deadline(a).localeCompare(deadline(b)) || Number(Boolean(b.important))-Number(Boolean(a.important))
+      || Number(pending(b))-Number(pending(a)) || a.title.localeCompare(b.title,'zh-CN') || String(a.id).localeCompare(String(b.id)));
+  }
+  return {pending, due, sort, priority, quadrants, validDate: value => day(value) !== null};
 });
