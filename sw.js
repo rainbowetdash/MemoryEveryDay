@@ -1,7 +1,7 @@
-const cache = "memory-everyday-v227";
+const cache = "memory-everyday-v228";
 const files = [
   "/todo-planning.js?v=2",
-  "/todo-planning.css?v=4",
+  "/todo-planning.css?v=5",
   "/mobile-widget.js?v=1",
   "/",
   "/index.html",
@@ -51,7 +51,7 @@ const files = [
   "/desktop-widget.css?v=8",
   "/desktop-widget-model.js?v=5",
   "/desktop-widget.js?v=12",
-  "/app.js?v=184",
+  "/app.js?v=185",
   "/calendar-drag.js?v=2",
   "/settings.js?v=10",
   "/voice-assistant.js?v=8",

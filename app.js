@@ -837,6 +837,11 @@ function renderPlanning() {
   const pending = open.filter(window.TodoPlanning.pending), urgent = open.filter(item => window.TodoPlanning.due(item)?.days <= 2);
   $('planning-entry-title').textContent = `待办总览 · ${open.length}`;
   $('planning-entry-copy').textContent = `${pending.length} 项待安排 · ${urgent.length} 项临近或逾期`;
+  const urgentGroups = [0,2].map(quadrant => ({quadrant, items: window.TodoPlanning.sort(urgent.filter(item => window.TodoPlanning.priority(item) === quadrant))})).filter(group => group.items.length);
+  $('planning-entry-urgent').innerHTML = urgentGroups.map(({quadrant,items}) => `<span class="planning-urgent-chip" data-quadrant="${quadrant}" title="${escapeHtml(items.map(item => item.title).join('、'))}"><i aria-hidden="true"></i><span class="planning-urgent-title">${escapeHtml(items[0].title)}</span>${items.length > 1 ? `<em>+${items.length-1}</em>` : ''}</span>`).join('');
+  $('planning-entry-urgent').hidden = !urgentGroups.length;
+  $('planning-entry-copy').hidden = Boolean(urgentGroups.length);
+  $('planning-entry').setAttribute('aria-label', `待办总览，${open.length} 项未完成。` + (urgentGroups.length ? urgentGroups.map(({quadrant,items}) => `${quadrant === 0 ? '重要且紧急' : '不重要但紧急'} ${items.length} 项：${items[0].title}`).join('。') : `${pending.length} 项待安排`));
   if (!$('planning-dialog').open) return;
   const filter = $('planning-filter').value, sorting = $('planning-sort').value;
   syncPlanningPicker('planning-filter'); syncPlanningPicker('planning-sort');
@@ -850,7 +855,7 @@ function renderPlanning() {
     const members = items.filter(item => window.TodoPlanning.priority(item) === index);
     return `<section class="planning-quadrant" data-quadrant="${index}" aria-label="${quadrant.label}"><h3>${quadrant.label}<span>${members.length}</span></h3><small>${quadrant.hint}</small><div class="planning-dots">${members.map(item => `<button type="button" class="planning-dot" data-planning-dot="${escapeHtml(item.id)}" title="${escapeHtml(item.title)}" aria-label="定位：${escapeHtml(item.title)}"><i></i></button>`).join('') || '<span class="quadrant-empty">暂无</span>'}</div></section>`;
   }).join('');
-  $('planning-list').innerHTML = items.length ? items.map(item => `<article class="planning-card" data-planning-card="${escapeHtml(item.id)}" tabindex="-1"><div class="planning-card-main">${todoCheckMarkup(item)}<div><button type="button" class="planning-title" data-planning-edit="${escapeHtml(item.id)}">${escapeHtml(item.title)}</button><div class="planning-meta"><span class="priority-badge" data-quadrant="${window.TodoPlanning.priority(item)}">${item.important ? '★ 重要' : '普通'}</span>${dueBadge(item) || '<span>无截止日期</span>'}<span>${item.date ? `${escapeHtml(item.date)} ${escapeHtml(eventTimeLabel(item))} 做` : '待安排时间'}</span></div></div></div><div class="planning-actions"><button type="button" data-planning-now="${escapeHtml(item.id)}">现在做</button><button type="button" data-planning-schedule="${escapeHtml(item.id)}">${item.date ? '调整时间' : '安排时间'}</button></div></article>`).join('') : `<div class="planning-empty">${filter === 'pending' ? '暂时没有待安排的事，可以切换到全部未完成。' : '目前没有未完成的待办，记一件事就能出现在这里。'}</div>`;
+  $('planning-list').innerHTML = items.length ? items.map(item => `<article class="planning-card" data-planning-card="${escapeHtml(item.id)}" tabindex="-1"><div class="planning-card-main">${todoCheckMarkup(item)}<div><button type="button" class="planning-title" data-planning-edit="${escapeHtml(item.id)}">${escapeHtml(item.title)}</button><div class="planning-meta"><span class="priority-badge" data-quadrant="${window.TodoPlanning.priority(item)}">${item.important ? '★ 重要' : '普通'}</span>${dueBadge(item) || '<span>无截止日期</span>'}<span>${item.date ? `${escapeHtml(item.date)} ${escapeHtml(eventTimeLabel(item))} 做` : '待安排时间'}</span></div></div></div><div class="planning-actions"><button type="button" data-planning-now="${escapeHtml(item.id)}">现在做</button><button type="button" data-planning-schedule="${escapeHtml(item.id)}">${item.date ? '调整时间' : '编辑待办'}</button></div></article>`).join('') : `<div class="planning-empty">${filter === 'pending' ? '暂时没有待安排的事，可以切换到全部未完成。' : '目前没有未完成的待办，记一件事就能出现在这里。'}</div>`;
   $('planning-matrix').querySelectorAll('[data-planning-dot]').forEach(dot => dot.onclick = () => {
     const card = [...$('planning-list').querySelectorAll('[data-planning-card]')].find(item => item.dataset.planningCard === dot.dataset.planningDot);
     $('planning-list').querySelectorAll('.is-highlighted').forEach(item => item.classList.remove('is-highlighted'));
@@ -872,7 +877,7 @@ function renderPlanning() {
 function openPlanningEvent(id, schedule = false) {
   const event = state.events.find(item => item.id === id); if (!event) return;
   $('planning-dialog').close(); openEventDialog(event);
-  if (schedule) { $('todo-planning-mode').value = 'scheduled'; updateTodoPlanningFields(); openScheduleEditor(); }
+  if (schedule && event.date) { $('todo-planning-mode').value = 'scheduled'; updateTodoPlanningFields(); openScheduleEditor(); }
 }
 $('planning-entry').onclick = () => { $('planning-feedback').textContent = ''; $('planning-filter').value = 'open'; $('planning-sort').value = 'priority'; closePlanningPickers(); $('planning-dialog').showModal(); renderPlanning(); $('planning-dialog').scrollTop = 0; };
 $('planning-close').onclick = () => $('planning-dialog').close();

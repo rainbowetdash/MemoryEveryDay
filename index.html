@@ -147,7 +147,7 @@
       @media (max-width: 540px) { #event-dialog { width: calc(100% - 24px); max-height: calc(100dvh - 24px); overflow-y: auto; overscroll-behavior: contain; } #event-dialog form { padding: 20px; } #event-dialog .time-inputs { grid-template-columns: minmax(0, 1fr); gap: 12px; } }
     </style>
     <title>每日备忘</title>
-  <link rel="stylesheet" href="./todo-planning.css?v=4" />
+  <link rel="stylesheet" href="./todo-planning.css?v=5" />
 </head>
   <body>
     <main class="app-shell is-sidebar-available" id="app-shell">
@@ -177,7 +177,7 @@
             <button type="button" id="calendar-zoom-in" class="zoom-button" aria-label="放大月历" title="放大月历"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
           </div>
         </div>
-        <button type="button" id="planning-entry" class="planning-entry"><span><strong id="planning-entry-title">待办总览</strong><small id="planning-entry-copy">先记下来，时间以后定</small></span><b aria-hidden="true">›</b></button>
+        <button type="button" id="planning-entry" class="planning-entry"><span><strong id="planning-entry-title">待办总览</strong><small id="planning-entry-copy">先记下来，时间以后定</small><span id="planning-entry-urgent" hidden></span></span><b aria-hidden="true">›</b></button>
         <div class="calendar-scroll" id="calendar-scroll"><div class="calendar-canvas"><div class="weekdays" aria-hidden="true"><span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span></div><div class="calendar-grid" id="calendar-grid"></div></div></div>
         <section id="calendar-focus-list" class="calendar-focus-list is-hidden" aria-label="本月有安排的日期"></section>
         <section class="up-next calendar-agenda-section" aria-live="polite" aria-label="所选日期的日程">
@@ -651,7 +651,7 @@
       <div class="due-calendar-actions"><button type="button" id="due-clear">不设截止日期</button><button type="button" id="due-today">今天</button></div>
     </dialog>
     <script src="./todo-planning.js?v=2"></script>
-    <script src="./app.js?v=184"></script>
+    <script src="./app.js?v=185"></script>
     <script src="./calendar-drag.js?v=2"></script>
     <script src="./settings.js?v=10"></script>
     <script src="./voice-assistant.js?v=8"></script>

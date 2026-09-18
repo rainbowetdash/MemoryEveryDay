@@ -53,3 +53,15 @@ test('priority and due sort have distinct ordering and do not mutate source item
  assert.deepEqual(model.sort(items,'due',now).map(i=>i.id),['a','c','b','d']);
  assert.deepEqual(items.map(i=>i.id),['a','b','c','d']);
 });
+test('opening an unscheduled todo never assigns a time, including the card action', () => {
+ const source=fs.readFileSync(require.resolve('../app.js'),'utf8');
+ const fn=source.slice(source.indexOf('function openPlanningEvent('),source.indexOf("$('planning-entry').onclick"));
+ const controls={'planning-dialog':{close(){}},'todo-planning-mode':{value:'pending'}};
+ let opened=0;
+ const context=vm.createContext({state:{events:[{id:'pending',kind:'todo',date:''},{id:'scheduled',kind:'todo',date:'2026-09-18'}]},$:id=>controls[id],openEventDialog:()=>{},updateTodoPlanningFields:()=>{},openScheduleEditor:()=>opened++});
+ vm.runInContext(fn,context);
+ vm.runInContext("openPlanningEvent('pending',true)",context);
+ assert.equal(controls['todo-planning-mode'].value,'pending');assert.equal(opened,0);
+ vm.runInContext("openPlanningEvent('scheduled',true)",context);
+ assert.equal(controls['todo-planning-mode'].value,'scheduled');assert.equal(opened,1);
+});

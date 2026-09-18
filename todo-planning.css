@@ -109,3 +109,23 @@ body .planning-quadrant>small{font-size:11px;color:color-mix(in srgb,var(--theme
  #event-dialog{max-height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 32px)!important}
 }
 body #todo-due-dialog .mini-day.is-other{color:var(--theme-muted,#637b8e)!important;opacity:1}
+/* Compact urgent previews share the entry row on both desktop and phone. */
+#planning-entry>span{display:flex;align-items:center;gap:10px;min-width:0;flex:1}
+#planning-entry-title{flex-shrink:0}
+#planning-entry #planning-entry-urgent{display:flex;gap:6px;min-width:0;flex:1}
+#planning-entry #planning-entry-urgent[hidden],#planning-entry-copy[hidden]{display:none}
+#planning-entry .planning-urgent-chip{display:flex;align-items:center;gap:5px;min-width:0;max-width:240px;flex:1;padding:6px 8px;border-radius:8px;background:color-mix(in srgb,var(--quadrant-color) 13%,var(--theme-surface,#fafdff));color:var(--theme-text,#183b60)}
+#planning-entry .planning-urgent-chip i{width:6px;height:6px;flex:0 0 6px;border-radius:50%;background:var(--quadrant-color)}
+#planning-entry .planning-urgent-title{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;min-width:0}
+#planning-entry .planning-urgent-chip em{font-size:10px;font-style:normal;flex-shrink:0}
+@media(max-width:540px){
+ #calendar-screen #planning-entry>span{gap:7px}
+ #planning-entry-title{font-size:12px}
+ #planning-entry .planning-urgent-chip{padding:5px;gap:4px}
+ #planning-entry .planning-urgent-title{font-size:11px}
+ #planning-entry{gap:6px}
+}
+#planning-entry .planning-urgent-chip[data-quadrant="0"]{color:#a33e36}
+#planning-entry .planning-urgent-chip[data-quadrant="2"]{color:#806014}
+body[data-app-theme="night"] #planning-entry .planning-urgent-chip[data-quadrant="0"]{color:#ffb6aa}
+body[data-app-theme="night"] #planning-entry .planning-urgent-chip[data-quadrant="2"]{color:#ffe0a0}
