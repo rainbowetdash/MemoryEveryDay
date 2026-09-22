@@ -10,6 +10,12 @@
     const parts = match.slice(1).map(Number), date = new Date(Date.UTC(parts[0], parts[1]-1, parts[2]));
     return date.getUTCFullYear() === parts[0] && date.getUTCMonth() === parts[1]-1 && date.getUTCDate() === parts[2] ? date.getTime()/86400000 : null;
   }
+  // A deadline gives an unplanned todo a day in the calendar, not an execution time.
+  function occursOn(item, key) {
+    if (item?.kind !== 'todo') return false;
+    if (item.date) return item.date === key;
+    return !item.completedAt && day(item.dueDate) !== null && item.dueDate === key;
+  }
   function due(item, now = new Date()) {
     if (item?.kind !== 'todo' || !item.dueDate) return null;
     const target = day(item.dueDate); if (target === null) return null;
@@ -33,5 +39,5 @@
       || deadline(a).localeCompare(deadline(b)) || Number(Boolean(b.important))-Number(Boolean(a.important))
       || Number(pending(b))-Number(pending(a)) || a.title.localeCompare(b.title,'zh-CN') || String(a.id).localeCompare(String(b.id)));
   }
-  return {pending, due, sort, priority, quadrants, validDate: value => day(value) !== null};
+  return {pending, occursOn, due, sort, priority, quadrants, validDate: value => day(value) !== null};
 });

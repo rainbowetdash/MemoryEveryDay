@@ -32,7 +32,12 @@
     const targetDate = /^\d{4}-\d{2}-\d{2}$/.test(String(options.date || '')) ? String(options.date) : event.date;
     const changingTime = options.time !== undefined;
     const targetMinutes = changingTime ? timeToMinutes(options.time) : timeToMinutes(event.time);
-    if (targetMinutes === null) return { error: 'invalid_time' };
+    if (targetMinutes === null) {
+      if (!changingTime && event.kind === 'todo' && !event.date && !event.time) {
+        return { event: { ...event, dueDate: targetDate }, duration: 0, adjusted: false, requestedTime: '' };
+      }
+      return { error: 'invalid_time' };
+    }
     const duration = eventDuration(event);
     const latestStart = duration ? Math.max(0, Math.floor((1440 - duration) / 30) * 30) : 1410;
     const start = changingTime ? Math.min(targetMinutes, latestStart) : targetMinutes;

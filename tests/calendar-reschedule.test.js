@@ -32,3 +32,15 @@ assert.equal(moveEvent({ ...reminder, time: '23:50' }, { date: '2026-09-03' }).e
 assert.equal(moveEvent({ ...base, weeklyDays: [1, 3] }, { date: '2026-09-08' }).error, 'recurring_event');
 
 console.log('calendar reschedule tests passed');
+
+// Date-only todos can move their deadline without inventing a start time.
+const deadlineOnly = { id: 'deadline-only', kind: 'todo', date: '', time: '', dueDate: '2026-09-22' };
+const deadlineApi = require('../calendar-reschedule.js');
+const movedDeadline = deadlineApi.moveEvent(deadlineOnly, {date:'2026-09-23'}).event;
+assert.equal(movedDeadline.dueDate, '2026-09-23');
+assert.equal(movedDeadline.date, '');
+assert.equal(movedDeadline.time, '');
+const scheduledDeadline = deadlineApi.moveEvent(deadlineOnly, {date:'2026-09-22',time:'14:00'}).event;
+assert.equal(scheduledDeadline.time, '14:00');
+assert.equal(scheduledDeadline.date, '2026-09-22');
+assert.equal(scheduledDeadline.dueDate, '2026-09-22');

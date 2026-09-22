@@ -155,8 +155,8 @@
   }
 
   function timelineEventMarkup(event) {
-    const completed = model.isCompleted(event), recurring = model.isRecurring(event), note = event.note || (recurring ? '重复日程请在主应用中修改' : model.isTodo(event) ? '待办完成后可直接勾选' : '拖动卡片可以改变时间');
-    return `<article class="timeline-event ${escapeHtml(event.color || 'blue')} ${completed ? 'is-completed' : ''} ${recurring ? 'is-recurring' : ''}" data-widget-event-id="${escapeHtml(event.id)}" aria-label="${escapeHtml(`${model.timeLabel(event)} ${event.title}`)}">${model.isTodo(event) ? `<button type="button" class="todo-check ${completed ? 'is-checked' : ''}" data-widget-todo-id="${escapeHtml(event.id)}" aria-label="${completed ? '恢复为未完成' : '标记为完成'}"></button>` : `<time>${escapeHtml(model.timeLabel(event))}</time>`}<span class="timeline-event-copy"><strong>${escapeHtml(event.title)}</strong><small>${escapeHtml(note)}</small></span>${recurring ? '<span class="event-lock" title="重复日程请在主应用中修改">↻</span>' : (model.isTodo(event) ? `<time>${escapeHtml(model.timeLabel(event))}</time>` : '')}</article>`;
+    const completed = model.isCompleted(event), recurring = model.isRecurring(event), note = [model.isTodo(event) && !event.time ? window.TodoPlanning.due(event)?.label : '', event.note].filter(Boolean).join(' · ') || (recurring ? '重复日程请在主应用中修改' : model.isTodo(event) ? '待办完成后可直接勾选' : '拖动卡片可以改变时间');
+    return `<article class="timeline-event ${escapeHtml(event.color || 'blue')} ${completed ? 'is-completed' : ''} ${recurring ? 'is-recurring' : ''}" data-widget-event-id="${escapeHtml(event.id)}" aria-label="${escapeHtml(`${model.timeLabel(event)} ${event.title}`)}">${model.isTodo(event) ? `<button type="button" class="todo-check ${completed ? 'is-checked' : ''}" data-widget-todo-id="${escapeHtml(event.id)}" aria-label="${completed ? '恢复为未完成' : '标记为完成'}"></button>` : `<time>${escapeHtml(model.timeLabel(event))}</time>`}<span class="timeline-event-copy"><strong>${escapeHtml(event.title)}</strong><small>${escapeHtml(note)}</small></span>${recurring ? '<span class="event-lock" title="重复日程请在主应用中修改">↻</span>' : (model.isTodo(event) && event.time ? `<time>${escapeHtml(model.timeLabel(event))}</time>` : '')}</article>`;
   }
 
   function renderTimeline() {
@@ -172,7 +172,8 @@
       });
       slots.push(`<section class="timeline-slot ${minutes % 60 ? 'is-half' : ''}" data-widget-time="${time}"><span class="timeline-slot-time">${time}</span><span class="timeline-slot-line"></span>${slotEvents.length ? `<div class="timeline-events">${slotEvents.map(timelineEventMarkup).join('')}</div>` : ''}</section>`);
     }
-    timeline.innerHTML = slots.join('');
+    const untimed = dayEvents.filter((event) => model.isTodo(event) && !event.time);
+    timeline.innerHTML = (untimed.length ? `<section class="widget-untimed-todos" aria-label="当天待办"><p>当天待办<span>未设具体时间</span></p>${untimed.map(timelineEventMarkup).join('')}</section>` : '') + slots.join('');
     $('day-empty').classList.toggle('is-hidden', Boolean(dayEvents.length));
     timeline.querySelectorAll('[data-widget-time]').forEach((slot) => {
       slot.addEventListener('dragover', onTimeDragOver);
@@ -218,7 +219,7 @@
     try {
       const { data, error } = await client.from('schedule_events').select('*').eq('user_id', state.user.id).order('event_date').order('start_time');
       if (error) throw error;
-      state.events = (data || []).map(model.rowToEvent).filter((event) => event.id && event.date);
+      state.events = (data || []).map(model.rowToEvent).filter((event) => event.id && (event.date || model.isTodo(event)));
       saveSnapshot();
       render();
       setSyncStatus(`已同步 · ${new Intl.DateTimeFormat('zh-CN', { hour: '2-digit', minute: '2-digit' }).format(new Date())}`, 'ok');
@@ -319,14 +320,14 @@
     if (moved.error === 'recurring_event') { setToast('重复日程暂不支持直接拖动', '请打开每日备忘主应用修改重复规则'); return; }
     if (moved.error) { setToast('无法移动这项安排', '请稍后再试'); return; }
     const previous = { ...current }, next = moved.event;
-    if (next.date === current.date && next.time === current.time && (next.endTime || '') === (current.endTime || '')) {
+    if (next.date === current.date && next.time === current.time && (next.endTime || '') === (current.endTime || '') && next.dueDate === current.dueDate) {
       state.undo = null;
       setToast('位置没有改变', '这项安排仍在原来的日期和时间');
       return;
     }
     state.events = state.events.map((event) => event.id === eventId ? next : event);
     if (options.date) {
-      state.selected = model.dateFromKey(next.date) || state.selected;
+      state.selected = model.dateFromKey(next.date || next.dueDate) || state.selected;
       state.showing = new Date(state.selected.getFullYear(), state.selected.getMonth(), 1, 12);
     }
     render();
@@ -336,7 +337,7 @@
       state.undo = { previous, next: { ...next } };
       saveSnapshot();
       setSyncStatus('已同步', 'ok');
-      const detail = `${new Intl.DateTimeFormat('zh-CN', { month: 'long', day: 'numeric' }).format(model.dateFromKey(next.date))} · ${model.timeLabel(next)}`;
+      const detail = `${new Intl.DateTimeFormat('zh-CN', { month: 'long', day: 'numeric' }).format(model.dateFromKey(next.date || next.dueDate))} · ${model.timeLabel(next)}`;
       setToast('安排已移动', detail, true);
     } catch {
       state.events = state.events.map((event) => event.id === eventId ? previous : event);
@@ -352,7 +353,7 @@
     if (!snapshot || !state.user) return;
     state.undo = null;
     state.events = state.events.map((event) => event.id === snapshot.previous.id ? snapshot.previous : event);
-    state.selected = model.dateFromKey(snapshot.previous.date) || state.selected;
+    state.selected = model.dateFromKey(snapshot.previous.date || snapshot.previous.dueDate) || state.selected;
     state.showing = new Date(state.selected.getFullYear(), state.selected.getMonth(), 1, 12);
     render();
     hideToast();
@@ -361,7 +362,7 @@
       await persistEvent(snapshot.previous);
       saveSnapshot();
       setSyncStatus('已同步', 'ok');
-      setToast('已经撤销移动', `${snapshot.previous.date} · ${model.timeLabel(snapshot.previous)}`);
+      setToast('已经撤销移动', `${snapshot.previous.date || snapshot.previous.dueDate} · ${model.timeLabel(snapshot.previous)}`);
     } catch {
       state.events = state.events.map((event) => event.id === snapshot.next.id ? snapshot.next : event);
       render();

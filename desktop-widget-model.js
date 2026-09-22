@@ -1,8 +1,8 @@
 (function (root, factory) {
-  const api = factory(root?.CalendarReschedule, root?.CalendarDotVisibility);
+  const api = factory(root?.CalendarReschedule, root?.CalendarDotVisibility, root?.TodoPlanning);
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   if (root) root.DesktopWidgetModel = api;
-})(typeof globalThis !== 'undefined' ? globalThis : this, function (rescheduleApi, dotVisibilityApi) {
+})(typeof globalThis !== 'undefined' ? globalThis : this, function (rescheduleApi, dotVisibilityApi, todoPlanningApi) {
   function pad(value) { return String(value).padStart(2, '0'); }
 
   function dateKey(date) {
@@ -35,9 +35,11 @@
       title: String(row?.title || '未命名安排'),
       note: String(row?.note || '').trim().slice(0, 140),
       kind,
+      dueDate: kind === 'todo' ? String(row?.due_date || '') : '',
+      important: kind === 'todo' && Boolean(row?.is_important),
       completedAt: kind === 'todo' ? String(row?.completed_at || '') : '',
       date: String(row?.event_date || ''),
-      time: normalizeTime(row?.start_time) || '09:00',
+      time: normalizeTime(row?.start_time) || (kind === 'todo' ? '' : '09:00'),
       endTime: normalizeTime(row?.end_time, true),
       color: String(row?.color || 'blue'),
       groupId: String(row?.group_id || 'all'),
@@ -53,13 +55,14 @@
 
   function eventOccursOn(event, date) {
     const key = dateKey(date);
+    if (isTodo(event)) return todoPlanningApi.occursOn(event, key);
     if (!isRecurring(event)) return event?.date === key;
     const start = event.repeatStartDate || event.date;
     return key >= start && (!event.repeatEndDate || key <= event.repeatEndDate) && normalizeWeeklyDays(event.weeklyDays).includes(date.getDay());
   }
 
   function eventsForDate(events, date) {
-    return (Array.isArray(events) ? events : []).filter((event) => eventOccursOn(event, date)).sort((a, b) => `${a.time}${a.title}`.localeCompare(`${b.time}${b.title}`, 'zh-CN'));
+    return (Array.isArray(events) ? events : []).filter((event) => eventOccursOn(event, date)).sort((a, b) => Number(Boolean(a.time)) - Number(Boolean(b.time)) || `${a.time}${a.title}`.localeCompare(`${b.time}${b.title}`, 'zh-CN'));
   }
 
   function calendarDotColors(events, occurrenceDate, now = new Date()) {
@@ -85,10 +88,11 @@
 
   function eventUpdateRow(event) {
     return {
-      event_date: event.date,
-      start_time: event.time,
+      ...(isTodo(event) && !event.date ? { due_date: event.dueDate || null } : {}),
+      event_date: event.date || null,
+      start_time: event.time || null,
       end_time: event.endTime || null,
-      repeat_start_date: event.repeatStartDate || event.date,
+      repeat_start_date: event.repeatStartDate || event.date || null,
     };
   }
 

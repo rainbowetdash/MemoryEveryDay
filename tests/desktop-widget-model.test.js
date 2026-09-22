@@ -1,4 +1,5 @@
 const assert = require('node:assert/strict');
+global.TodoPlanning = require('../todo-planning.js');
 global.CalendarReschedule = require('../calendar-reschedule.js');
 global.CalendarDotVisibility = require('../calendar-dot-visibility.js');
 delete require.cache[require.resolve('../desktop-widget-model.js')];

@@ -140,7 +140,7 @@
     const target = hit?.closest?.('.time-row[data-time-slot]');
     drag.targetTime = target?.dataset.timeSlot || '';
     if (target) {
-      const preview = CalendarReschedule.moveEvent(drag.event, { date: drag.event.date, time: drag.targetTime });
+      const preview = CalendarReschedule.moveEvent(drag.event, { date: drag.event.date || dateKey(state.selected), time: drag.targetTime });
       target.classList.add('is-time-drop-target');
       setDragStatus(`松手调整到 ${CalendarReschedule.timeLabel(preview.event)}`, 'ready');
     } else setDragStatus('上下拖到目标时间，每半小时吸附一次');
@@ -184,20 +184,20 @@
     const result = CalendarReschedule.moveEvent(original, options);
     if (result.error) return;
     const moved = result.event;
-    if (moved.date === original.date && moved.time === original.time && moved.endTime === original.endTime) {
+    if (moved.date === original.date && moved.time === original.time && moved.endTime === original.endTime && moved.dueDate === original.dueDate) {
       showMoveToast('位置没有改变', '长按后拖到新的日期或时间即可调整');
       return;
     }
     persistMovedEvent(original, moved);
     undoSnapshot = { before: { ...original }, after: { ...moved } };
     if (mode === 'date') {
-      state.selected = new Date(`${moved.date}T12:00:00`);
+      state.selected = new Date(`${moved.date || moved.dueDate}T12:00:00`);
       state.showing = new Date(state.selected);
     }
     render();
     if (mode === 'time') requestAnimationFrame(() => document.querySelector(`.time-row[data-time-slot="${moved.time}"]`)?.scrollIntoView({ block: 'center', behavior: 'smooth' }));
     const rangeCopy = CalendarReschedule.timeLabel(moved);
-    if (mode === 'date') showMoveToast(`已移到 ${dateLabel(moved.date)}`, `时间保持 ${rangeCopy}`, true);
+    if (mode === 'date') showMoveToast(`已移到 ${dateLabel(moved.date || moved.dueDate)}`, moved.time ? `时间保持 ${rangeCopy}` : '已调整截止日期，仍未设置具体时间', true);
     else {
       const duration = durationLabel(result.duration);
       showMoveToast(`已调整为 ${rangeCopy}`, result.adjusted ? `已吸附到当天最晚可用时间，${duration ? `时长仍为 ${duration}` : '提醒时长不变'}` : (duration ? `时长保持 ${duration}` : '日期保持不变'), true);
@@ -256,7 +256,7 @@
     const targetDate = activeDrag.targetDate, targetTime = activeDrag.targetTime, original = activeDrag.event, mode = activeDrag.mode;
     cleanupDrag();
     if (mode === 'date' && targetDate) applyMove(original, { date: targetDate }, mode);
-    else if (mode === 'time' && targetTime) applyMove(original, { date: original.date, time: targetTime }, mode);
+    else if (mode === 'time' && targetTime) applyMove(original, { date: original.date || dateKey(state.selected), time: targetTime }, mode);
     else showMoveToast('这次没有移动', mode === 'date' ? '请拖到月历中的某一天后松手' : '请拖到时间刻度上后松手');
   }
 
@@ -291,11 +291,11 @@
     if (!undoSnapshot) return;
     const before = { ...undoSnapshot.before };
     persistMovedEvent(undoSnapshot.after, before);
-    state.selected = new Date(`${before.date}T12:00:00`);
+    state.selected = new Date(`${before.date || before.dueDate}T12:00:00`);
     state.showing = new Date(state.selected);
     undoSnapshot = null;
     render();
-    showMoveToast('已撤销移动', `已恢复到 ${dateLabel(before.date)} · ${CalendarReschedule.timeLabel(before)}`);
+    showMoveToast('已撤销移动', `已恢复到 ${dateLabel(before.date || before.dueDate)} · ${CalendarReschedule.timeLabel(before)}`);
   }
 
   document.addEventListener('pointerdown', beginTracking, true);

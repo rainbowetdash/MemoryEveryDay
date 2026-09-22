@@ -348,3 +348,7 @@ body.is-widget-scaled .desktop-widget { grid-template-rows: calc(40px / var(--wi
   .widget-auth-card form { gap: 8px; margin-top: 12px; }
   .widget-auth-card > a { margin-top: 10px; }
 }
+
+.widget-untimed-todos{display:grid;gap:6px;margin:0 2px 14px 0}
+.widget-untimed-todos>p{display:flex;justify-content:space-between;gap:8px;margin:0 0 2px;color:var(--muted);font-size:10px;font-weight:700}
+.widget-untimed-todos>p span{font-size:9px;font-weight:400}

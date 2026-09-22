@@ -129,3 +129,14 @@ body #todo-due-dialog .mini-day.is-other{color:var(--theme-muted,#637b8e)!import
 #planning-entry .planning-urgent-chip[data-quadrant="2"]{color:#806014}
 body[data-app-theme="night"] #planning-entry .planning-urgent-chip[data-quadrant="0"]{color:#ffb6aa}
 body[data-app-theme="night"] #planning-entry .planning-urgent-chip[data-quadrant="2"]{color:#ffe0a0}
+
+/* Date-only tasks stay above the hourly schedule, with no invented time. */
+.untimed-todos{display:grid;gap:8px;margin:0 0 22px}
+.untimed-todos-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 4px;font-size:13px;font-weight:700;color:var(--text)}
+.untimed-todos-heading span{font-size:11px;font-weight:400;opacity:.65}
+.untimed-todos .event-card{grid-column:auto;margin:0}
+.agenda-item.is-untimed>div{flex:1;min-width:0}
+
+.calendar-agenda-section .agenda-item.is-untimed[data-event-id]>div{grid-column:2 / -1}
+.untimed-todos .event-card small{display:block;margin-top:4px;color:var(--theme-muted,#527896)}
+.untimed-todos-heading{color:var(--theme-text,#183b60)}

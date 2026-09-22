@@ -147,7 +147,7 @@
       @media (max-width: 540px) { #event-dialog { width: calc(100% - 24px); max-height: calc(100dvh - 24px); overflow-y: auto; overscroll-behavior: contain; } #event-dialog form { padding: 20px; } #event-dialog .time-inputs { grid-template-columns: minmax(0, 1fr); gap: 12px; } }
     </style>
     <title>每日备忘</title>
-  <link rel="stylesheet" href="./todo-planning.css?v=5" />
+  <link rel="stylesheet" href="./todo-planning.css?v=6" />
 </head>
   <body>
     <main class="app-shell is-sidebar-available" id="app-shell">
@@ -629,7 +629,7 @@
     </dialog>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     <script src="./memo-time-suggestions.js?v=1"></script>
-    <script src="./calendar-reschedule.js?v=1"></script>
+    <script src="./calendar-reschedule.js?v=2"></script>
     <script src="./calendar-dot-visibility.js?v=1"></script>
     <script src="./mobile-widget.js?v=1"></script>
     <dialog id="planning-dialog" aria-labelledby="planning-title">
@@ -650,8 +650,8 @@
       <div id="due-calendar-grid" class="due-calendar-grid" aria-label="选择截止日期"></div>
       <div class="due-calendar-actions"><button type="button" id="due-clear">不设截止日期</button><button type="button" id="due-today">今天</button></div>
     </dialog>
-    <script src="./todo-planning.js?v=2"></script>
-    <script src="./app.js?v=186"></script>
+    <script src="./todo-planning.js?v=3"></script>
+    <script src="./app.js?v=187"></script>
     <script src="./calendar-drag.js?v=2"></script>
     <script src="./settings.js?v=10"></script>
     <script src="./voice-assistant.js?v=8"></script>

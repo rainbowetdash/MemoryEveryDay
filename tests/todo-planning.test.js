@@ -65,3 +65,30 @@ test('opening an unscheduled todo never assigns a time, including the card actio
  vm.runInContext("openPlanningEvent('scheduled',true)",context);
  assert.equal(controls['todo-planning-mode'].value,'scheduled');assert.equal(opened,1);
 });
+test('unplanned deadlines appear only on their day until completed, without changing planning data', () => {
+ const item={id:'due',kind:'todo',date:'',time:'',dueDate:'2026-09-22',title:'复习'};
+ const before=JSON.stringify(item);
+ assert.equal(model.occursOn(item,'2026-09-22'),true);
+ assert.equal(model.occursOn(item,'2026-09-21'),false);
+ assert.equal(model.occursOn(item,'2026-09-23'),false);
+ assert.equal(model.occursOn({...item,completedAt:'done'},'2026-09-22'),false);
+ assert.equal(model.occursOn({...item,dueDate:''},'2026-09-22'),false);
+ assert.equal(model.occursOn({...item,date:'2026-09-21',time:'10:00'},'2026-09-22'),false);
+ assert.equal(model.occursOn({...item,date:'2026-09-21',time:'10:00'},'2026-09-21'),true);
+ assert.equal(JSON.stringify(item),before);
+});
+test('web and desktop calendars include deadline-only tasks before timed entries', () => {
+ global.TodoPlanning=model;
+ const desktop=require('../desktop-widget-model');
+ const source=fs.readFileSync(require.resolve('../app.js'),'utf8');
+ const context=vm.createContext({window:{TodoPlanning:model},dateKey:desktop.dateKey,visibleEvents:()=>items});
+ for(const name of ['normalizeRepeatDate','normalizeWeeklyDays','eventKind','isTodo','isWeeklyRepeating','eventOccursOn','eventsFor']) {
+  vm.runInContext(source.split('\n').find(l=>l.startsWith(`function ${name}(`)),context);
+ }
+ const pending=desktop.rowToEvent({id:'pending',title:'笔记',item_type:'todo',event_date:null,start_time:null,due_date:'2026-09-22'});
+ assert.equal(pending.time,'');
+ const items=[{...pending,id:'timed',date:'2026-09-22',time:'09:00'},pending,{...pending,id:'done',completedAt:'done'}];
+ const date=new Date(2026,8,22,12);context.date=date;
+ assert.deepEqual(Array.from(vm.runInContext('eventsFor(date)',context),x=>x.id),['pending','timed']);
+ assert.deepEqual(desktop.eventsForDate(items,date).map(x=>x.id),['pending','timed']);
+});
