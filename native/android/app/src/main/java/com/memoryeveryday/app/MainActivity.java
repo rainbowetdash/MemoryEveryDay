@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.Insets;
 import android.media.MediaRecorder;
 import android.os.Handler;
 import android.os.Looper;
@@ -20,6 +21,7 @@ import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowInsets;
 import android.util.Base64;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
@@ -115,7 +117,21 @@ public class MainActivity extends Activity {
         splash.setBackgroundColor(Color.rgb(244, 249, 255));
         root.addView(webView, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
         root.addView(splash, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
+        // Android 15 enforces edge-to-edge. Keep the entire WebView inside the
+        // usable area, including dialogs, fixed navigation and the keyboard.
+        // Consume the insets here so WebView does not add the same space again.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            getWindow().setDecorFitsSystemWindows(false);
+            root.setOnApplyWindowInsetsListener((view, windowInsets) -> {
+                Insets safeArea = windowInsets.getInsets(
+                    WindowInsets.Type.systemBars() | WindowInsets.Type.displayCutout()
+                        | WindowInsets.Type.ime());
+                view.setPadding(safeArea.left, safeArea.top, safeArea.right, safeArea.bottom);
+                return WindowInsets.CONSUMED;
+            });
+        }
         setContentView(root);
+        root.requestApplyInsets();
 
         requestNotificationPermissionIfNeeded();
         loadLatest();

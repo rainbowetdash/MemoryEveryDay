@@ -9,9 +9,9 @@
       "hint": "SideStore 安装时请保留应用扩展，更新后打开应用同步小组件"
     },
     "android": {
-      "latestVersion": "1.0.10",
-      "downloadUrl": "./downloads/apk-1-0-10",
-      "downloadName": "MemoryEveryDay-1.0.10.apk",
+      "latestVersion": "1.0.11",
+      "downloadUrl": "./downloads/apk-1-0-11",
+      "downloadName": "MemoryEveryDay-1.0.11.apk",
       "label": "Android APK",
       "hint": "下载后可直接安装更新"
     },
